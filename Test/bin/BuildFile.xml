@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="test.exe">
+  <use name="AnHiMaHGCAL/Test"/>
+</bin>
