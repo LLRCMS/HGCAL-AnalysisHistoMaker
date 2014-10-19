@@ -1,0 +1,9 @@
+Follow the instructions in https://twiki.cern.ch/twiki/bin/viewauth/CMS/HGCalCMSSWSimulation#Recipe_for_developers to setup CMSSW
+
+In src/ do:
+> git clone git@github.com:LLRCMS/HGCAL-AnalysisHistoMaker.git AnHiMaHGCAL
+> scram b -j4
+> cd AnHiMaHGCAL/Test
+> test.exe run/analysis.config 
+
+To create your own executable copy the structure of Test/ in a new directory, but with a different Analysis class name (not simply "Analysis") and a different executable name (not "test.exe", specified in bin/BuildFile.xml).
