@@ -110,6 +110,7 @@ bool Analysis::initialize(const string& parameterFile)
 void Analysis::execute()
 /*****************************************************************/
 {
+    event().update();
     if(!event().passSelection()) return;
 
     fillHistos();

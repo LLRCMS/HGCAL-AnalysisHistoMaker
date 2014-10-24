@@ -22,7 +22,7 @@
 #define ANALYSIS_H
 
 #include "AnHiMaHGCAL/Core/interface/IAnalysis.h"
-#include "AnHiMaHGCAL/HGCALCommon/interface/Event.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 #include "AnHiMaHGCAL/Core/interface/EventAware.h"
 #include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
 
@@ -39,7 +39,7 @@
 namespace AnHiMa
 {
 
-    class Analysis: public IAnalysis, EventAware<Event>
+    class Analysis: public IAnalysis, EventAware<EventHGCAL>
     {
         public:
             Analysis();

@@ -50,3 +50,21 @@ void IEvent::connectVariables(TChain* inputChain)
     inputChain->SetBranchStatus("*", false);
     
 }
+
+/*****************************************************************/
+void IEvent::registerCallback(void* objectPtr, CallBack function)
+/*****************************************************************/
+{
+    m_listOfCallBacks.push_back( std::make_pair(objectPtr, function) );
+}
+
+
+/*****************************************************************/
+void IEvent::update()
+/*****************************************************************/
+{
+    for(unsigned int fu = 0; fu<m_listOfCallBacks.size();fu++)
+    {
+        (m_listOfCallBacks[fu].second)(m_listOfCallBacks[fu].first);
+    }
+}
