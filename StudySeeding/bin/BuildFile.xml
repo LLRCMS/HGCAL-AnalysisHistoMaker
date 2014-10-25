@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="seeding.exe">
+  <use name="AnHiMaHGCAL/StudySeeding"/>
+</bin>
