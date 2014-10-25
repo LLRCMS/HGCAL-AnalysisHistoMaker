@@ -27,9 +27,11 @@ using namespace AnHiMa;
 using namespace std;
 
 /*****************************************************************/
-EventHGCAL::EventHGCAL():IEvent()
+EventHGCAL::EventHGCAL():IEvent(),
+    m_sortedHits(5184000)
 /*****************************************************************/
 {
+
 
 
 }
@@ -75,4 +77,47 @@ bool EventHGCAL::passSelection(int selection)
     return true;
 }
 
+
+/*****************************************************************/
+void EventHGCAL::update()
+/*****************************************************************/
+{
+    IEvent::update();
+    // reset simhit pointers
+    for(unsigned i=0; i<m_sortedHits.size(); i++)
+    {
+        //cerr<<"Resetting "<<i<<"\n";
+        m_sortedHits[i] = NULL;
+    }
+    // sort hits according to their index
+    for(auto itr=simhits().cbegin(); itr!=simhits().end(); itr++)
+    {
+        const SimHit& hit = *itr;
+        unsigned index = cellIndex(hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        //cerr<<"Setting "<<index<<"\n";
+        //cerr<<" ("<<hit.zside()<<","<< hit.layer()<<","<< hit.sector()<<","<< hit.subsector()<<","<< hit.cell()<<")\n";
+        m_sortedHits[index] = &hit;
+    }
+}
+
+
+/*****************************************************************/
+unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, int cell)
+/*****************************************************************/
+{
+    int z = (zside==-1 ? 0 : 1);
+    int l = layer-1;
+    int s = sector-1;
+    int ss = (subsector==-1 ? 0 : 1);
+    int c = cell;
+    return (unsigned)(c + ss*2400 + s*4800 + l*86400 + z*2592000);
+}
+
+
+/*****************************************************************/
+unsigned EventHGCAL::cellIndex(const HGCEEDetId& detid)
+/*****************************************************************/
+{
+    return cellIndex(detid.zside(), detid.layer(), detid.sector(), detid.subsector(), detid.cell());
+}
 

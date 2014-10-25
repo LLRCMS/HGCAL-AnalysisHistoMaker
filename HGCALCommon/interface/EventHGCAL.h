@@ -25,6 +25,8 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
 
+#include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
+
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -45,7 +47,8 @@ namespace AnHiMa
 
             bool passSelection(int selection=0);
             void connectVariables(TChain* inputChain);
-            void buildObjects();
+            void update();
+
 
             int event()  const {return m_event;}
             int lumi()   const {return m_lumi;}
@@ -53,6 +56,9 @@ namespace AnHiMa
             int npu()    const {return m_npu;}
 
             const std::vector<SimHit>& simhits() const {return m_simhitFactory.data();}
+
+            unsigned cellIndex(int zside, int layer, int sector, int subsector, int cell);
+            unsigned cellIndex(const HGCEEDetId& detid);
 
 
         private:
@@ -62,6 +68,8 @@ namespace AnHiMa
             int m_npu;
 
             SimHitFactory m_simhitFactory;
+
+            std::vector<const SimHit*> m_sortedHits;
 
     };
 }

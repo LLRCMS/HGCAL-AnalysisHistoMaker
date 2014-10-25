@@ -34,6 +34,7 @@ namespace AnHiMa
       void setSector   (int sector)    {m_sector    = sector;}
       void setSubsector(int subsector) {m_subsector = subsector;}
       void setLayer    (int layer)     {m_layer     = layer;}
+      void setZside    (int zside)     {m_zside     = zside;}
       void setEnergy   (float energy)  {m_energy    = energy;}
       void setEta      (float eta)     {m_eta       = eta;}
       void setPhi      (float phi)     {m_phi       = phi;}
@@ -48,6 +49,7 @@ namespace AnHiMa
       int      sector()    const {return m_sector;}
       int      subsector() const {return m_subsector;}
       int      layer()     const {return m_layer;}
+      int      zside()     const {return m_zside;}
       float    energy()    const {return m_energy;}
       float    eta()       const {return m_eta;}
       float    phi()       const {return m_phi;}

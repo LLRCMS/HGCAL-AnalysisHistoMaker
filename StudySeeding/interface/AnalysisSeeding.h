@@ -55,6 +55,8 @@ namespace AnHiMa
 
             HGCALNavigator m_hgcalNavigator;
 
+            TRandom3 m_random;
+
     };
 }
 

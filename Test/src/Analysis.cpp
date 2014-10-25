@@ -81,6 +81,8 @@ bool Analysis::initialize(const string& parameterFile)
                             std::vector<DetId> idW = m_hgcalNavigator.west(id);
                             std::vector<DetId> idN = m_hgcalNavigator.north(id);
                             std::vector<DetId> idS = m_hgcalNavigator.south(id);
+                            std::vector<HGCEEDetId> idU = m_hgcalNavigator.up(id);
+                            std::vector<HGCEEDetId> idD = m_hgcalNavigator.down(id);
                             std::cout << "          " << idE.size() << " sets along East:";
                             for (unsigned int i=0; i<idE.size(); ++i) std::cout << " " << (HGCEEDetId)(idE[i]());
                             std::cout << std::endl;
@@ -92,6 +94,12 @@ bool Analysis::initialize(const string& parameterFile)
                             std::cout << std::endl;
                             std::cout << "          " << idS.size() << " sets along South:";
                             for (unsigned int i=0; i<idS.size(); ++i) std::cout << " " << (HGCEEDetId)(idS[i]());
+                            std::cout << std::endl;
+                            std::cout << "          " << idU.size() << " sets along Up:";
+                            for (unsigned int i=0; i<idU.size(); ++i) std::cout << " " << (HGCEEDetId)(idU[i]());
+                            std::cout << std::endl;
+                            std::cout << "          " << idD.size() << " sets along Down:";
+                            for (unsigned int i=0; i<idD.size(); ++i) std::cout << " " << (HGCEEDetId)(idD[i]());
                             std::cout << std::endl;
                         }
                         cell += 100;

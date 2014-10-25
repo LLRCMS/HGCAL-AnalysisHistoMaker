@@ -404,3 +404,35 @@ bool HGCALNavigator::initialize()
     return true;
 
 }
+
+
+// temporary workaround to navigate up and down
+/*****************************************************************/
+std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id)
+/*****************************************************************/
+{
+    std::vector<HGCEEDetId> vCells;
+    int layer = id.layer()+1;
+    if(layer<=0 || layer>30) return vCells;
+
+    std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
+    std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
+    int cell = kcell.second;
+    vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
+    return vCells;
+}
+
+/*****************************************************************/
+std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id)
+/*****************************************************************/
+{
+    std::vector<HGCEEDetId> vCells;
+    int layer = id.layer()-1;
+    if(layer<=0 || layer>30) return vCells;
+
+    std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
+    std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
+    int cell = kcell.second;
+    vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
+    return vCells;
+}

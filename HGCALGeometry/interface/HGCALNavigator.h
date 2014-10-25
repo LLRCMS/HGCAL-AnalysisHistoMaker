@@ -40,10 +40,15 @@ class HGCALNavigator
         std::vector<DetId> south(const DetId& id){return m_hgctopo->south(id);};
         std::vector<DetId> east(const DetId& id) {return m_hgctopo->east(id);};
         std::vector<DetId> west(const DetId& id) {return m_hgctopo->west(id);};
-        std::vector<DetId> up(const DetId& id)   {return m_hgctopo->up(id);};
-        std::vector<DetId> down(const DetId& id) {return m_hgctopo->down(id);};
+        // FIXME: topo.up() and down() give no DetId... 
+        //std::vector<DetId> up(const DetId& id)   {return m_hgctopo->up(id);};
+        //std::vector<DetId> down(const DetId& id) {return m_hgctopo->down(id);};
+        // temporary workaround to navigate up and down
+        std::vector<HGCEEDetId> up(const HGCEEDetId& id);
+        std::vector<HGCEEDetId> down(const HGCEEDetId& id);
 
         const HGCalTopology* topology() const {return m_hgctopo;};
+        const HGCalDDDConstants* dddConstants() const {return m_hgcdc;};
 
 
     private:

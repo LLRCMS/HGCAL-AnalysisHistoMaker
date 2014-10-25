@@ -114,6 +114,7 @@ void SimHitFactory::update()
         hit.setSector    ( (*m_hit_sector)[i] );
         hit.setSubsector ( (*m_hit_subsector)[i] );
         hit.setLayer     ( (*m_hit_layer)[i] );
+        hit.setZside     ( (*m_hit_zside)[i] );
         hit.setEnergy    ( (*m_hit_energy)[i] );
         hit.setEta       ( (*m_hit_eta)[i] );
         hit.setPhi       ( (*m_hit_phi)[i] );
