@@ -28,7 +28,7 @@ namespace AnHiMa
       SimHit();
       ~SimHit();
 
-      void setDetid    (int detid)     {m_detid     = detid;}
+      void setDetid    (unsigned detid){m_detid     = detid;}
       void setSubdet   (int subdet)    {m_subdet    = subdet;}
       void setCell     (int cell)      {m_cell      = cell;}
       void setSector   (int sector)    {m_sector    = sector;}
@@ -42,34 +42,34 @@ namespace AnHiMa
       void setZ        (float z)       {m_z         = z;}
 
 
-      int detid()     const {return m_detid;}
-      int subdet()    const {return m_subdet;}
-      int cell()      const {return m_cell;}
-      int sector()    const {return m_sector;}
-      int subsector() const {return m_subsector;}
-      int layer()     const {return m_layer;}
-      float energy()  const {return m_energy;}
-      float eta()     const {return m_eta;}
-      float phi()     const {return m_phi;}
-      float x()       const {return m_x;}
-      float y()       const {return m_y;}
-      float z()       const {return m_z;}
+      unsigned detid()     const {return m_detid;}
+      int      subdet()    const {return m_subdet;}
+      int      cell()      const {return m_cell;}
+      int      sector()    const {return m_sector;}
+      int      subsector() const {return m_subsector;}
+      int      layer()     const {return m_layer;}
+      float    energy()    const {return m_energy;}
+      float    eta()       const {return m_eta;}
+      float    phi()       const {return m_phi;}
+      float    x()         const {return m_x;}
+      float    y()         const {return m_y;}
+      float    z()         const {return m_z;}
 
 
     private:
-      int   m_detid;
-      int   m_subdet;
-      int   m_cell;
-      int   m_sector;
-      int   m_subsector;
-      int   m_layer;
-      int   m_zside;
-      float m_energy;
-      float m_eta;
-      float m_phi;
-      float m_x;
-      float m_y;
-      float m_z;
+      unsigned m_detid;
+      int      m_subdet;
+      int      m_cell;
+      int      m_sector;
+      int      m_subsector;
+      int      m_layer;
+      int      m_zside;
+      float    m_energy;
+      float    m_eta;
+      float    m_phi;
+      float    m_x;
+      float    m_y;
+      float    m_z;
 
   };
 };

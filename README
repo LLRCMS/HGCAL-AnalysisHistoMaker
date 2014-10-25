@@ -2,6 +2,9 @@ Follow the instructions in https://twiki.cern.ch/twiki/bin/viewauth/CMS/HGCalCMS
 
 In src/ do:
 > git clone git@github.com:LLRCMS/HGCAL-AnalysisHistoMaker.git AnHiMaHGCAL
+> cd AnHiMaHGCAL/
+> git checkout $CMSSW_VERSION
+> cd -
 > scram b -j4
 > cd AnHiMaHGCAL/Test
 > test.exe run/analysis.config 
