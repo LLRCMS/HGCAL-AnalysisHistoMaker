@@ -24,6 +24,7 @@
 
 #include "AnHiMaHGCAL/StudySeeding/interface/AnalysisSeeding.h"
 #include "AnHiMaHGCAL/Core/interface/Utilities.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
 
@@ -76,121 +77,70 @@ void AnalysisSeeding::execute()
     if(!event().passSelection()) return;
 
 
-    double eta = m_random.Uniform(1.5, 3.);
-    double phi = m_random.Uniform(-M_PI, M_PI);
-    const SimHit* choosenHit = NULL;
-    double mindr = 9999.;
-    for(auto itrHit=event().simhits().cbegin(); itrHit!=event().simhits().end(); itrHit++)
+    const SimHit* chosenHit = NULL;
+
+    while(!chosenHit)
     {
-        const SimHit& hit = *itrHit;
-        double deta = (hit.eta() - eta);
-        double dphi = (hit.phi() - phi);
-        double dr = sqrt(deta*deta + dphi*dphi);
-        if(dr<mindr)
+        double eta = m_random.Uniform(1.5, 3.);
+        double phi = m_random.Uniform(-M_PI, M_PI);
+        double maxE = 0.;
+        for(auto itrHit=event().simhits().cbegin(); itrHit!=event().simhits().end(); itrHit++)
         {
-            choosenHit = &hit;
-            mindr = dr;
+            const SimHit& hit = *itrHit;
+            double deta = (hit.eta() - eta);
+            double dphi = (hit.phi() - phi);
+            double dr = sqrt(deta*deta + dphi*dphi);
+            if(dr<0.2 && hit.energy()>maxE)
+            {
+                chosenHit = &hit;
+                maxE = hit.energy();
+            }
         }
     }
-    HGCEEDetId detid(ForwardSubdetector(choosenHit->subdet()), choosenHit->zside(), choosenHit->layer(), choosenHit->sector(), choosenHit->subsector(), choosenHit->cell());
 
-    vector<DetId> northIds      = m_hgcalNavigator.north(detid);
-    vector<DetId> southIds      = m_hgcalNavigator.south(detid);
-    vector<DetId> eastIds       = m_hgcalNavigator.east(detid);
-    vector<DetId> westIds       = m_hgcalNavigator.west(detid);
-    vector<HGCEEDetId> upIds    = m_hgcalNavigator.up(detid, -20);
-    vector<HGCEEDetId> downIds  = m_hgcalNavigator.down(detid);
+    HGCEEDetId detid(ForwardSubdetector(chosenHit->subdet()), chosenHit->zside(), chosenHit->layer(), chosenHit->sector(), chosenHit->subsector(), chosenHit->cell());
 
-    vector<HGCEEDetId> upProjIds    = m_hgcalNavigator.upProj(detid, -20);
-
-    cout<<"Fired eta,phi = "<<eta<<","<<phi<<"\n";
-    cout<<"  Chosen detid eta="<<choosenHit->eta()<<", phi="<<choosenHit->phi()<<", layer="<<choosenHit->layer()<<", cell="<<choosenHit->cell()<<"\n";
-
-    //const SimHit* hitNorth = ( northIds.size()>0 ? event().simhit( (HGCEEDetId)northIds[0] ) : NULL);
-    //const SimHit* hitSouth = ( southIds.size()>0 ? event().simhit( (HGCEEDetId)southIds[0] ) : NULL);
-    //const SimHit* hitEast  = ( eastIds.size()>0  ? event().simhit( (HGCEEDetId)eastIds[0] )  : NULL);
-    //const SimHit* hitWest  = ( westIds.size()>0  ? event().simhit( (HGCEEDetId)westIds[0] )  : NULL);
-    //const SimHit* hitUp    = ( upIds.size()>0    ? event().simhit( (HGCEEDetId)upIds[0] )    : NULL);
-    //const SimHit* hitDown  = ( downIds.size()>0  ? event().simhit( (HGCEEDetId)downIds[0] )  : NULL);
-
-    //cout<<"  North hit: ";
-    //if(hitNorth) cout << "eta="<<hitNorth->eta()<<", phi="<<hitNorth->phi()<<", layer="<<hitNorth->layer()<<", cell="<<hitNorth->cell()<<", sec="<<hitNorth->sector()<<", subsec="<<hitNorth->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-    //cout<<"  South hit: ";
-    //if(hitSouth) cout << "eta="<<hitSouth->eta()<<", phi="<<hitSouth->phi()<<", layer="<<hitSouth->layer()<<", cell="<<hitSouth->cell()<<", sec="<<hitSouth->sector()<<", subsec="<<hitSouth->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-    //cout<<"  East hit: ";
-    //if(hitEast) cout << "eta="<<hitEast->eta()<<", phi="<<hitEast->phi()<<", layer="<<hitEast->layer()<<", cell="<<hitEast->cell()<<", sec="<<hitEast->sector()<<", subsec="<<hitEast->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-    //cout<<"  West hit: ";
-    //if(hitWest) cout << "eta="<<hitWest->eta()<<", phi="<<hitWest->phi()<<", layer="<<hitWest->layer()<<", cell="<<hitWest->cell()<<", sec="<<hitWest->sector()<<", subsec="<<hitWest->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-    //cout<<"  Up hit: ";
-    //if(hitUp) cout << "eta="<<hitUp->eta()<<", phi="<<hitUp->phi()<<", layer="<<hitUp->layer()<<", cell="<<hitUp->cell()<<", sec="<<hitUp->sector()<<", subsec="<<hitUp->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-    //cout<<"  Down hit: ";
-    //if(hitDown) cout << "eta="<<hitDown->eta()<<", phi="<<hitDown->phi()<<", layer="<<hitDown->layer()<<", cell="<<hitDown->cell()<<", sec="<<hitDown->sector()<<", subsec="<<hitDown->subsector()<<"\n";
-    //else cout << "NULL\n";
-
-
-
-    //cout<<"   detid="<<detid.rawId()<<", subdet="<<detid.subdet()<<", zsdetide="<<detid.zside()<<", layer="<<detid.layer()<<", sector="<<detid.sector()<<", subsector="<<detid.subsector()<<", cell="<<detid.cell()<<"\n";
-    //cout<<"   North Ids:";
-    //for(unsigned i=0;i<northIds.size();i++)
-    //{
-    //    HGCEEDetId id(northIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
-    //cout<<"   South Ids:";
-    //for(unsigned i=0;i<southIds.size();i++)
-    //{
-    //    HGCEEDetId id(southIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
-    //cout<<"   East Ids:";
-    //for(unsigned i=0;i<eastIds.size();i++)
-    //{
-    //    HGCEEDetId id(eastIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
-    //cout<<"   West Ids:";
-    //for(unsigned i=0;i<westIds.size();i++)
-    //{
-    //    HGCEEDetId id(westIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
-    cout<<"   Up Ids:";
-    for(unsigned i=0;i<upIds.size();i++)
+    // find cells in the tower at (eta,phi)
+    int layer = detid.layer();
+    vector<HGCEEDetId> idLayers(31);
+    vector<HGCEEDetId> idLayer15 = m_hgcalNavigator.upProj(detid, 15-layer);
+    if(idLayer15.size()>0) idLayers[15] = idLayer15[0];
+    else
     {
-        HGCEEDetId id(upIds[i]);
-        cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-        cout<<", eta="<<m_hgcalNavigator.geometry()->getPosition(id).eta();
+        cout<<"[WARNING] Cannot find cell in layer 15\n";
+        return;
     }
-    cout<<"\n";
-    cout<<"   UpProj Ids:";
-    for(unsigned i=0;i<upProjIds.size();i++)
+    for(int l=1;l<=30;l++)
     {
-        HGCEEDetId id(upProjIds[i]);
-        cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-        cout<<", eta="<<m_hgcalNavigator.geometry()->getPosition(id).eta();
+        if(l==15) continue;
+        vector<HGCEEDetId> ids = m_hgcalNavigator.upProj(idLayers[15], l-15);
+        if(ids.size()==0)
+        {
+            cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+            idLayers[l] = (HGCEEDetId)DetId(0);
+        }
+        else
+        {
+            idLayers[l] = ids[0];
+        }
     }
-    cout<<"\n";
-    //cout<<"   Down Ids:";
-    //for(unsigned i=0;i<downIds.size();i++)
-    //{
-    //    HGCEEDetId id(downIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
+
+    // build tower from the list of cells
+    Tower tower;
+    tower.setEta(chosenHit->eta());
+    tower.setPhi(chosenHit->phi());
+    for(unsigned l=0; l<idLayers.size(); l++)
+    {
+        HGCEEDetId id = idLayers[l];
+        if(id==DetId(0)) continue;
+        const SimHit* hit = event().simhit(id);
+        if(!hit) continue;
+        tower.addHit(*hit);
+    }
+
+    cout<<"Tower (eta,phi)=("<<tower.eta()<<","<<tower.phi()<<"): #hits="<<tower.nHits()<<", energy="<<tower.energy()<<"\n";
+
+
 
 
     fillHistos();
