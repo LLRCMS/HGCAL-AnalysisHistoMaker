@@ -561,6 +561,5 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
 std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
-    std::vector<HGCEEDetId> vCells;
-    return vCells;
+    return upProj(id, -nz);
 }

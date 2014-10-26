@@ -173,6 +173,7 @@ void AnalysisSeeding::execute()
     {
         HGCEEDetId id(upIds[i]);
         cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
+        cout<<", eta="<<m_hgcalNavigator.geometry()->getPosition(id).eta();
     }
     cout<<"\n";
     cout<<"   UpProj Ids:";
@@ -180,6 +181,7 @@ void AnalysisSeeding::execute()
     {
         HGCEEDetId id(upProjIds[i]);
         cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
+        cout<<", eta="<<m_hgcalNavigator.geometry()->getPosition(id).eta();
     }
     cout<<"\n";
     //cout<<"   Down Ids:";
