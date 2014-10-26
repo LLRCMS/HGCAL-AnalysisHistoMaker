@@ -98,10 +98,10 @@ void AnalysisSeeding::execute()
     vector<DetId> southIds      = m_hgcalNavigator.south(detid);
     vector<DetId> eastIds       = m_hgcalNavigator.east(detid);
     vector<DetId> westIds       = m_hgcalNavigator.west(detid);
-    vector<HGCEEDetId> upIds    = m_hgcalNavigator.up(detid, 20);
+    vector<HGCEEDetId> upIds    = m_hgcalNavigator.up(detid, -20);
     vector<HGCEEDetId> downIds  = m_hgcalNavigator.down(detid);
 
-    vector<HGCEEDetId> upProjIds    = m_hgcalNavigator.upProj(detid, 20);
+    vector<HGCEEDetId> upProjIds    = m_hgcalNavigator.upProj(detid, -20);
 
     cout<<"Fired eta,phi = "<<eta<<","<<phi<<"\n";
     cout<<"  Chosen detid eta="<<choosenHit->eta()<<", phi="<<choosenHit->phi()<<", layer="<<choosenHit->layer()<<", cell="<<choosenHit->cell()<<"\n";

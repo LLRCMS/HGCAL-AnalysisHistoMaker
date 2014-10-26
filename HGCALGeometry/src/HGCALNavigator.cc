@@ -433,6 +433,8 @@ std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz)
     std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
     std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
     int cell = kcell.second;
+    if(!m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
+
     vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
     return vCells;
 }
@@ -448,6 +450,8 @@ std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz)
     std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
     std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
     int cell = kcell.second;
+    if(!m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
+
     vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
     return vCells;
 }
@@ -457,8 +461,15 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCellsProj;
+    int layer = id.layer()+nz;
+    if(layer<=0 || layer>30) return vCellsProj;
+
     std::vector<HGCEEDetId> vCells = up(id, nz);
-    if(vCells.size()==0) return vCellsProj;
+    if(vCells.size()==0) // try simple navigation
+    {
+        if( !m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), id.cell())) ) return vCellsProj; // Simple navigation doesn't work neither
+        vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), id.cell()) );   
+    }
 
     // Try to find the cell in the up layer with the smallest DeltaR, among a 3x9 grid
     std::vector<DetId> ids;
