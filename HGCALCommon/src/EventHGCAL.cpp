@@ -102,7 +102,7 @@ void EventHGCAL::update()
 
 
 /*****************************************************************/
-unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, int cell)
+unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, int cell) const
 /*****************************************************************/
 {
     int z = (zside==-1 ? 0 : 1);
@@ -115,9 +115,27 @@ unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, 
 
 
 /*****************************************************************/
-unsigned EventHGCAL::cellIndex(const HGCEEDetId& detid)
+unsigned EventHGCAL::cellIndex(const HGCEEDetId& detid) const
 /*****************************************************************/
 {
     return cellIndex(detid.zside(), detid.layer(), detid.sector(), detid.subsector(), detid.cell());
+}
+
+
+/*****************************************************************/
+const SimHit* EventHGCAL::simhit(int zside, int layer, int sector, int subsector, int cell) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(zside, layer, sector, subsector, cell);
+    return m_sortedHits[index];
+}
+
+
+/*****************************************************************/
+const SimHit* EventHGCAL::simhit(const HGCEEDetId& detid) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(detid);
+    return m_sortedHits[index];
 }
 

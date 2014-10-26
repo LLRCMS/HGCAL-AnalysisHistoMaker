@@ -57,8 +57,11 @@ namespace AnHiMa
 
             const std::vector<SimHit>& simhits() const {return m_simhitFactory.data();}
 
-            unsigned cellIndex(int zside, int layer, int sector, int subsector, int cell);
-            unsigned cellIndex(const HGCEEDetId& detid);
+            const SimHit* simhit(int zside, int layer, int sector, int subsector, int cell) const;
+            const SimHit* simhit(const HGCEEDetId& detid) const;
+
+            unsigned cellIndex(int zside, int layer, int sector, int subsector, int cell) const;
+            unsigned cellIndex(const HGCEEDetId& detid) const;
 
 
         private:
