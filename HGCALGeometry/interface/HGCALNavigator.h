@@ -24,6 +24,7 @@
 #include "DetectorDescription/Core/interface/DDCompactView.h"
 #include "Geometry/HGCalCommonData/interface/HGCalDDDConstants.h"
 #include "Geometry/CaloTopology/interface/HGCalTopology.h"
+#include "Geometry/FCalGeometry/interface/HGCalGeometry.h"
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
 
 
@@ -47,6 +48,10 @@ class HGCALNavigator
         std::vector<HGCEEDetId> up(const HGCEEDetId& id);
         std::vector<HGCEEDetId> down(const HGCEEDetId& id);
 
+        std::vector<HGCEEDetId> upProj(const HGCEEDetId& id);
+        std::vector<HGCEEDetId> downProj(const HGCEEDetId& id);
+
+        const HGCalGeometry* geometry() const {return m_hgcgeom;};
         const HGCalTopology* topology() const {return m_hgctopo;};
         const HGCalDDDConstants* dddConstants() const {return m_hgcdc;};
 
@@ -55,6 +60,7 @@ class HGCALNavigator
         DDCompactView* m_ddcv;
         HGCalDDDConstants* m_hgcdc;
         HGCalTopology* m_hgctopo;
+        HGCalGeometry* m_hgcgeom;
 
 };
 

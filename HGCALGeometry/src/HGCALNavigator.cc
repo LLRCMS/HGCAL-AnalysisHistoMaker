@@ -39,6 +39,8 @@
 #include "DetectorDescription/Core/src/LogicalPart.h"
 #include "DetectorDescription/Core/src/Specific.h"
 
+#include "Geometry/FCalGeometry/interface/HGCalGeometryLoader.h"
+
 #include "DataFormats/ForwardDetId/interface/ForwardSubdetector.h"
 
 
@@ -63,6 +65,7 @@ HGCALNavigator::~HGCALNavigator()
     delete m_ddcv;
     delete m_hgcdc;
     delete m_hgctopo;
+    delete m_hgcgeom;
 }
 
 
@@ -401,6 +404,18 @@ bool HGCALNavigator::initialize()
         return false;
     }
     cout<<"OK\n";
+
+    // Copy-paste from https://github.com/cms-sw/cmssw/blob/CMSSW_6_2_X_SLHC/Geometry/FCalGeometry/plugins/HGCalGeometryESProducer.cc 
+    cout<<"INFO: Building HGCAL geometry: ";
+    HGCalGeometryLoader builder; 
+    m_hgcgeom = builder.build(*m_hgctopo);
+    if(!m_hgcgeom)
+    {
+        cout<<" Failed!\n";
+        return false;
+    }
+    cout<<"OK\n";
+
     return true;
 
 }
@@ -434,5 +449,21 @@ std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id)
     std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
     int cell = kcell.second;
     vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
+    return vCells;
+}
+
+/*****************************************************************/
+std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id)
+/*****************************************************************/
+{
+    std::vector<HGCEEDetId> vCells;
+    return vCells;
+}
+
+/*****************************************************************/
+std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id)
+/*****************************************************************/
+{
+    std::vector<HGCEEDetId> vCells;
     return vCells;
 }

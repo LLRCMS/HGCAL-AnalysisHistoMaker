@@ -7,6 +7,7 @@
 <use name="Geometry/Records"/>
 <use name="Geometry/HGCalCommonData"/>
 <use name="Geometry/CaloTopology"/>
+<use name="Geometry/FCalGeometry"/>
 <use name="CondFormats/GeometryObjects"/>
 <use name="MagneticField/Records"/>
 <use name="DataFormats/ForwardDetId"/>
