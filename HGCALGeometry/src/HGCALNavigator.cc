@@ -423,11 +423,11 @@ bool HGCALNavigator::initialize()
 
 // temporary workaround to navigate up and down
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id)
+std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCells;
-    int layer = id.layer()+1;
+    int layer = id.layer()+nz;
     if(layer<=0 || layer>30) return vCells;
 
     std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
@@ -438,11 +438,11 @@ std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id)
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id)
+std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCells;
-    int layer = id.layer()-1;
+    int layer = id.layer()-nz;
     if(layer<=0 || layer>30) return vCells;
 
     std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
@@ -453,15 +453,112 @@ std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id)
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id)
+std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
-    std::vector<HGCEEDetId> vCells;
-    return vCells;
+    std::vector<HGCEEDetId> vCellsProj;
+    std::vector<HGCEEDetId> vCells = up(id, nz);
+    if(vCells.size()==0) return vCellsProj;
+
+    // Try to find the cell in the up layer with the smallest DeltaR, among a 3x9 grid
+    std::vector<DetId> ids;
+    // center
+    ids.push_back( vCells[0]); // 0
+    // first ring
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  1) ); // 1
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  1) ); // 2
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  1) ); // 3
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  0) ); // 4
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -1) ); // 5
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -1) ); // 6
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -1) ); // 7
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  0) ); // 8
+    // second ring
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  2) ); // 9
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  2) ); // 10
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  2) ); // 11
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  2) ); // 12
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  2) ); // 13
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  1) ); // 14
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  0) ); // 15
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -1) ); // 16
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -2) ); // 17
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -2) ); // 18
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -2) ); // 19
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -2) ); // 20
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -2) ); // 21
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -1) ); // 22
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  0) ); // 23
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  1) ); // 24
+    // third ring
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  3) ); // 25
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  3) ); // 26
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  3) ); // 27
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  3) ); // 28
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  3) ); // 29
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  3) ); // 30
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  3) ); // 31
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  2) ); // 32
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  1) ); // 33
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  0) ); // 34
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -1) ); // 35
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -2) ); // 36
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -3) ); // 37
+    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -3) ); // 38
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -3) ); // 39
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -3) ); // 40
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -3) ); // 41
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -3) ); // 42
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -3) ); // 43
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -2) ); // 44
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -1) ); // 45
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  0) ); // 46
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  1) ); // 47
+    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  2) ); // 48
+    // fourth ring
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  4) );
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  4) );
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  4) );
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -4) );
+    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -4) );
+    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -4) );
+
+
+    const GlobalPoint pos ( std::move( m_hgcgeom->getPosition(id ) ) ); 
+    std::vector<GlobalPoint> poss;
+    std::vector<double> drs;
+    for(unsigned i=0;i<ids.size();i++)
+    {
+        if(ids[0]==DetId(0)) 
+        {
+            drs.push_back(99999.);
+            continue;
+        }
+        poss.push_back( std::move( m_hgcgeom->getPosition(ids[i]) ) );
+        double dr = ( (double)poss[i].eta()-(double)pos.eta() )*( (double)poss[i].eta()-(double)pos.eta() ) + ( (double)poss[i].phi()-(double)pos.phi() )*( (double)poss[i].phi()-(double)pos.phi() );
+        drs.push_back(dr);
+    }
+
+
+    double mindr = 99999.;
+    unsigned minIndex = 0;
+    for(unsigned i=0;i<drs.size();i++)
+    {
+        //cout<<"Cell #"<<i<<": DR="<<drs[i]<<"\n";
+        if(drs[i]<mindr)
+        {
+            mindr = drs[i];
+            minIndex = i;
+        }
+    }
+    //cout<<"Min DR="<<mindr<<" ("<<minIndex<<")\n";
+    vCellsProj.push_back(ids[minIndex]);
+
+    return vCellsProj;
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id)
+std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id, int nz)
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCells;

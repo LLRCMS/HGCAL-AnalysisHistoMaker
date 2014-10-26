@@ -45,11 +45,11 @@ class HGCALNavigator
         //std::vector<DetId> up(const DetId& id)   {return m_hgctopo->up(id);};
         //std::vector<DetId> down(const DetId& id) {return m_hgctopo->down(id);};
         // temporary workaround to navigate up and down
-        std::vector<HGCEEDetId> up(const HGCEEDetId& id);
-        std::vector<HGCEEDetId> down(const HGCEEDetId& id);
+        std::vector<HGCEEDetId> up(const HGCEEDetId& id, int nz=1);
+        std::vector<HGCEEDetId> down(const HGCEEDetId& id, int nz=1);
 
-        std::vector<HGCEEDetId> upProj(const HGCEEDetId& id);
-        std::vector<HGCEEDetId> downProj(const HGCEEDetId& id);
+        std::vector<HGCEEDetId> upProj(const HGCEEDetId& id, int nz=1);
+        std::vector<HGCEEDetId> downProj(const HGCEEDetId& id, int nz=1);
 
         const HGCalGeometry* geometry() const {return m_hgcgeom;};
         const HGCalTopology* topology() const {return m_hgctopo;};

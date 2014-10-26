@@ -98,42 +98,44 @@ void AnalysisSeeding::execute()
     vector<DetId> southIds      = m_hgcalNavigator.south(detid);
     vector<DetId> eastIds       = m_hgcalNavigator.east(detid);
     vector<DetId> westIds       = m_hgcalNavigator.west(detid);
-    vector<HGCEEDetId> upIds    = m_hgcalNavigator.up(detid);
+    vector<HGCEEDetId> upIds    = m_hgcalNavigator.up(detid, 20);
     vector<HGCEEDetId> downIds  = m_hgcalNavigator.down(detid);
+
+    vector<HGCEEDetId> upProjIds    = m_hgcalNavigator.upProj(detid, 20);
 
     cout<<"Fired eta,phi = "<<eta<<","<<phi<<"\n";
     cout<<"  Chosen detid eta="<<choosenHit->eta()<<", phi="<<choosenHit->phi()<<", layer="<<choosenHit->layer()<<", cell="<<choosenHit->cell()<<"\n";
 
-    const SimHit* hitNorth = ( northIds.size()>0 ? event().simhit( (HGCEEDetId)northIds[0] ) : NULL);
-    const SimHit* hitSouth = ( southIds.size()>0 ? event().simhit( (HGCEEDetId)southIds[0] ) : NULL);
-    const SimHit* hitEast  = ( eastIds.size()>0  ? event().simhit( (HGCEEDetId)eastIds[0] )  : NULL);
-    const SimHit* hitWest  = ( westIds.size()>0  ? event().simhit( (HGCEEDetId)westIds[0] )  : NULL);
-    const SimHit* hitUp    = ( upIds.size()>0    ? event().simhit( (HGCEEDetId)upIds[0] )    : NULL);
-    const SimHit* hitDown  = ( downIds.size()>0  ? event().simhit( (HGCEEDetId)downIds[0] )  : NULL);
+    //const SimHit* hitNorth = ( northIds.size()>0 ? event().simhit( (HGCEEDetId)northIds[0] ) : NULL);
+    //const SimHit* hitSouth = ( southIds.size()>0 ? event().simhit( (HGCEEDetId)southIds[0] ) : NULL);
+    //const SimHit* hitEast  = ( eastIds.size()>0  ? event().simhit( (HGCEEDetId)eastIds[0] )  : NULL);
+    //const SimHit* hitWest  = ( westIds.size()>0  ? event().simhit( (HGCEEDetId)westIds[0] )  : NULL);
+    //const SimHit* hitUp    = ( upIds.size()>0    ? event().simhit( (HGCEEDetId)upIds[0] )    : NULL);
+    //const SimHit* hitDown  = ( downIds.size()>0  ? event().simhit( (HGCEEDetId)downIds[0] )  : NULL);
 
-    cout<<"  North hit: ";
-    if(hitNorth) cout << "eta="<<hitNorth->eta()<<", phi="<<hitNorth->phi()<<", layer="<<hitNorth->layer()<<", cell="<<hitNorth->cell()<<", sec="<<hitNorth->sector()<<", subsec="<<hitNorth->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  North hit: ";
+    //if(hitNorth) cout << "eta="<<hitNorth->eta()<<", phi="<<hitNorth->phi()<<", layer="<<hitNorth->layer()<<", cell="<<hitNorth->cell()<<", sec="<<hitNorth->sector()<<", subsec="<<hitNorth->subsector()<<"\n";
+    //else cout << "NULL\n";
 
-    cout<<"  South hit: ";
-    if(hitSouth) cout << "eta="<<hitSouth->eta()<<", phi="<<hitSouth->phi()<<", layer="<<hitSouth->layer()<<", cell="<<hitSouth->cell()<<", sec="<<hitSouth->sector()<<", subsec="<<hitSouth->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  South hit: ";
+    //if(hitSouth) cout << "eta="<<hitSouth->eta()<<", phi="<<hitSouth->phi()<<", layer="<<hitSouth->layer()<<", cell="<<hitSouth->cell()<<", sec="<<hitSouth->sector()<<", subsec="<<hitSouth->subsector()<<"\n";
+    //else cout << "NULL\n";
 
-    cout<<"  East hit: ";
-    if(hitEast) cout << "eta="<<hitEast->eta()<<", phi="<<hitEast->phi()<<", layer="<<hitEast->layer()<<", cell="<<hitEast->cell()<<", sec="<<hitEast->sector()<<", subsec="<<hitEast->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  East hit: ";
+    //if(hitEast) cout << "eta="<<hitEast->eta()<<", phi="<<hitEast->phi()<<", layer="<<hitEast->layer()<<", cell="<<hitEast->cell()<<", sec="<<hitEast->sector()<<", subsec="<<hitEast->subsector()<<"\n";
+    //else cout << "NULL\n";
 
-    cout<<"  West hit: ";
-    if(hitWest) cout << "eta="<<hitWest->eta()<<", phi="<<hitWest->phi()<<", layer="<<hitWest->layer()<<", cell="<<hitWest->cell()<<", sec="<<hitWest->sector()<<", subsec="<<hitWest->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  West hit: ";
+    //if(hitWest) cout << "eta="<<hitWest->eta()<<", phi="<<hitWest->phi()<<", layer="<<hitWest->layer()<<", cell="<<hitWest->cell()<<", sec="<<hitWest->sector()<<", subsec="<<hitWest->subsector()<<"\n";
+    //else cout << "NULL\n";
 
-    cout<<"  Up hit: ";
-    if(hitUp) cout << "eta="<<hitUp->eta()<<", phi="<<hitUp->phi()<<", layer="<<hitUp->layer()<<", cell="<<hitUp->cell()<<", sec="<<hitUp->sector()<<", subsec="<<hitUp->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  Up hit: ";
+    //if(hitUp) cout << "eta="<<hitUp->eta()<<", phi="<<hitUp->phi()<<", layer="<<hitUp->layer()<<", cell="<<hitUp->cell()<<", sec="<<hitUp->sector()<<", subsec="<<hitUp->subsector()<<"\n";
+    //else cout << "NULL\n";
 
-    cout<<"  Down hit: ";
-    if(hitDown) cout << "eta="<<hitDown->eta()<<", phi="<<hitDown->phi()<<", layer="<<hitDown->layer()<<", cell="<<hitDown->cell()<<", sec="<<hitDown->sector()<<", subsec="<<hitDown->subsector()<<"\n";
-    else cout << "NULL\n";
+    //cout<<"  Down hit: ";
+    //if(hitDown) cout << "eta="<<hitDown->eta()<<", phi="<<hitDown->phi()<<", layer="<<hitDown->layer()<<", cell="<<hitDown->cell()<<", sec="<<hitDown->sector()<<", subsec="<<hitDown->subsector()<<"\n";
+    //else cout << "NULL\n";
 
 
 
@@ -166,13 +168,20 @@ void AnalysisSeeding::execute()
     //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
     //}
     //cout<<"\n";
-    //cout<<"   Up Ids:";
-    //for(unsigned i=0;i<upIds.size();i++)
-    //{
-    //    HGCEEDetId id(upIds[i]);
-    //    cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
-    //}
-    //cout<<"\n";
+    cout<<"   Up Ids:";
+    for(unsigned i=0;i<upIds.size();i++)
+    {
+        HGCEEDetId id(upIds[i]);
+        cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
+    }
+    cout<<"\n";
+    cout<<"   UpProj Ids:";
+    for(unsigned i=0;i<upProjIds.size();i++)
+    {
+        HGCEEDetId id(upProjIds[i]);
+        cout<<" detid="<<id.rawId()<<", subdet="<<id.subdet()<<", zside="<<id.zside()<<", layer="<<id.layer()<<", sector="<<id.sector()<<", subsector="<<id.subsector()<<", cell="<<id.cell();
+    }
+    cout<<"\n";
     //cout<<"   Down Ids:";
     //for(unsigned i=0;i<downIds.size();i++)
     //{
