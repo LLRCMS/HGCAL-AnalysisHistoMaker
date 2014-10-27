@@ -23,7 +23,9 @@
 
 #include "AnHiMaHGCAL/Core/interface/IEvent.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/GenParticle.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/GenParticleFactory.h"
 
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
 
@@ -55,7 +57,9 @@ namespace AnHiMa
             int run()    const {return m_run;}
             int npu()    const {return m_npu;}
 
-            const std::vector<SimHit>& simhits() const {return m_simhitFactory.data();}
+            const std::vector<SimHit>& simhits() const {return m_simhitFactoryAll.data();}
+            const std::vector<SimHit>& hardsimhits() const {return m_simhitFactoryHard.data();}
+            const std::vector<GenParticle>& genparticles() const {return m_genparticleFactory.data();}
 
             const SimHit* simhit(int zside, int layer, int sector, int subsector, int cell) const;
             const SimHit* simhit(const HGCEEDetId& detid) const;
@@ -70,7 +74,9 @@ namespace AnHiMa
             int m_run;
             int m_npu;
 
-            SimHitFactory m_simhitFactory;
+            SimHitFactory      m_simhitFactoryAll;
+            SimHitFactory      m_simhitFactoryHard;
+            GenParticleFactory m_genparticleFactory;
 
             std::vector<const SimHit*> m_sortedHits;
 

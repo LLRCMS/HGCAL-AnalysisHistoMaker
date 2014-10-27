@@ -25,6 +25,7 @@
 #include "AnHiMaHGCAL/Core/interface/EventAware.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 #include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 
 #include <TRandom3.h>
 #include <TLorentzVector.h>
@@ -51,11 +52,18 @@ namespace AnHiMa
 
         private:
             void fillHistos();
+            void buildTower();
+            void findMaxHit(int i);
             
 
             HGCALNavigator m_hgcalNavigator;
+            Tower m_tower;
+            const SimHit* m_chosenHit;
+            const GenParticle* m_genParticle;
 
             TRandom3 m_random;
+
+            std::string m_sample;
 
     };
 }

@@ -65,7 +65,9 @@ void EventHGCAL::connectVariables(TChain* inputChain)
     inputChain->SetBranchAddress("npu"       , &m_npu);
 
 
-    m_simhitFactory.initialize(this, inputChain);
+    m_simhitFactoryAll.initialize(this, inputChain, SimHitFactory::ALL);
+    m_simhitFactoryHard.initialize(this, inputChain, SimHitFactory::HARDINT);
+    m_genparticleFactory.initialize(this, inputChain);
 
 }
 

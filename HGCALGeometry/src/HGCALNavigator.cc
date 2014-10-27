@@ -19,6 +19,8 @@
 #include <vector>
 #include <string>
 
+#include "TVector2.h"
+
 #include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
 #include "AnHiMaHGCAL/HGCALGeometry/interface/GeometryConfigurationHack.h"
 
@@ -546,7 +548,9 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
             continue;
         }
         poss.push_back( std::move( m_hgcgeom->getPosition(ids[i]) ) );
-        double dr = ( (double)poss[i].eta()-(double)pos.eta() )*( (double)poss[i].eta()-(double)pos.eta() ) + ( (double)poss[i].phi()-(double)pos.phi() )*( (double)poss[i].phi()-(double)pos.phi() );
+        double deta = (double)poss[i].eta()-(double)pos.eta();
+        double dphi = TVector2::Phi_mpi_pi((double)poss[i].phi()-(double)pos.phi());
+        double dr = sqrt(deta*deta + dphi*dphi);
         drs.push_back(dr);
     }
 

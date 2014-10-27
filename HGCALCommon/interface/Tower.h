@@ -45,6 +45,8 @@ namespace AnHiMa
             float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
             float layersEnergy(unsigned l1, unsigned l2) const;
 
+            void clear();
+
 
         private:
             float m_eta;

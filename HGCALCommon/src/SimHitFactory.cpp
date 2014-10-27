@@ -35,6 +35,14 @@ void SimHitFactory::initialize(IEvent* event, TChain* chain)
 
 }
 
+/*****************************************************************/
+void SimHitFactory::initialize(IEvent* event, TChain* chain, HitType type)
+/*****************************************************************/
+{
+    m_type = type;
+    initialize(event, chain);
+}
+
 
 
 /*****************************************************************/
@@ -56,36 +64,75 @@ void SimHitFactory::connectVariables(TChain* chain)
     m_hit_y         = 0;
     m_hit_z         = 0;
 
-    chain->SetBranchStatus("hit_n"        , true);
-    chain->SetBranchStatus("hit_detid"    , true);
-    chain->SetBranchStatus("hit_subdet"   , true);
-    chain->SetBranchStatus("hit_cell"     , true);
-    chain->SetBranchStatus("hit_sector"   , true);
-    chain->SetBranchStatus("hit_subsector", true);
-    chain->SetBranchStatus("hit_layer"    , true);
-    chain->SetBranchStatus("hit_zside"    , true);
-    chain->SetBranchStatus("hit_energy"   , true);
-    chain->SetBranchStatus("hit_eta"      , true);
-    chain->SetBranchStatus("hit_phi"      , true);
-    chain->SetBranchStatus("hit_x"        , true);
-    chain->SetBranchStatus("hit_y"        , true);
-    chain->SetBranchStatus("hit_z"        , true);
+    switch(m_type)
+    {
+        case ALL:
+            chain->SetBranchStatus("hit_n"        , true);
+            chain->SetBranchStatus("hit_detid"    , true);
+            chain->SetBranchStatus("hit_subdet"   , true);
+            chain->SetBranchStatus("hit_cell"     , true);
+            chain->SetBranchStatus("hit_sector"   , true);
+            chain->SetBranchStatus("hit_subsector", true);
+            chain->SetBranchStatus("hit_layer"    , true);
+            chain->SetBranchStatus("hit_zside"    , true);
+            chain->SetBranchStatus("hit_energy"   , true);
+            chain->SetBranchStatus("hit_eta"      , true);
+            chain->SetBranchStatus("hit_phi"      , true);
+            chain->SetBranchStatus("hit_x"        , true);
+            chain->SetBranchStatus("hit_y"        , true);
+            chain->SetBranchStatus("hit_z"        , true);
 
 
-    chain->SetBranchAddress("hit_n"        , &m_hit_n);
-    chain->SetBranchAddress("hit_detid"    , &m_hit_detid    );
-    chain->SetBranchAddress("hit_subdet"   , &m_hit_subdet   );
-    chain->SetBranchAddress("hit_cell"     , &m_hit_cell     );
-    chain->SetBranchAddress("hit_sector"   , &m_hit_sector   );
-    chain->SetBranchAddress("hit_subsector", &m_hit_subsector);
-    chain->SetBranchAddress("hit_layer"    , &m_hit_layer    );
-    chain->SetBranchAddress("hit_zside"    , &m_hit_zside    );
-    chain->SetBranchAddress("hit_energy"   , &m_hit_energy   );
-    chain->SetBranchAddress("hit_eta"      , &m_hit_eta      );
-    chain->SetBranchAddress("hit_phi"      , &m_hit_phi      );
-    chain->SetBranchAddress("hit_x"        , &m_hit_x        );
-    chain->SetBranchAddress("hit_y"        , &m_hit_y        );
-    chain->SetBranchAddress("hit_z"        , &m_hit_z        );
+            chain->SetBranchAddress("hit_n"        , &m_hit_n        );
+            chain->SetBranchAddress("hit_detid"    , &m_hit_detid    );
+            chain->SetBranchAddress("hit_subdet"   , &m_hit_subdet   );
+            chain->SetBranchAddress("hit_cell"     , &m_hit_cell     );
+            chain->SetBranchAddress("hit_sector"   , &m_hit_sector   );
+            chain->SetBranchAddress("hit_subsector", &m_hit_subsector);
+            chain->SetBranchAddress("hit_layer"    , &m_hit_layer    );
+            chain->SetBranchAddress("hit_zside"    , &m_hit_zside    );
+            chain->SetBranchAddress("hit_energy"   , &m_hit_energy   );
+            chain->SetBranchAddress("hit_eta"      , &m_hit_eta      );
+            chain->SetBranchAddress("hit_phi"      , &m_hit_phi      );
+            chain->SetBranchAddress("hit_x"        , &m_hit_x        );
+            chain->SetBranchAddress("hit_y"        , &m_hit_y        );
+            chain->SetBranchAddress("hit_z"        , &m_hit_z        );
+            break;
+        case HARDINT:
+            chain->SetBranchStatus("hard_hit_n"        , true);
+            chain->SetBranchStatus("hard_hit_detid"    , true);
+            chain->SetBranchStatus("hard_hit_subdet"   , true);
+            chain->SetBranchStatus("hard_hit_cell"     , true);
+            chain->SetBranchStatus("hard_hit_sector"   , true);
+            chain->SetBranchStatus("hard_hit_subsector", true);
+            chain->SetBranchStatus("hard_hit_layer"    , true);
+            chain->SetBranchStatus("hard_hit_zside"    , true);
+            chain->SetBranchStatus("hard_hit_energy"   , true);
+            chain->SetBranchStatus("hard_hit_eta"      , true);
+            chain->SetBranchStatus("hard_hit_phi"      , true);
+            chain->SetBranchStatus("hard_hit_x"        , true);
+            chain->SetBranchStatus("hard_hit_y"        , true);
+            chain->SetBranchStatus("hard_hit_z"        , true);
+
+
+            chain->SetBranchAddress("hard_hit_n"        , &m_hit_n        );
+            chain->SetBranchAddress("hard_hit_detid"    , &m_hit_detid    );
+            chain->SetBranchAddress("hard_hit_subdet"   , &m_hit_subdet   );
+            chain->SetBranchAddress("hard_hit_cell"     , &m_hit_cell     );
+            chain->SetBranchAddress("hard_hit_sector"   , &m_hit_sector   );
+            chain->SetBranchAddress("hard_hit_subsector", &m_hit_subsector);
+            chain->SetBranchAddress("hard_hit_layer"    , &m_hit_layer    );
+            chain->SetBranchAddress("hard_hit_zside"    , &m_hit_zside    );
+            chain->SetBranchAddress("hard_hit_energy"   , &m_hit_energy   );
+            chain->SetBranchAddress("hard_hit_eta"      , &m_hit_eta      );
+            chain->SetBranchAddress("hard_hit_phi"      , &m_hit_phi      );
+            chain->SetBranchAddress("hard_hit_x"        , &m_hit_x        );
+            chain->SetBranchAddress("hard_hit_y"        , &m_hit_y        );
+            chain->SetBranchAddress("hard_hit_z"        , &m_hit_z        );
+            break;
+        default:
+            break;
+    }
 
 }
 

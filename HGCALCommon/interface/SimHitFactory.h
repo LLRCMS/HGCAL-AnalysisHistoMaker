@@ -17,15 +17,25 @@ namespace AnHiMa
     class SimHitFactory : public IObjectFactory<SimHitCollection>
     {
         public:
+            enum HitType
+            {
+                ALL     = 0,
+                HARDINT = 1
+            };
+
+        public:
             SimHitFactory() {};
             ~SimHitFactory() {};
 
             virtual void initialize(IEvent*, TChain*);
+            void initialize(IEvent*, TChain*, HitType);
 
         private:
             virtual void connectVariables(TChain*);
             virtual void update();
             static void callback(void*);
+
+            HitType m_type;
 
             int                    m_hit_n;
             std::vector<unsigned> *m_hit_detid;
