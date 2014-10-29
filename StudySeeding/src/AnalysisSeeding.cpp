@@ -81,7 +81,7 @@ void AnalysisSeeding::execute()
     event().update();
     if(!event().passSelection()) return;
 
-    unsigned n = (m_sample=="minbias" ? 10 : 2);
+    unsigned n = (m_sample=="minbias" ? 50 : 2);
 
     for(unsigned i=0;i<n;i++)
     {
@@ -107,6 +107,7 @@ void AnalysisSeeding::execute()
 void AnalysisSeeding::fillHistos()
 /*****************************************************************/
 {
+    //double mip = 0.000055;
 
     short sysNum = 0;
     float weight = 1.;
@@ -117,18 +118,29 @@ void AnalysisSeeding::fillHistos()
     for(unsigned l=1; l<=30; l++)
     {
         double fraction = m_tower.layerEnergy(l)/m_tower.energy();
-        m_histos.Fill2BinHisto(100+hoffset, m_tower.eta(), l, fraction, weight, sysNum);
+        m_histos.Fill2BinHisto(100+hoffset, fabs(m_tower.eta()), l, fraction, weight, sysNum);
+        m_histos.Fill2BinHisto(200+hoffset, fabs(m_tower.eta()), l, m_tower.layerEnergy(l), weight, sysNum);
     }
-    double fraction1 = m_tower.layersEnergy(1,10)/m_tower.energy();
-    double fraction2 = m_tower.layersEnergy(11,20)/m_tower.energy();
-    double fraction3 = m_tower.layersEnergy(21,30)/m_tower.energy();
-    m_histos.Fill2BinHisto(200+hoffset, m_tower.eta(), 1, fraction1, weight, sysNum);
-    m_histos.Fill2BinHisto(200+hoffset, m_tower.eta(), 2, fraction2, weight, sysNum);
-    m_histos.Fill2BinHisto(200+hoffset, m_tower.eta(), 3, fraction3, weight, sysNum);
+    double energyFront  = m_tower.layersEnergy(1,10);
+    double energyMiddle = m_tower.layersEnergy(11,20);
+    double energyBack   = m_tower.layersEnergy(21,30);
+    double fractionFront  = energyFront/m_tower.energy();
+    double fractionMiddle = energyMiddle/m_tower.energy();
+    double fractionBack   = energyBack/m_tower.energy();
+    m_histos.Fill2BinHisto(300+hoffset, fabs(m_tower.eta()), 1, fractionFront, weight, sysNum);
+    m_histos.Fill2BinHisto(300+hoffset, fabs(m_tower.eta()), 2, fractionMiddle, weight, sysNum);
+    m_histos.Fill2BinHisto(300+hoffset, fabs(m_tower.eta()), 3, fractionBack, weight, sysNum);
+    //
+    m_histos.Fill2BinHisto(350+hoffset, fabs(m_tower.eta()), 1, energyFront, weight, sysNum);
+    m_histos.Fill2BinHisto(350+hoffset, fabs(m_tower.eta()), 2, energyMiddle, weight, sysNum);
+    m_histos.Fill2BinHisto(350+hoffset, fabs(m_tower.eta()), 3, energyBack, weight, sysNum);
 
-    double middleOverFront = ( m_tower.layersEnergy(1,10)>0. ? m_tower.layersEnergy(11,20)/m_tower.layersEnergy(1,10) : 19.999);
+    double middleOverFront = ( energyFront>0. ? energyMiddle/energyFront : 19.999);
     if(middleOverFront>=20.) middleOverFront = 19.999;
-    m_histos.Fill1BinHisto(250+hoffset, m_tower.eta(), middleOverFront, weight, sysNum);
+    m_histos.Fill1BinHisto(400+hoffset, fabs(m_tower.eta()), middleOverFront, weight, sysNum);
+
+    m_histos.Fill1BinHisto(410+hoffset, fabs(m_tower.eta()), m_tower.nHits(), weight, sysNum);
+    m_histos.Fill1BinHisto(420+hoffset, fabs(m_tower.eta()), m_tower.longitudinalBarycenter(), weight, sysNum);
 
 }
 
@@ -208,7 +220,7 @@ void AnalysisSeeding::findMaxHit(int i)
             double deta = (hit.eta() - eta);
             double dphi = TVector2::Phi_mpi_pi(hit.phi() - phi);
             double dr = sqrt(deta*deta + dphi*dphi);
-            if(dr<0.2 && hit.energy()>maxE)
+            if(dr<0.3 && hit.energy()>maxE)
             {
                 m_chosenHit = &hit;
                 maxE = hit.energy();
@@ -230,7 +242,7 @@ void AnalysisSeeding::findMaxHit(int i)
             double deta = (hit.eta() - eta);
             double dphi = TVector2::Phi_mpi_pi(hit.phi() - phi);
             double dr = sqrt(deta*deta + dphi*dphi);
-            if(dr<0.2 && hit.energy()>maxE)
+            if(dr<0.3 && hit.energy()>maxE)
             {
                 m_chosenHit = &hit;
                 maxE = hit.energy();

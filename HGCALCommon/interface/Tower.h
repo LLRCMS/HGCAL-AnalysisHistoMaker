@@ -44,6 +44,7 @@ namespace AnHiMa
             int nHits() const {return m_hits.size();}
             float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
             float layersEnergy(unsigned l1, unsigned l2) const;
+            float longitudinalBarycenter();
 
             void clear();
 

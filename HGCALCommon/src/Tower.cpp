@@ -88,3 +88,19 @@ void Tower::clear()
         m_layerEnergies[l] = 0.;
     }
 }
+
+
+
+/*****************************************************************/
+float Tower::longitudinalBarycenter()
+/*****************************************************************/
+{
+    double meanLayer = 0.;
+    for(unsigned l=1;l<m_layerEnergies.size();l++)
+    {
+        meanLayer += (double)l * m_layerEnergies[l];
+    }
+    meanLayer /= m_energy;
+    return meanLayer;
+
+}
