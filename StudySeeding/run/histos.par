@@ -1,7 +1,8 @@
-Histos: StudySeeding_
+Histos: StudySeeding_Size1_, StudySeeding_Size1_Cut_(10000), StudySeeding_Size2_(20000), StudySeeding_Size2_Cut_(30000), StudySeeding_Size4_(40000), StudySeeding_Size4_Cut_(50000)
 
 # General event 
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
 
 2binvh1f 100 layerEnergyFractions ' Energy fraction ' 100 0. 1.01
 ETA 3
@@ -31,13 +32,74 @@ COMP 3
 ETA 3
 1.5 2. 2.5 3.
 #
-1binvh1f 410 numberOfHits ' #hits ' 31 -0.5 30.5
+1binvh1f 405 towerEnergy ' E [GeV] ' 200 0. 2.
 ETA 3
 1.5 2. 2.5 3.
 #
-1binvh1f 420 depthBarycenter ' barycenter [layer] ' 100 0. 30.
+1binvh1f 410 towerEt ' E_{T} [GeV] ' 200 0. 0.2
 ETA 3
 1.5 2. 2.5 3.
+#
+1binvh1f 420 numberOfHits ' #hits ' 1001 -0.5 1000.5
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 425 numberOfLayers ' #layers ' 31 -0.5 30.5
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 430 depthBarycenter ' barycenter [layer] ' 100 0. 30.
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 435 towerCalibEnergy ' E [GeV] ' 100 0. 100
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 440 towerCalibEt ' E_{T} [GeV] ' 100 0. 50
+ETA 3
+1.5 2. 2.5 3.
+
+
+## Tree
+h1f 1000 towEta ' #eta ' 100 -3.2 3.2
+h1f 1001 towPhi ' #phi ' 100 -3.15 3.15
+h1f 1002 towE ' E [GeV] ' 100 0. 10.
+h1f 1003 towCalE ' E [GeV] ' 100 0. 100.
+h1f 1004 towEf1 ' E fraction ' 100 0. 1.01
+h1f 1005 towEf2 ' E fraction ' 100 0. 1.01
+h1f 1006 towEf3 ' E fraction ' 100 0. 1.01
+h1f 1007 towEf4 ' E fraction ' 100 0. 1.01
+h1f 1008 towEf5 ' E fraction ' 100 0. 1.01
+h1f 1009 towEf6 ' E fraction ' 100 0. 1.01
+h1f 1010 towEf7 ' E fraction ' 100 0. 1.01
+h1f 1011 towEf8 ' E fraction ' 100 0. 1.01
+h1f 1012 towEf9 ' E fraction ' 100 0. 1.01
+h1f 1013 towEf10 ' E fraction ' 100 0. 1.01
+h1f 1014 towEf11 ' E fraction ' 100 0. 1.01
+h1f 1015 towEf12 ' E fraction ' 100 0. 1.01
+h1f 1016 towEf13 ' E fraction ' 100 0. 1.01
+h1f 1017 towEf14 ' E fraction ' 100 0. 1.01
+h1f 1018 towEf15 ' E fraction ' 100 0. 1.01
+h1f 1019 towEf16 ' E fraction ' 100 0. 1.01
+h1f 1020 towEf17 ' E fraction ' 100 0. 1.01
+h1f 1021 towEf18 ' E fraction ' 100 0. 1.01
+h1f 1022 towEf19 ' E fraction ' 100 0. 1.01
+h1f 1023 towEf20 ' E fraction ' 100 0. 1.01
+h1f 1024 towEf21 ' E fraction ' 100 0. 1.01
+h1f 1025 towEf22 ' E fraction ' 100 0. 1.01
+h1f 1026 towEf23 ' E fraction ' 100 0. 1.01
+h1f 1027 towEf24 ' E fraction ' 100 0. 1.01
+h1f 1028 towEf25 ' E fraction ' 100 0. 1.01
+h1f 1029 towEf26 ' E fraction ' 100 0. 1.01
+h1f 1030 towEf27 ' E fraction ' 100 0. 1.01
+h1f 1031 towEf28 ' E fraction ' 100 0. 1.01
+h1f 1032 towEf29 ' E fraction ' 100 0. 1.01
+h1f 1033 towEf30 ' E fraction ' 100 0. 1.01
+h1f 1034 towNhit ' #hits ' 1000 0. 1000
+
+ntuple 1100 towerTree ' tree ' towEta:towPhi:towE:towCalE:towEf1:towEf2:towEf3:towEf4:towEf5:towEf6:towEf7:towEf8:towEf9:towEf10:towEf11:towEf12:towEf13:towEf14:towEf15:towEf16:towEf17:towEf18:towEf19:towEf20:towEf21:towEf22:towEf23:towEf24:towEf25:towEf26:towEf27:towEf28:towEf29:towEf30:towNhit
+
 
 
 end_Histos

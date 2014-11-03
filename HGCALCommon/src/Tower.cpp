@@ -50,14 +50,17 @@ Tower::~Tower()
 void Tower::addHit(const SimHit& hit)
 /*****************************************************************/
 {
-    float mip = 0.000055;
-    if(hit.energy()>mip)
-    {
-        m_hits.push_back(&hit);
-        m_energy += hit.energy();
-        int layer = hit.layer();
-        m_layerEnergies[layer] += hit.energy();
-    }
+    m_hits.push_back(&hit);
+    m_eta *= m_energy;
+    m_phi *= m_energy;
+
+    m_energy += hit.energy();
+    m_eta += hit.eta()*hit.energy();
+    m_phi += hit.phi()*hit.energy();
+    m_eta /= m_energy;
+    m_phi /= m_energy;
+    int layer = hit.layer();
+    m_layerEnergies[layer] += hit.energy();
 }
 
 
@@ -72,6 +75,19 @@ float Tower::layersEnergy(unsigned l1, unsigned l2) const
         energy += (double)m_layerEnergies[l];
     }
     return (float)energy;
+}
+
+/*****************************************************************/
+int Tower::nLayers() const
+/*****************************************************************/
+{
+
+    int n = 0;
+    for(unsigned l=0; l<m_layerEnergies.size(); l++)
+    {
+        if(m_layerEnergies[l]>0) n++;
+    }
+    return n;
 }
 
 

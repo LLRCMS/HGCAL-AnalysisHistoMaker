@@ -21,6 +21,7 @@
 #define TOWER_H
 
 #include <vector>
+#include <math.h>
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
 
@@ -37,14 +38,20 @@ namespace AnHiMa
             void setEta(float eta) {m_eta = eta;}
             void setPhi(float phi) {m_phi = phi;}
             void setEnergy(float energy) {m_energy = energy;}
+            void setCalibratedEnergy(float energy) {m_calibratedEnergy = energy;}
 
-            float eta()    const {return m_eta;}
-            float phi()    const {return m_phi;}
-            float energy() const {return m_energy;}
-            int nHits() const {return m_hits.size();}
+            float eta()     const {return m_eta;}
+            float phi()     const {return m_phi;}
+            float energy()  const {return m_energy;}
+            float calibratedEnergy()  const {return m_calibratedEnergy;}
+            float et()      const {return m_energy/cosh(m_eta);}
+            float calibratedEt()  const {return m_calibratedEnergy/cosh(m_eta);}
+            int   nHits()   const {return m_hits.size();}
+            int   nLayers() const;
             float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
             float layersEnergy(unsigned l1, unsigned l2) const;
             float longitudinalBarycenter();
+            const std::vector<const SimHit*>& hits() const {return m_hits;}
 
             void clear();
 
@@ -53,6 +60,7 @@ namespace AnHiMa
             float m_eta;
             float m_phi;
             float m_energy;
+            float m_calibratedEnergy;
 
             std::vector<float> m_layerEnergies;
             std::vector<const SimHit*> m_hits;

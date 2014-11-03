@@ -24,6 +24,12 @@
 using namespace AnHiMa;
 using namespace std;
 
+/*****************************************************************/
+bool AnHiMa::simHitSort(const SimHit* hit1, const SimHit* hit2)
+/*****************************************************************/
+{
+    return hit1->energy() > hit2->energy();
+};
 
 
 /*****************************************************************/

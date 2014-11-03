@@ -25,7 +25,10 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/GenParticle.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/TowerFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/GenParticleFactory.h"
+
+#include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
 
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
 
@@ -57,8 +60,12 @@ namespace AnHiMa
             int run()    const {return m_run;}
             int npu()    const {return m_npu;}
 
+            const HGCALNavigator& hgcalNavigator() const {return m_hgcalNavigator;}
+
             const std::vector<SimHit>& simhits() const {return m_simhitFactoryAll.data();}
             const std::vector<SimHit>& hardsimhits() const {return m_simhitFactoryHard.data();}
+            const std::vector<const SimHit*>& sortedHits() const {return m_energySortedHits;}
+            const std::vector<Tower>& towers() const {return m_towerFactory.data();}
             const std::vector<GenParticle>& genparticles() const {return m_genparticleFactory.data();}
 
             const SimHit* simhit(int zside, int layer, int sector, int subsector, int cell) const;
@@ -69,16 +76,24 @@ namespace AnHiMa
 
 
         private:
+            static void callback(void*);
+            void buildHitsIndex();
+
+
             int m_event;
             int m_lumi;
             int m_run;
             int m_npu;
 
+            HGCALNavigator m_hgcalNavigator;
+
             SimHitFactory      m_simhitFactoryAll;
             SimHitFactory      m_simhitFactoryHard;
+            TowerFactory       m_towerFactory;
             GenParticleFactory m_genparticleFactory;
 
             std::vector<const SimHit*> m_sortedHits;
+            std::vector<const SimHit*> m_energySortedHits;
 
     };
 }

@@ -13,6 +13,8 @@ namespace AnHiMa
 {
     typedef std::vector<SimHit> SimHitCollection;
 
+    bool simHitSort(const SimHit* hit1, const SimHit* hit2);
+
 
     class SimHitFactory : public IObjectFactory<SimHitCollection>
     {

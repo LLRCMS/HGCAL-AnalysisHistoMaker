@@ -1,5 +1,6 @@
 <use name="root"/>
 <use name="AnHiMaHGCAL/Core"/>
+<use name="AnHiMaHGCAL/HGCALGeometry"/>
 <export>
    <lib name="1"/>
 </export>

@@ -32,7 +32,7 @@ EventHGCAL::EventHGCAL():IEvent(),
 /*****************************************************************/
 {
 
-
+    m_hgcalNavigator.initialize();
 
 }
 
@@ -65,8 +65,11 @@ void EventHGCAL::connectVariables(TChain* inputChain)
     inputChain->SetBranchAddress("npu"       , &m_npu);
 
 
+    // keep this order of initialization
     m_simhitFactoryAll.initialize(this, inputChain, SimHitFactory::ALL);
     m_simhitFactoryHard.initialize(this, inputChain, SimHitFactory::HARDINT);
+    registerCallback((void*)this, EventHGCAL::callback);
+    //m_towerFactory.initialize(this, inputChain, this);
     m_genparticleFactory.initialize(this, inputChain);
 
 }
@@ -85,6 +88,22 @@ void EventHGCAL::update()
 /*****************************************************************/
 {
     IEvent::update();
+
+}
+
+/*****************************************************************/
+void EventHGCAL::callback(void* object)
+/*****************************************************************/
+{
+    EventHGCAL* myself = reinterpret_cast<EventHGCAL*>(object);
+    myself->buildHitsIndex();
+}
+
+
+/*****************************************************************/
+void EventHGCAL::buildHitsIndex()
+/*****************************************************************/
+{
     // reset simhit pointers
     for(unsigned i=0; i<m_sortedHits.size(); i++)
     {
@@ -100,6 +119,15 @@ void EventHGCAL::update()
         //cerr<<" ("<<hit.zside()<<","<< hit.layer()<<","<< hit.sector()<<","<< hit.subsector()<<","<< hit.cell()<<")\n";
         m_sortedHits[index] = &hit;
     }
+
+
+    m_energySortedHits.clear();
+    m_energySortedHits.reserve(simhits().size());
+    for(auto itr=simhits().cbegin(); itr!=simhits().end(); itr++)
+    {
+        m_energySortedHits.push_back( &(*itr) );
+    }
+    sort(m_energySortedHits.begin(), m_energySortedHits.end(), AnHiMa::simHitSort);
 }
 
 

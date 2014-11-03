@@ -37,19 +37,19 @@ class HGCALNavigator
         bool initialize();
 
         bool valid(const DetId& id) const {return m_hgctopo->valid(id);}; 
-        std::vector<DetId> north(const DetId& id){return m_hgctopo->north(id);};
-        std::vector<DetId> south(const DetId& id){return m_hgctopo->south(id);};
-        std::vector<DetId> east(const DetId& id) {return m_hgctopo->east(id);};
-        std::vector<DetId> west(const DetId& id) {return m_hgctopo->west(id);};
+        std::vector<DetId> north(const DetId& id)const {return m_hgctopo->north(id);};
+        std::vector<DetId> south(const DetId& id)const {return m_hgctopo->south(id);};
+        std::vector<DetId> east(const DetId& id) const {return m_hgctopo->east(id);};
+        std::vector<DetId> west(const DetId& id) const {return m_hgctopo->west(id);};
         // FIXME: topo.up() and down() give no DetId... 
         //std::vector<DetId> up(const DetId& id)   {return m_hgctopo->up(id);};
         //std::vector<DetId> down(const DetId& id) {return m_hgctopo->down(id);};
         // temporary workaround to navigate up and down
-        std::vector<HGCEEDetId> up(const HGCEEDetId& id, int nz=1);
-        std::vector<HGCEEDetId> down(const HGCEEDetId& id, int nz=1);
+        std::vector<HGCEEDetId> up(const HGCEEDetId& id, int nz=1) const;
+        std::vector<HGCEEDetId> down(const HGCEEDetId& id, int nz=1) const;
 
-        std::vector<HGCEEDetId> upProj(const HGCEEDetId& id, int nz=1);
-        std::vector<HGCEEDetId> downProj(const HGCEEDetId& id, int nz=1);
+        std::vector<HGCEEDetId> upProj(const HGCEEDetId& id, int nz=1, double refEta=999., double refPhi=999.) const;
+        std::vector<HGCEEDetId> downProj(const HGCEEDetId& id, int nz=1, double refEta=999., double refPhi=999.) const;
 
         const HGCalGeometry* geometry() const {return m_hgcgeom;};
         const HGCalTopology* topology() const {return m_hgctopo;};

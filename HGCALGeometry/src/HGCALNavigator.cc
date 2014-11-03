@@ -425,7 +425,7 @@ bool HGCALNavigator::initialize()
 
 // temporary workaround to navigate up and down
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz)
+std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz) const
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCells;
@@ -442,7 +442,7 @@ std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz)
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz)
+std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz) const
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCells;
@@ -459,7 +459,7 @@ std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz)
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
+std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz, double refEta, double refPhi) const
 /*****************************************************************/
 {
     std::vector<HGCEEDetId> vCellsProj;
@@ -537,7 +537,12 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
     ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -4) );
 
 
-    const GlobalPoint pos ( std::move( m_hgcgeom->getPosition(id ) ) ); 
+    if(refEta==999. && refPhi==999.)
+    {
+        const GlobalPoint pos ( std::move( m_hgcgeom->getPosition(id ) ) ); 
+        refEta = (double)pos.eta();
+        refPhi = (double)pos.phi();
+    }
     std::vector<GlobalPoint> poss;
     std::vector<double> drs;
     for(unsigned i=0;i<ids.size();i++)
@@ -548,8 +553,8 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
             continue;
         }
         poss.push_back( std::move( m_hgcgeom->getPosition(ids[i]) ) );
-        double deta = (double)poss[i].eta()-(double)pos.eta();
-        double dphi = TVector2::Phi_mpi_pi((double)poss[i].phi()-(double)pos.phi());
+        double deta = (double)poss[i].eta()-refEta;
+        double dphi = TVector2::Phi_mpi_pi((double)poss[i].phi()-refPhi);
         double dr = sqrt(deta*deta + dphi*dphi);
         drs.push_back(dr);
     }
@@ -573,8 +578,8 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz)
 }
 
 /*****************************************************************/
-std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id, int nz)
+std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id, int nz, double refEta, double refPhi) const
 /*****************************************************************/
 {
-    return upProj(id, -nz);
+    return upProj(id, -nz, refEta, refPhi);
 }
