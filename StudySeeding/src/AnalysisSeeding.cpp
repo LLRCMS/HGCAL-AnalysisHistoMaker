@@ -81,11 +81,26 @@ void AnalysisSeeding::execute()
 
     m_usedHits.clear();
 
+    short sysNum = 0;
+    float weight = 1.;
+    int hoffset  = 0;
+
+    double mip = 0.000055;
+    cout<<"Number of hits = "<<event().simhits().size()<<"\n";
+    for(const auto& hit : event().simhits())
+    {
+        m_histos.FillHisto(5+hoffset, hit.energy()/mip, weight, sysNum);
+    }
+
     //unsigned n = (m_sample=="minbias" ? event().towers().size(): 2);
-    unsigned n = (m_sample=="minbias" ? 500 : 2);
+    //unsigned n = (m_sample=="minbias" ? 500 : 2);
+    unsigned n = (m_sample=="minbias" ? event().sortedSeedingHits().size() : 2);
     //cout<<"Number of towers = "<<event().towers().size()<<"\n";
 
-    vector<int> towerSizes = {1,2,4};
+    //vector<int> towerSizes = {1,2,4};
+    vector<int> towerSizes = {4};
+    map<int, int> nTowers;
+    for(auto size : towerSizes) nTowers[size] = 0;
     for(unsigned i=0;i<n;i++)
     {
         findMaxHit(i);
@@ -104,15 +119,36 @@ void AnalysisSeeding::execute()
                 continue;
             }
 
-            fillHistos(size, false);
-            if(m_tower.calibratedEt()>2.) fillHistos(size, true);
+            fillHistos(i, size, false);
+            if(m_tower.calibratedEt()>2.) 
+            {
+                fillHistos(i, size, true);
+                nTowers[size]++;
+            }
         }
     }
-
+    for(auto size : towerSizes)
+    {
+        switch(size)
+        {
+            case 1: 
+                hoffset = 10000;
+                break;
+            case 2: 
+                hoffset = 30000;
+                break;
+            case 4: 
+                hoffset = 50000;
+                break;
+            default:
+                break;
+        }
+        m_histos.FillHisto(6+hoffset, nTowers[size], weight, sysNum);
+    }
 }
 
 /*****************************************************************/
-void AnalysisSeeding::fillHistos(int towerSize, bool cut)
+void AnalysisSeeding::fillHistos(int i, int towerSize, bool cut)
 /*****************************************************************/
 {
     //double mip = 0.000055;
@@ -138,6 +174,7 @@ void AnalysisSeeding::fillHistos(int towerSize, bool cut)
 
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
+    m_histos.FillHisto(10+hoffset, i, weight, sysNum);
 
     for(unsigned l=1; l<=30; l++)
     {
@@ -178,12 +215,13 @@ void AnalysisSeeding::fillHistos(int towerSize, bool cut)
     m_histos.FillHisto(1001+hoffset, m_tower.phi(), weight, sysNum);
     m_histos.FillHisto(1002+hoffset, m_tower.energy(), weight, sysNum);
     m_histos.FillHisto(1003+hoffset, m_tower.calibratedEnergy(), weight, sysNum);
+    m_histos.FillHisto(1040+hoffset, m_tower.nHits(), weight, sysNum);
     for(int l=1;l<=30;l++)
     {
         double fraction = m_tower.layerEnergy(l)/m_tower.energy();
         m_histos.FillHisto(1003+l+hoffset, fraction, weight, sysNum);
+        m_histos.FillHisto(1040+l+hoffset, m_tower.layerNHits(l), weight, sysNum);
     }
-    m_histos.FillHisto(1034+hoffset, m_tower.nHits(), weight, sysNum);
     m_histos.FillNtuple(1100+hoffset, event().run(), event().event(), weight, sysNum);
 }
 
@@ -493,6 +531,7 @@ vector<HGCEEDetId> AnalysisSeeding::choose2x2( const vector<HGCEEDetId>& detids)
 void AnalysisSeeding::findMaxHit(int i)
 /*****************************************************************/
 {
+    double mip = 0.000055;
     m_chosenHit = NULL;
 
     if(m_sample=="electron")
@@ -510,7 +549,7 @@ void AnalysisSeeding::findMaxHit(int i)
             double deta = (hit.eta() - eta);
             double dphi = TVector2::Phi_mpi_pi(hit.phi() - phi);
             double dr = sqrt(deta*deta + dphi*dphi);
-            if(dr<0.3 && hit.energy()>maxE)
+            if(dr<0.1 && hit.energy()>maxE)
             {
                 m_chosenHit = &hit;
                 maxE = hit.energy();
@@ -527,7 +566,8 @@ void AnalysisSeeding::findMaxHit(int i)
         {
             const SimHit& hit = *itrHit;
             // match only to hits in layers 10-20
-            if(hit.layer()<10 || hit.layer()>20) continue;
+            //if(hit.layer()<10 || hit.layer()>20) continue;
+            if(hit.layer()!=15 || hit.energy()<5.*mip) continue;
 
             double deta = (hit.eta() - eta);
             double dphi = TVector2::Phi_mpi_pi(hit.phi() - phi);
@@ -559,8 +599,8 @@ void AnalysisSeeding::findMaxHit(int i)
         //        }
         //    }
         //}
-        if((unsigned)i>=event().sortedHits().size()) return;
-        m_chosenHit = event().sortedHits()[i];
+        if((unsigned)i>=event().sortedSeedingHits().size()) return;
+        m_chosenHit = event().sortedSeedingHits()[i];
         // make sure a close-by hit has not been already picked
         for(auto itr=m_usedHits.cbegin(); itr!=m_usedHits.end();itr++)
         {

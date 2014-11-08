@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="pileup.exe">
+  <use name="AnHiMaHGCAL/StudyPileup"/>
+</bin>

@@ -65,6 +65,7 @@ namespace AnHiMa
             const std::vector<SimHit>& simhits() const {return m_simhitFactoryAll.data();}
             const std::vector<SimHit>& hardsimhits() const {return m_simhitFactoryHard.data();}
             const std::vector<const SimHit*>& sortedHits() const {return m_energySortedHits;}
+            const std::vector<const SimHit*>& sortedSeedingHits() const {return m_energySortedSeedingHits;}
             const std::vector<Tower>& towers() const {return m_towerFactory.data();}
             const std::vector<GenParticle>& genparticles() const {return m_genparticleFactory.data();}
 
@@ -78,6 +79,9 @@ namespace AnHiMa
         private:
             static void callback(void*);
             void buildHitsIndex();
+            void sortHits();
+
+            const double m_mip;
 
 
             int m_event;
@@ -94,6 +98,7 @@ namespace AnHiMa
 
             std::vector<const SimHit*> m_sortedHits;
             std::vector<const SimHit*> m_energySortedHits;
+            std::vector<const SimHit*> m_energySortedSeedingHits;
 
     };
 }

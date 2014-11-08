@@ -28,6 +28,7 @@ using namespace std;
 
 /*****************************************************************/
 EventHGCAL::EventHGCAL():IEvent(),
+    m_mip(0.000055),
     m_sortedHits(5184000)
 /*****************************************************************/
 {
@@ -97,6 +98,7 @@ void EventHGCAL::callback(void* object)
 {
     EventHGCAL* myself = reinterpret_cast<EventHGCAL*>(object);
     myself->buildHitsIndex();
+    myself->sortHits();
 }
 
 
@@ -128,6 +130,25 @@ void EventHGCAL::buildHitsIndex()
         m_energySortedHits.push_back( &(*itr) );
     }
     sort(m_energySortedHits.begin(), m_energySortedHits.end(), AnHiMa::simHitSort);
+}
+
+/*****************************************************************/
+void EventHGCAL::sortHits()
+/*****************************************************************/
+{
+    m_energySortedHits.clear();
+    m_energySortedSeedingHits.clear();
+    m_energySortedHits.reserve(simhits().size());
+    for(auto itr=simhits().cbegin(); itr!=simhits().end(); itr++)
+    {
+        m_energySortedHits.push_back( &(*itr) );
+        if(itr->layer()==15 && itr->energy()>=5.*m_mip)
+        {
+            m_energySortedSeedingHits.push_back( &(*itr) );
+        }
+    }
+    sort(m_energySortedHits.begin(), m_energySortedHits.end(), AnHiMa::simHitSort);
+    sort(m_energySortedSeedingHits.begin(), m_energySortedSeedingHits.end(), AnHiMa::simHitSort);
 }
 
 

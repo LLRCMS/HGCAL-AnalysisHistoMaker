@@ -48,6 +48,7 @@ namespace AnHiMa
             float calibratedEt()  const {return m_calibratedEnergy/cosh(m_eta);}
             int   nHits()   const {return m_hits.size();}
             int   nLayers() const;
+            int   layerNHits(unsigned l)   const {return m_layerHits[l];}
             float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
             float layersEnergy(unsigned l1, unsigned l2) const;
             float longitudinalBarycenter();
@@ -63,6 +64,7 @@ namespace AnHiMa
             float m_calibratedEnergy;
 
             std::vector<float> m_layerEnergies;
+            std::vector<int> m_layerHits;
             std::vector<const SimHit*> m_hits;
     };
 };

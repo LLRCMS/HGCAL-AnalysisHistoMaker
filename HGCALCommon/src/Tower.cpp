@@ -28,12 +28,14 @@ Tower::Tower():
     m_eta(0.),
     m_phi(0.),
     m_energy(0.),
-    m_layerEnergies(31)
+    m_layerEnergies(31),
+    m_layerHits(31)
 /*****************************************************************/
 {
     for(unsigned l=0;l<m_layerEnergies.size();l++)
     {
         m_layerEnergies[l] = 0.;
+        m_layerHits[l] = 0;
     }
 }
 
@@ -61,6 +63,7 @@ void Tower::addHit(const SimHit& hit)
     m_phi /= m_energy;
     int layer = hit.layer();
     m_layerEnergies[layer] += hit.energy();
+    m_layerHits[layer]++;
 }
 
 
@@ -102,6 +105,7 @@ void Tower::clear()
     for(unsigned l=0;l<m_layerEnergies.size();l++)
     {
         m_layerEnergies[l] = 0.;
+        m_layerHits[l] = 0;
     }
 }
 

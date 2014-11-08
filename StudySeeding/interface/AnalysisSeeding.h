@@ -53,7 +53,7 @@ namespace AnHiMa
             void execute();
 
         private:
-            void fillHistos(int towerSize=1, bool cut=false);
+            void fillHistos(int i, int towerSize=1, bool cut=false);
             void buildTower(int size=1);
             std::vector<HGCEEDetId> choose2x2(const std::vector<HGCEEDetId>& detids);
             std::vector<HGCEEDetId> chooseNxN(const std::vector<HGCEEDetId>& detids, int N=2);
