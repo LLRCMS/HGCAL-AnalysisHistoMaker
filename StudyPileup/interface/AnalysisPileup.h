@@ -33,6 +33,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <algorithm>
 
 
 
@@ -52,6 +54,9 @@ namespace AnHiMa
 
         private:
             void fillHistos();
+
+            std::map< std::pair<int,int>, std::vector< std::pair<HGCEEDetId, float> > > m_regionSimHits; // detid (with eta) in trigger regions and layers inside a trigger region
+
             
 
     };

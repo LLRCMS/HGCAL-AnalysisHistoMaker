@@ -100,7 +100,12 @@ void AnalysisSeeding::execute()
     //vector<int> towerSizes = {1,2,4};
     vector<int> towerSizes = {4};
     map<int, int> nTowers;
-    for(auto size : towerSizes) nTowers[size] = 0;
+    map<int, int> nTowersNhitCut;
+    for(auto size : towerSizes) 
+    {
+        nTowers[size] = 0;
+        nTowersNhitCut[size] = 0;
+    }
     for(unsigned i=0;i<n;i++)
     {
         findMaxHit(i);
@@ -124,6 +129,11 @@ void AnalysisSeeding::execute()
             {
                 fillHistos(i, size, true);
                 nTowers[size]++;
+                int nhits = m_tower.layerNHits(15)+m_tower.layerNHits(16)+m_tower.layerNHits(17)+m_tower.layerNHits(18);
+                if(nhits>=19)
+                {
+                    nTowersNhitCut[size]++;
+                }
             }
         }
     }
@@ -144,6 +154,7 @@ void AnalysisSeeding::execute()
                 break;
         }
         m_histos.FillHisto(6+hoffset, nTowers[size], weight, sysNum);
+        m_histos.FillHisto(7+hoffset, nTowersNhitCut[size], weight, sysNum);
     }
 }
 
@@ -294,7 +305,13 @@ void AnalysisSeeding::buildTower(int size)
         const SimHit* hit = event().simhit(id);
         //cout<<"  Possible hit in the tower: layer="<<id.layer()<<",cell="<<id.cell()<<"\n";
         if(!hit || hit->energy()<=mip) continue;
+        if(m_usedHits.find(hit)!=m_usedHits.end())
+        {
+            continue;
+        }
         m_tower.addHit(*hit);
+        //m_usedHits.push_back(hit);
+        m_usedHits.insert(hit);
     }
     m_calibrator.calibrate(m_tower);
     //cout<<" Tower energy  = "<<m_tower.energy()<<"\n";
@@ -601,20 +618,25 @@ void AnalysisSeeding::findMaxHit(int i)
         //}
         if((unsigned)i>=event().sortedSeedingHits().size()) return;
         m_chosenHit = event().sortedSeedingHits()[i];
-        // make sure a close-by hit has not been already picked
-        for(auto itr=m_usedHits.cbegin(); itr!=m_usedHits.end();itr++)
+        if(m_usedHits.find(m_chosenHit)!=m_usedHits.end())
         {
-            const SimHit* usedHit = *itr;
-            double deta = (m_chosenHit->eta() - usedHit->eta());
-            double dphi = TVector2::Phi_mpi_pi(m_chosenHit->phi() - usedHit->phi());
-            double dr = sqrt(deta*deta + dphi*dphi);
-            if(dr<0.1) 
-            {
-                m_chosenHit = 0;
-                return;
-            }
+            m_chosenHit = 0;
         }
-        m_usedHits.push_back(m_chosenHit);
+
+        // make sure a close-by hit has not been already picked
+        //for(auto itr=m_usedHits.cbegin(); itr!=m_usedHits.end();itr++)
+        //{
+        //    const SimHit* usedHit = *itr;
+        //    //double deta = (m_chosenHit->eta() - usedHit->eta());
+        //    //double dphi = TVector2::Phi_mpi_pi(m_chosenHit->phi() - usedHit->phi());
+        //    //double dr = sqrt(deta*deta + dphi*dphi);
+        //    //if(dr<0.1) 
+        //    if(m_chosenHit->detid()==usedHit->detid())
+        //    {
+        //        m_chosenHit = 0;
+        //        return;
+        //    }
+        //}
 
         //cout<<" E="<<m_chosenHit->energy()<<", eta="<<m_chosenHit->eta()<<", phi="<<m_chosenHit->phi()<<",layer="<<m_chosenHit->layer()<<",cell="<<m_chosenHit->cell()<<"\n";
     }

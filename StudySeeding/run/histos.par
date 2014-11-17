@@ -5,6 +5,7 @@ h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
 h1f 5 hitEnergy ' hit energy ' 100 0. 100.
 h1f 6 ntowers ' #towers ' 1000 0. 1000.
+h1f 7 NHitCut_ntowers ' #towers ' 1000 0. 1000.
 
 h1f 10 towerIndex ' tower index ' 1000 -0.5 999.5
 

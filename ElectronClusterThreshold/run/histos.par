@@ -1,0 +1,41 @@
+Histos: ClusterThreshold_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+
+
+1binvh1f 100 nMissHits_vs_eta ' Number of cut hits ' 100 0. 1000.
+ETA 3
+1.5 2. 2.5 3.0
+#
+1binvh1f 150 missEnergy_vs_eta ' Relative energy loss ' 1000 0. 1.
+ETA 3
+1.5 2. 2.5 3.0
+#
+1binvh1f 200 missHitLayer_vs_eta ' layer of missed hits ' 30 0.5 30.5
+ETA 3
+1.5 2. 2.5 3.0
+#
+1binvh2f 250 missHitDeltaEtaPhi_vs_eta ' #Delta eta #phi ' 200 -0.1 0.1 250 -0.5 0.5
+ETA 3
+1.5 2. 2.5 3.0
+
+#
+1binvh1f 1000 hitDeltaEta_vs_eta ' #Delta eta ' 200 -0.1 0.1
+ETA 3
+1.5 2. 2.5 3.0
+#
+1binvh1f 1050 hitDeltaPhi_vs_eta ' #Delta eta ' 250 -0.5 0.5
+ETA 3
+1.5 2. 2.5 3.0
+#
+1binvh2f 1100 hitDeltaEtaPhi_vs_eta ' #Delta eta #phi ' 200 -0.1 0.1 250 -0.5 0.5
+ETA 3
+1.5 2. 2.5 3.0
+
+end_Histos
+
+
+
+

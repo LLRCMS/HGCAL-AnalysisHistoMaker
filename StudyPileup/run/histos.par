@@ -1,139 +1,393 @@
-Histos: StudySeeding_Size1_, StudySeeding_Size1_Cut_(10000), StudySeeding_Size2_(20000), StudySeeding_Size2_Cut_(30000), StudySeeding_Size4_(40000), StudySeeding_Size4_Cut_(50000)
+Histos: StudyPileup_
 
 # General event 
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
-h1f 5 hitEnergy ' hit energy ' 100 0. 100.
-h1f 6 ntowers ' #towers ' 1000 0. 1000.
+h1f 10 eta_region1 ' #eta ' 150 1.5 3.
+h1f 11 eta_region2 ' #eta ' 150 1.5 3.
 
-h1f 10 towerIndex ' tower index ' 1000 -0.5 999.5
-
-2binvh1f 100 layerEnergyFractions ' Energy fraction ' 100 0. 1.01
-ETA 3
-1.5 2. 2.5 3.
+2binvh1f 100 nhits_vs_region_layer ' #hits vs region, layer ' 3600 0. 3600
+IETA 2
+-0.5 0.5 1.5
 LAYER 30
 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
-#
-2binvh1f 200 layerEnergies ' Energies [GeV] ' 100 0. 0.01
-ETA 3
-1.5 2. 2.5 3.
-LAYER 30
-0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
-#
-2binvh1f 300 compartmentEnergyFractions ' Energy fraction ' 100 0. 1.01
-ETA 3
-1.5 2. 2.5 3.
-COMP 3
-0.5 1.5 2.5 3.5
-#
-2binvh1f 350 compartmentEnergies ' Energies [GeV] ' 100 0. 0.1
-ETA 3
-1.5 2. 2.5 3.
-COMP 3
-0.5 1.5 2.5 3.5
-#
-1binvh1f 400 middleOverFrontEnergy ' middle/front ' 200 0. 20.
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 405 towerEnergy ' E [GeV] ' 200 0. 2.
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 410 towerEt ' E_{T} [GeV] ' 200 0. 0.2
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 420 numberOfHits ' #hits ' 1001 -0.5 1000.5
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 425 numberOfLayers ' #layers ' 31 -0.5 30.5
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 430 depthBarycenter ' barycenter [layer] ' 100 0. 30.
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 435 towerCalibEnergy ' E [GeV] ' 100 0. 100
-ETA 3
-1.5 2. 2.5 3.
-#
-1binvh1f 440 towerCalibEt ' E_{T} [GeV] ' 100 0. 50
-ETA 3
-1.5 2. 2.5 3.
 
+2binvh1f 1000 cellEnergy_vs_eta_layers ' cell energy vs |eta|, layers ' 500 0. 50.
+ETA 6
+1.5 1.6 1.7 1.9 2.2 2.6 3.0
+LAYER 15
+0.5 2.5 4.5 6.5 8.5 10.5 12.5 14.5 16.5 18.5 20.5 22.5 24.5 26.5 28.5 30.5
 
-## Tree
-h1f 1000 towEta ' #eta ' 100 -3.2 3.2
-h1f 1001 towPhi ' #phi ' 100 -3.15 3.15
-h1f 1002 towE ' E [GeV] ' 100 0. 10.
-h1f 1003 towCalE ' E [GeV] ' 100 0. 100.
-h1f 1004 towEf1 ' E fraction ' 100 0. 1.01
-h1f 1005 towEf2 ' E fraction ' 100 0. 1.01
-h1f 1006 towEf3 ' E fraction ' 100 0. 1.01
-h1f 1007 towEf4 ' E fraction ' 100 0. 1.01
-h1f 1008 towEf5 ' E fraction ' 100 0. 1.01
-h1f 1009 towEf6 ' E fraction ' 100 0. 1.01
-h1f 1010 towEf7 ' E fraction ' 100 0. 1.01
-h1f 1011 towEf8 ' E fraction ' 100 0. 1.01
-h1f 1012 towEf9 ' E fraction ' 100 0. 1.01
-h1f 1013 towEf10 ' E fraction ' 100 0. 1.01
-h1f 1014 towEf11 ' E fraction ' 100 0. 1.01
-h1f 1015 towEf12 ' E fraction ' 100 0. 1.01
-h1f 1016 towEf13 ' E fraction ' 100 0. 1.01
-h1f 1017 towEf14 ' E fraction ' 100 0. 1.01
-h1f 1018 towEf15 ' E fraction ' 100 0. 1.01
-h1f 1019 towEf16 ' E fraction ' 100 0. 1.01
-h1f 1020 towEf17 ' E fraction ' 100 0. 1.01
-h1f 1021 towEf18 ' E fraction ' 100 0. 1.01
-h1f 1022 towEf19 ' E fraction ' 100 0. 1.01
-h1f 1023 towEf20 ' E fraction ' 100 0. 1.01
-h1f 1024 towEf21 ' E fraction ' 100 0. 1.01
-h1f 1025 towEf22 ' E fraction ' 100 0. 1.01
-h1f 1026 towEf23 ' E fraction ' 100 0. 1.01
-h1f 1027 towEf24 ' E fraction ' 100 0. 1.01
-h1f 1028 towEf25 ' E fraction ' 100 0. 1.01
-h1f 1029 towEf26 ' E fraction ' 100 0. 1.01
-h1f 1030 towEf27 ' E fraction ' 100 0. 1.01
-h1f 1031 towEf28 ' E fraction ' 100 0. 1.01
-h1f 1032 towEf29 ' E fraction ' 100 0. 1.01
-h1f 1033 towEf30 ' E fraction ' 100 0. 1.01
-h1f 1040 towNhit ' #hits ' 1000 0. 1000
-h1f 1041 towNhit1 ' #hits ' 17 0. 17
-h1f 1042 towNhit2 ' #hits ' 17 0. 17
-h1f 1043 towNhit3 ' #hits ' 17 0. 17
-h1f 1044 towNhit4 ' #hits ' 17 0. 17
-h1f 1045 towNhit5 ' #hits ' 17 0. 17
-h1f 1046 towNhit6 ' #hits ' 17 0. 17
-h1f 1047 towNhit7 ' #hits ' 17 0. 17
-h1f 1048 towNhit8 ' #hits ' 17 0. 17
-h1f 1049 towNhit9 ' #hits ' 17 0. 17
-h1f 1050 towNhit10 ' #hits ' 17 0. 17
-h1f 1051 towNhit11 ' #hits ' 17 0. 17
-h1f 1052 towNhit12 ' #hits ' 17 0. 17
-h1f 1053 towNhit13 ' #hits ' 17 0. 17
-h1f 1054 towNhit14 ' #hits ' 17 0. 17
-h1f 1055 towNhit15 ' #hits ' 17 0. 17
-h1f 1056 towNhit16 ' #hits ' 17 0. 17
-h1f 1057 towNhit17 ' #hits ' 17 0. 17
-h1f 1058 towNhit18 ' #hits ' 17 0. 17
-h1f 1059 towNhit19 ' #hits ' 17 0. 17
-h1f 1060 towNhit20 ' #hits ' 17 0. 17
-h1f 1061 towNhit21 ' #hits ' 17 0. 17
-h1f 1062 towNhit22 ' #hits ' 17 0. 17
-h1f 1063 towNhit23 ' #hits ' 17 0. 17
-h1f 1064 towNhit24 ' #hits ' 17 0. 17
-h1f 1065 towNhit25 ' #hits ' 17 0. 17
-h1f 1066 towNhit26 ' #hits ' 17 0. 17
-h1f 1067 towNhit27 ' #hits ' 17 0. 17
-h1f 1068 towNhit28 ' #hits ' 17 0. 17
-h1f 1069 towNhit29 ' #hits ' 17 0. 17
-h1f 1070 towNhit30 ' #hits ' 17 0. 17
+####################
+## UP
+2binvh1f 2000 cellEnergy_up_layer1_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+3.5 25.5 30.5 35.5 41.5 108.5
+#
+2binvh1f 2100 cellEnergy_up_layer2_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+6.5 33.5 39.5 45.5 53.5 118.5
+#
+2binvh1f 2200 cellEnergy_up_layer3_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+7.5 33.5 39.5 45.5 52.5 125.5
+#
+2binvh1f 2300 cellEnergy_up_layer4_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+5.5 36.5 43.5 50.5 59.5 145.5
+#
+2binvh1f 2400 cellEnergy_up_layer5_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+2.5 33.5 40.5 46.5 54.5 126.5
+#
+2binvh1f 2500 cellEnergy_up_layer6_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+6.5 36.5 43.5 50.5 59.5 135.5
+#
+2binvh1f 2600 cellEnergy_up_layer7_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+4.5 31.5 38.5 44.5 53.5 120.5
+#
+2binvh1f 2700 cellEnergy_up_layer8_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+4.5 32.5 39.5 46.5 55.5 142.5
+#
+2binvh1f 2800 cellEnergy_up_layer9_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+3.5 28.5 34.5 40.5 48.5 119.5
+#
+2binvh1f 2900 cellEnergy_up_layer10_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+2.5 28.5 34.5 41.5 49.5 123.5
+#
+2binvh1f 3000 cellEnergy_up_layer11_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+1.5 23.5 29.5 35.5 42.5 128.5
+#
+2binvh1f 3100 cellEnergy_up_layer12_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+0.5 22.5 28.5 34.5 41.5 121.5
+#
+2binvh1f 3200 cellEnergy_up_layer13_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+0.5 18.5 23.5 28.5 34.5 102.5
+#
+2binvh1f 3300 cellEnergy_up_layer14_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+0.5 17.5 22.5 26.5 32.5 98.5
+#
+2binvh1f 3400 cellEnergy_up_layer15_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 14.5 18.5 22.5 27.5 88.5
+#
+2binvh1f 3500 cellEnergy_up_layer16_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 13.5 17.5 21.5 27.5 86.5
+#
+2binvh1f 3600 cellEnergy_up_layer17_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 11.5 15.5 18.5 23.5 80.5
+#
+2binvh1f 3700 cellEnergy_up_layer18_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 10.5 14.5 17.5 22.5 74.5
+#
+2binvh1f 3800 cellEnergy_up_layer19_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 9.5 12.5 15.5 19.5 67.5
+#
+2binvh1f 3900 cellEnergy_up_layer20_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 8.5 12.5 15.5 19.5 67.5
+#
+2binvh1f 4000 cellEnergy_up_layer21_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 7.5 10.5 13.5 17.5 63.5
+#
+2binvh1f 4100 cellEnergy_up_layer22_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 7.5 10.5 12.5 16.5 61.5
+#
+2binvh1f 4200 cellEnergy_up_layer23_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 6.5 8.5 11.5 14.5 55.5
+#
+2binvh1f 4300 cellEnergy_up_layer24_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 6.5 8.5 11.5 14.5 61.5
+#
+2binvh1f 4400 cellEnergy_up_layer25_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 5.5 7.5 10.5 13.5 54.5
+#
+2binvh1f 4500 cellEnergy_up_layer26_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 5.5 7.5 9.5 13.5 57.5
+#
+2binvh1f 4600 cellEnergy_up_layer27_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 4.5 6.5 9.5 12.5 56.5
+#
+2binvh1f 4700 cellEnergy_up_layer28_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 4.5 6.5 8.5 12.5 56.5
+#
+2binvh1f 4800 cellEnergy_up_layer29_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 4.5 6.5 8.5 11.5 60.5
+#
+2binvh1f 4900 cellEnergy_up_layer30_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 3
+1.5 1.6 1.7 1.8
+NHITS 5
+-0.5 3.5 6.5 8.5 11.5 58.5
+#
+####################
+## DOWN
+2binvh1f 5000 cellEnergy_down_layer1_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+125.5 250.5 273.5 294.5 319.5 463.5
+#
+2binvh1f 5100 cellEnergy_down_layer2_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+149.5 310.5 339.5 364.5 394.5 601.5
+#
+2binvh1f 5200 cellEnergy_down_layer3_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+149.5 313.5 342.5 368.5 398.5 585.5
+#
+2binvh1f 5300 cellEnergy_down_layer4_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+168.5 345.5 377.5 406.5 439.5 648.5
+#
+2binvh1f 5400 cellEnergy_down_layer5_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+154.5 329.5 360.5 388.5 420.5 605.5
+#
+2binvh1f 5500 cellEnergy_down_layer6_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+169.5 352.5 386.5 416.5 451.5 661.5
+#
+2binvh1f 5600 cellEnergy_down_layer7_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+153.5 325.5 357.5 386.5 419.5 613.5
+#
+2binvh1f 5700 cellEnergy_down_layer8_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+168.5 342.5 376.5 406.5 442.5 671.5
+#
+2binvh1f 5800 cellEnergy_down_layer9_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+136.5 310.5 341.5 369.5 402.5 617.5
+#
+2binvh1f 5900 cellEnergy_down_layer10_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+130.5 318.5 350.5 379.5 414.5 622.5
+#
+2binvh1f 6000 cellEnergy_down_layer11_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+112.5 283.5 313.5 340.5 372.5 591.5
+#
+2binvh1f 6100 cellEnergy_down_layer12_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+116.5 279.5 309.5 336.5 368.5 589.5
+#
+2binvh1f 6200 cellEnergy_down_layer13_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+106.5 243.5 269.5 294.5 322.5 541.5
+#
+2binvh1f 6300 cellEnergy_down_layer14_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+99.5 235.5 261.5 285.5 314.5 511.5
+#
+2binvh1f 6400 cellEnergy_down_layer15_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+86.5 203.5 226.5 247.5 273.5 471.5
+#
+2binvh1f 6500 cellEnergy_down_layer16_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+78.5 196.5 219.5 239.5 264.5 444.5
+#
+2binvh1f 6600 cellEnergy_down_layer17_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+77.5 170.5 191.5 209.5 232.5 404.5
+#
+2binvh1f 6700 cellEnergy_down_layer18_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+75.5 164.5 184.5 202.5 224.5 381.5
+#
+2binvh1f 6800 cellEnergy_down_layer19_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+57.5 144.5 162.5 178.5 198.5 343.5
+#
+2binvh1f 6900 cellEnergy_down_layer20_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+56.5 139.5 157.5 173.5 193.5 340.5
+#
+2binvh1f 7000 cellEnergy_down_layer21_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+40.5 125.5 140.5 155.5 173.5 307.5
+#
+2binvh1f 7100 cellEnergy_down_layer22_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+43.5 118.5 133.5 147.5 164.5 296.5
+#
+2binvh1f 7200 cellEnergy_down_layer23_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+42.5 104.5 118.5 131.5 146.5 274.5
+#
+2binvh1f 7300 cellEnergy_down_layer24_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+31.5 100.5 113.5 125.5 141.5 263.5
+#
+2binvh1f 7400 cellEnergy_down_layer25_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+33.5 90.5 103.5 114.5 129.5 238.5
+#
+2binvh1f 7500 cellEnergy_down_layer26_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+31.5 87.5 100.5 111.5 125.5 228.5
+#
+2binvh1f 7600 cellEnergy_down_layer27_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+30.5 80.5 92.5 103.5 116.5 213.5
+#
+2binvh1f 7700 cellEnergy_down_layer28_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+28.5 78.5 90.5 100.5 113.5 214.5
+#
+2binvh1f 7800 cellEnergy_down_layer29_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+19.5 73.5 83.5 93.5 106.5 207.5
+#
+2binvh1f 7900 cellEnergy_down_layer30_vs_eta_nhits ' cell energy vs |eta|, #hits ' 900 0. 30. 
+ETA 6
+1.8 2.0 2.2 2.4 2.6 2.8 3.0
+NHITS 5
+21.5 71.5 82.5 92.5 104.5 211.5
+#
 
-ntuple 1100 towerTree ' tree ' towEta:towPhi:towE:towCalE:towEf1:towEf2:towEf3:towEf4:towEf5:towEf6:towEf7:towEf8:towEf9:towEf10:towEf11:towEf12:towEf13:towEf14:towEf15:towEf16:towEf17:towEf18:towEf19:towEf20:towEf21:towEf22:towEf23:towEf24:towEf25:towEf26:towEf27:towEf28:towEf29:towEf30:towNhit:towNhit1:towNhit2:towNhit3:towNhit4:towNhit5:towNhit6:towNhit7:towNhit8:towNhit9:towNhit10:towNhit11:towNhit12:towNhit13:towNhit14:towNhit15:towNhit16:towNhit17:towNhit18:towNhit19:towNhit20:towNhit21:towNhit22:towNhit23:towNhit24:towNhit25:towNhit26:towNhit27:towNhit28:towNhit29:towNhit30
+h1f 50000 region ' region ' 2 -0.5 1.5
+h1f 50001 layer ' layer ' 30 0.5 30.5
+h1f 50002 nhits ' nhits ' 60 0. 600.
 
+ntuple 50020 regionTree ' region tree ' region:layer:nhits
 
 
 end_Histos

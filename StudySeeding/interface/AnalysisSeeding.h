@@ -35,6 +35,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 
 
@@ -69,7 +70,7 @@ namespace AnHiMa
 
             std::string m_sample;
 
-            std::vector<const SimHit*> m_usedHits;
+            std::set<const SimHit*> m_usedHits;
 
     };
 }

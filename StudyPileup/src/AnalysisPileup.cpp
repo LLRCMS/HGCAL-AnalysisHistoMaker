@@ -60,6 +60,49 @@ bool AnalysisPileup::initialize(const string& parameterFile)
     if(!status) return status;
     event().connectVariables(m_inputChain);
 
+    // initialize vectors
+    for(int s=0;s<12;s++)
+    {
+        for(int z=0;z<2;z++)
+        {
+            for(int u=0;u<2;u++)
+            {
+                int triggerRegion = s + 12*u + 24*z;
+                for(int l=1;l<=30;l++)
+                {
+                    m_regionSimHits[make_pair(triggerRegion, l)] = vector<pair<HGCEEDetId,float> >(0);
+                }
+            }
+        }
+    }
+    // fill vectors
+    for (int izz=0; izz<=1; izz++) 
+    {
+        int iz = (2*izz-1);
+        for (int subsec=0; subsec<=1; ++subsec) 
+        {
+            int ssec = (2*subsec-1);
+            for (int sec=1; sec<=18; ++sec) 
+            {
+                int sector30deg = (2*(sec-1) + (subsec==0 ? 1 : 0))/3;
+                for (int lay=1; lay<=30; ++lay) 
+                {
+                    for (int cell=0; cell<4000; ++cell) 
+                    {
+                        const HGCEEDetId id(HGCEE,iz,lay,sec,ssec,cell);
+                        if (event().hgcalNavigator().valid(id)) 
+                        {
+                            double eta = event().hgcalNavigator().geometry()->getPosition(id).eta();
+                            //int up = (cell>=1200 ? 1 : 0);
+                            int up = (fabs(eta)<=1.8 ? 1 : 0);
+                            int triggerRegion = sector30deg + 12*up + 24*izz;
+                            m_regionSimHits[make_pair(triggerRegion, lay)].push_back(make_pair(id,eta));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     return true;
 }
@@ -72,8 +115,8 @@ void AnalysisPileup::execute()
     event().update();
     if(!event().passSelection()) return;
 
-    //double mip = 0.000055;
 
+    fillHistos();
 
 
 }
@@ -82,7 +125,7 @@ void AnalysisPileup::execute()
 void AnalysisPileup::fillHistos()
 /*****************************************************************/
 {
-    //double mip = 0.000055;
+    double mip = 0.000055;
 
     short sysNum = 0;
     float weight = 1.;
@@ -90,6 +133,37 @@ void AnalysisPileup::fillHistos()
 
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
+
+    for(auto& region_vector : m_regionSimHits)
+    {
+        int region = region_vector.first.first;
+        int layer = region_vector.first.second;
+        int up = (region/12)%2;
+        int nHits = 0;
+        for(const auto& id: region_vector.second)
+        {
+            const SimHit* hit = event().simhit(id.first);
+            if(!hit) continue;
+            if(hit->energy()>=1.*mip) nHits++;
+        }
+        m_histos.Fill2BinHisto(100+hoffset, up, layer, nHits, weight, sysNum);
+        m_histos.FillHisto(50000+hoffset, up, weight, sysNum);
+        m_histos.FillHisto(50001+hoffset, layer, weight, sysNum);
+        m_histos.FillHisto(50002+hoffset, nHits, weight, sysNum);
+        m_histos.FillNtuple(50020+hoffset, event().run(), event().event(), weight, sysNum);
+        for(const auto& id: region_vector.second)
+        {
+            double energy = 0.;
+            double eta = id.second;
+            m_histos.FillHisto(10+up+hoffset, fabs(eta), weight, sysNum);
+            const SimHit* hit = event().simhit(id.first);
+            if(!hit) continue;
+            energy = hit->energy();
+            m_histos.Fill2BinHisto(1000+hoffset, fabs(eta), layer, energy/mip, weight, sysNum);
+            //cout<<eta<<", "<<layer<<", "<<nHits<<", "<<energy/mip<<"\n";
+            m_histos.Fill2BinHisto(2000+3000*abs(up-1)+100*(layer-1)+hoffset,fabs(eta), nHits, energy/mip, weight, sysNum);
+        }
+    }
 
 }
 
