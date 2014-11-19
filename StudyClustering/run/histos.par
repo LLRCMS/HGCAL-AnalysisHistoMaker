@@ -1,0 +1,25 @@
+Histos: Clustering_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+
+h1f 10 nSeedsPerEvent ' #seeds ' 100 0. 100.
+h1f 11 seeds_eta ' #eta ' 15 1.5 3.
+h1f 12 seeds_phi ' #phi ' 15 -3.14159265359 3.14159265359
+h2f 13 seeds_eta_phi ' #eta, #phi ' 15 1.5 3. 15 -3.14159265359 3.14159265359
+h1f 14 seeds_et ' E_{T} [GeV] ' 400 0. 40.
+
+
+1binvh2f 100 seeds_eta_phi_evt ' #eta, #phi ' 15 1.5 3. 15 -3.14159265359 3.14159265359
+EVT 10 
+-0.5 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 
+
+
+
+
+end_Histos
+
+
+
+

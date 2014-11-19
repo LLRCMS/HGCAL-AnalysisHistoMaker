@@ -142,8 +142,8 @@ void EventHGCAL::sortHits()
     for(auto itr=simhits().cbegin(); itr!=simhits().end(); itr++)
     {
         m_energySortedHits.push_back( &(*itr) );
-        //if(itr->layer()==15 && itr->energy()>=5.*m_mip)
-        if(itr->energy()>=5.*m_mip)
+        if(itr->layer()==15 && itr->energy()>=5.*m_mip)
+        //if(itr->energy()>=5.*m_mip)
         {
             m_energySortedSeedingHits.push_back( &(*itr) );
         }
