@@ -27,6 +27,7 @@
 
 namespace AnHiMa
 {
+
     class Tower
     {
         public:
@@ -67,6 +68,9 @@ namespace AnHiMa
             std::vector<int> m_layerHits;
             std::vector<const SimHit*> m_hits;
     };
+
+    bool towerSort(const Tower* tw1, const Tower* tw2);
+
 };
 
 #endif

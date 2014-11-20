@@ -23,6 +23,17 @@
 using namespace AnHiMa;
 using namespace std;
 
+
+/*****************************************************************/
+bool AnHiMa::towerSort(const Tower* tw1, const Tower* tw2)
+/*****************************************************************/
+{
+    return tw1->calibratedEt() > tw2->calibratedEt();
+};
+
+
+
+
 /*****************************************************************/
 Tower::Tower():
     m_eta(0.),

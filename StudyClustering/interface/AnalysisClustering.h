@@ -57,11 +57,16 @@ namespace AnHiMa
 
         private:
             void fillHistos();
+            void matchCluster(int i);
 
             TriggerEGammaAlgorithm m_egammaAlgo;
 
 
             std::vector<Tower> m_seeds;
+            std::vector<Tower> m_clusters;
+
+            const GenParticle* m_genParticle;
+            std::vector<const Tower*> m_matchedClusters;
 
 
     };

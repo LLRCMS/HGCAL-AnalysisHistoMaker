@@ -35,17 +35,23 @@ namespace AnHiMa
             TriggerEGammaAlgorithm();
             ~TriggerEGammaAlgorithm();
 
-            void initialize(const EventHGCAL& event, const std::string& pileupParamsFile);
+            void initialize(const EventHGCAL& event, TEnv& params);
 
             void seeding(const EventHGCAL& event, std::vector<Tower>& seeds);
+            void clustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<Tower>& clusters);
 
         private:
             void fillPileupEstimators(const EventHGCAL& event);
+            float pileupThreshold(float eta, int layer, int nhits);
+            int triggerRegionIndex(float eta, int zside, int sector, int subsector);
+            int triggerRegionHits(int triggerRegion, int layer);
 
+            // pileup related 
             std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParams;
             std::map< std::pair<int,int>, std::vector< std::pair<HGCEEDetId, float> > > m_regionSimHits; 
             std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveTh; 
-                
+            // clustering related
+            std::map<int, float> m_clusterSizes; 
 
     };
 

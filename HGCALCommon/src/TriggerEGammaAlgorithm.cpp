@@ -19,6 +19,8 @@
 
 #include <fstream>
 
+#include "TEnv.h"
+
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Constants.h"
 
@@ -45,7 +47,7 @@ TriggerEGammaAlgorithm::~TriggerEGammaAlgorithm()
 
 
 /*****************************************************************/
-void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, const std::string& pileupParamsFile)
+void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
 /*****************************************************************/
 {
     // initialize vectors
@@ -94,6 +96,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, const std::stri
     }
 
     // fill pileup params
+    string pileupParamsFile = params.GetValue("PileupParams", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/ElectronClusterThreshold/data/thresholdParameters.txt");
     ifstream stream(pileupParamsFile);
     if(!stream.is_open())
     {
@@ -107,6 +110,23 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, const std::stri
         stream >> up >> layer >> subeta >> a >> b;
         int eta = subeta + 6*up;
         m_pileupParams[make_pair(eta,layer)] = make_pair(a,b);
+    }
+    stream.close();
+
+    // fill cluster sizes
+    string clusterSizeFile = params.GetValue("ClusterSize", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/HGCALCommon/data/clusterSizes.txt");
+    stream.open(clusterSizeFile);
+    if(!stream.is_open())
+    {
+        cout<<"ERROR: Cannot open cluster size file '"<<clusterSizeFile<<"'\n";
+        return;
+    }
+    while(!stream.eof())
+    {
+        int layer;
+        float size;
+        stream >> layer >> size;
+        m_clusterSizes[layer] = size;
     }
     stream.close();
 }
@@ -133,6 +153,56 @@ void TriggerEGammaAlgorithm::fillPileupEstimators(const EventHGCAL& event)
             if(hit && hit->energy()>mip) m_regionHitsAboveTh[region_layer].push_back(hit);
         }
     }
+}
+
+/*****************************************************************/
+float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits)
+/*****************************************************************/
+{
+    int etaIndex = 0;
+    if     (fabs(eta)>=1.8 && fabs(eta)<2.)  etaIndex = 0;
+    else if(fabs(eta)>=2.  && fabs(eta)<2.2) etaIndex = 1;
+    else if(fabs(eta)>=2.2 && fabs(eta)<2.4) etaIndex = 2;
+    else if(fabs(eta)>=2.4 && fabs(eta)<2.6) etaIndex = 3;
+    else if(fabs(eta)>=2.6 && fabs(eta)<2.8) etaIndex = 4;
+    else if(fabs(eta)>=2.8 && fabs(eta)<3.)  etaIndex = 5;
+    else if(fabs(eta)>=1.5 && fabs(eta)<1.6) etaIndex = 6;
+    else if(fabs(eta)>=1.6 && fabs(eta)<1.7) etaIndex = 7;
+    else if(fabs(eta)>=1.7 && fabs(eta)<1.8) etaIndex = 8;
+    const auto itr = m_pileupParams.find(make_pair(etaIndex,layer));
+    if(itr==m_pileupParams.end())
+    {
+        cout<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
+        return 1.;
+    }
+    double a = itr->second.first;
+    double b = itr->second.second;
+    return a*(double)nhits + b;
+}
+
+/*****************************************************************/
+int TriggerEGammaAlgorithm::triggerRegionIndex(float eta, int zside, int sector, int subsector)
+/*****************************************************************/
+{
+    int iz = (zside==-1 ? 0 : 1);
+    int subsec = (subsector==-1 ? 1 : 0);
+    int sector30deg = (2*(sector-1) + subsec)/3;
+    int up = (abs(eta)<=1.8 ? 1 : 0);
+    int triggerRegion = sector30deg + 12*up + 24*iz;
+    return triggerRegion;
+}
+
+/*****************************************************************/
+int TriggerEGammaAlgorithm::triggerRegionHits(int triggerRegion, int layer)
+/*****************************************************************/
+{
+    const auto itr = m_regionHitsAboveTh.find(make_pair(triggerRegion, layer));
+    if(itr==m_regionHitsAboveTh.end())
+    {
+        cout<<"ERROR: cannot find number of hits in region "<<triggerRegion<<" layer "<<layer<<"\n";
+        return 0;
+    }
+    return itr->second.size();
 }
 
 
@@ -232,5 +302,120 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
         int nhits = tower.layerNHits(15)+tower.layerNHits(16)+tower.layerNHits(17)+tower.layerNHits(18);
         if(nhits<19) continue;
         seeds.push_back(tower);
+    } // end seeding hits loop
+
+}
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<Tower>& seeds, vector<Tower>& clusters)
+/*****************************************************************/
+{
+    //cout<<"Calling clustering\n";
+    // count number of hits in each trigger region, needed for pileup threshold
+    fillPileupEstimators(event);
+
+    // find hits above pileup threshold
+    map<int, vector<const SimHit*> > hitsAboveThreshold;
+    for(int l=1;l<=30;l++)
+    {
+        hitsAboveThreshold[l] = vector<const SimHit*>();
     }
+    for(const auto& hit : event.simhits())
+    {
+        int triggerRegion = triggerRegionIndex(hit.eta(), hit.zside(), hit.sector(), hit.subsector());
+        int nhits = triggerRegionHits(triggerRegion, hit.layer());
+        float threshold = pileupThreshold(hit.eta(), hit.layer(), nhits);
+        if(hit.energy()>=threshold*mip) hitsAboveThreshold[hit.layer()].push_back(&hit);
+    }
+
+
+    // to calibrate clusters
+    TowerCalibrator towerCalibrator;
+    // set of hits already included in clusters
+    set<const SimHit*> usedHits;
+
+    // sort seeds before looping (to favor highest ET seeds for hit aggregation)
+    vector<const Tower*> sortedSeeds;
+    for(const auto& seed : seeds) sortedSeeds.push_back(&seed);
+    sort(sortedSeeds.begin(), sortedSeeds.end(), AnHiMa::towerSort);
+    
+    // Build clusters around each seed
+    for(const auto seed : sortedSeeds)
+    {
+        //cout<<"seed ET="<<seed->calibratedEt()<<", eta="<<seed->eta()<<", phi="<<seed->phi()<<"\n";
+        const SimHit* seedHit = seed->hits()[0];
+
+        // first build a 1x1 tower
+        int layer0 = seedHit->layer();
+        double eta0 = seedHit->eta();
+        double phi0 = seedHit->phi();
+
+        vector<HGCEEDetId> idLayers(31);
+        idLayers[layer0] = HGCEEDetId(seedHit->detid());
+        for(int l=layer0+1;l<=30;l++)
+        {
+            vector<HGCEEDetId> ids;
+            ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, eta0, phi0);
+            if(ids.size()==0)
+            {
+                cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                idLayers[l] = (HGCEEDetId)DetId(0);
+            }
+            else
+            {
+                idLayers[l] = ids[0];
+            }
+        }
+        for(int l=layer0-1;l>0;l--)
+        {
+            vector<HGCEEDetId> ids;
+            ids = event.hgcalNavigator().downProj(idLayers[l+1], 1, eta0, phi0);
+            if(ids.size()==0)
+            {
+                cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                idLayers[l] = (HGCEEDetId)DetId(0);
+            }
+            else
+            {
+                idLayers[l] = ids[0];
+            }
+        }
+
+        // then aggregate hits in each layer
+        Tower cluster;
+        for(const auto& id : idLayers)
+        {
+            if(id==HGCEEDetId(0)) continue;
+
+            const GlobalPoint& point0 = event.hgcalNavigator().geometry()->getPosition(id);
+            float x0 = point0.x();
+            float y0 = point0.y();
+            float z0 = point0.z();
+            int layer = id.layer();
+            float clusterSize = m_clusterSizes[layer];
+            for(const auto hit: hitsAboveThreshold[layer])
+            {
+                if(usedHits.find(hit)!=usedHits.end()) continue;
+                if(z0*hit->z()<0.) continue;
+                float x = hit->x();
+                float y = hit->y();
+                double dx = (x-x0);
+                double dy = (y-y0);
+                float dr = sqrt(dx*dx+dy*dy);
+                if(dr>clusterSize) continue;
+                cluster.addHit(*hit);
+                usedHits.insert(hit);
+                //cout<<"    Adding hit eta="<<hit->eta()<<", phi="<<hit->phi()<<"\n";
+            }
+        }
+        // calibrate energy
+        towerCalibrator.calibrate(cluster);
+        clusters.push_back(cluster);
+        //cout<<"cluster ET="<<cluster.calibratedEt()<<", eta="<<cluster.eta()<<", phi="<<cluster.phi()<<"\n";
+        //cout<<" NHits="<<cluster.nHits()<<"\n";
+        //cout<<" Layer energies = ";
+        //for(int l=1;l<=30;l++) cout<<cluster.layerEnergy(l)<<",";
+        //cout<<"\n";
+    } // end seeds loop
+    
 }
