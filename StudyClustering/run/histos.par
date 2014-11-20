@@ -20,6 +20,7 @@ h1f 51 matchedClustersDeltaEta ' #Delta #eta ' 200 -0.5 0.5
 h1f 52 matchedClustersDeltaPhi ' #Delta #phi ' 200 -0.5 0.5
 h2f 53 matchedClustersDeltaEtaPhi ' #Delta#eta, #Delta#phi ' 100 -0.5 0.5 100 -0.5 0.5
 h1f 54 matchedClustersResponse ' (E_{T}^{cl} - E_{T}^{true})/E_{T}^{true} ' 200 -2. 2.
+h1f 55 matchedMaxClustersResponse ' (E_{T}^{cl} - E_{T}^{true})/E_{T}^{true} ' 200 -2. 2
 
 h1f 61 matchedClustersDeltaEtaSub ' #Delta #eta ' 200 -0.5 0.5
 h1f 62 matchedClustersDeltaPhiSub ' #Delta #phi ' 200 -0.5 0.5

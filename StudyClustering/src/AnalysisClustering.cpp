@@ -124,6 +124,8 @@ void AnalysisClustering::fillHistos()
     {
         matchCluster(i);
         m_histos.FillHisto(50+hoffset, m_matchedClusters.size(), weight, sysNum);
+        double responseMax = (m_matchedClusters[0]->calibratedEt() - m_genParticle->Et())/m_genParticle->Et();
+        m_histos.FillHisto(55+hoffset, responseMax, weight, sysNum);
         for(const auto cluster : m_matchedClusters)
         {
             double deta = (cluster->eta()-m_genParticle->Eta());
