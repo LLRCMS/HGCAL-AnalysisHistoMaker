@@ -25,6 +25,7 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
 namespace AnHiMa
 {
@@ -39,6 +40,7 @@ namespace AnHiMa
 
             void seeding(const EventHGCAL& event, std::vector<Tower>& seeds);
             void clustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<Tower>& clusters);
+            void superClustering(const std::vector<Tower>& clusters, std::vector<SuperCluster>& superClusters);
 
         private:
             void fillPileupEstimators(const EventHGCAL& event);

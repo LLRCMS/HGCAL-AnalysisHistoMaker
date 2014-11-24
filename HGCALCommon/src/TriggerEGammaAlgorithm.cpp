@@ -100,7 +100,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     ifstream stream(pileupParamsFile);
     if(!stream.is_open())
     {
-        cout<<"ERROR: Cannot open pileup parameters file '"<<pileupParamsFile<<"'\n";
+        cerr<<"ERROR: Cannot open pileup parameters file '"<<pileupParamsFile<<"'\n";
         return;
     }
     while(!stream.eof())
@@ -118,7 +118,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     stream.open(clusterSizeFile);
     if(!stream.is_open())
     {
-        cout<<"ERROR: Cannot open cluster size file '"<<clusterSizeFile<<"'\n";
+        cerr<<"ERROR: Cannot open cluster size file '"<<clusterSizeFile<<"'\n";
         return;
     }
     while(!stream.eof())
@@ -172,7 +172,7 @@ float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits)
     const auto itr = m_pileupParams.find(make_pair(etaIndex,layer));
     if(itr==m_pileupParams.end())
     {
-        cout<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
+        cerr<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
         return 1.;
     }
     double a = itr->second.first;
@@ -199,7 +199,7 @@ int TriggerEGammaAlgorithm::triggerRegionHits(int triggerRegion, int layer)
     const auto itr = m_regionHitsAboveTh.find(make_pair(triggerRegion, layer));
     if(itr==m_regionHitsAboveTh.end())
     {
-        cout<<"ERROR: cannot find number of hits in region "<<triggerRegion<<" layer "<<layer<<"\n";
+        cerr<<"ERROR: cannot find number of hits in region "<<triggerRegion<<" layer "<<layer<<"\n";
         return 0;
     }
     return itr->second.size();
@@ -235,7 +235,7 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
             ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, refEta, refPhi);
             if(ids.size()==0)
             {
-                cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
@@ -310,7 +310,7 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
 void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<Tower>& seeds, vector<Tower>& clusters)
 /*****************************************************************/
 {
-    //cout<<"Calling clustering\n";
+    //cerr<<"Calling clustering\n";
     // count number of hits in each trigger region, needed for pileup threshold
     fillPileupEstimators(event);
 
@@ -325,6 +325,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
         int triggerRegion = triggerRegionIndex(hit.eta(), hit.zside(), hit.sector(), hit.subsector());
         int nhits = triggerRegionHits(triggerRegion, hit.layer());
         float threshold = pileupThreshold(hit.eta(), hit.layer(), nhits);
+        //float threshold = 5.;
         if(hit.energy()>=threshold*mip) hitsAboveThreshold[hit.layer()].push_back(&hit);
     }
 
@@ -342,7 +343,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
     // Build clusters around each seed
     for(const auto seed : sortedSeeds)
     {
-        //cout<<"seed ET="<<seed->calibratedEt()<<", eta="<<seed->eta()<<", phi="<<seed->phi()<<"\n";
+        //cerr<<"seed ET="<<seed->calibratedEt()<<", eta="<<seed->eta()<<", phi="<<seed->phi()<<"\n";
         const SimHit* seedHit = seed->hits()[0];
 
         // first build a 1x1 tower
@@ -358,7 +359,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
             ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, eta0, phi0);
             if(ids.size()==0)
             {
-                cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
@@ -372,7 +373,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
             ids = event.hgcalNavigator().downProj(idLayers[l+1], 1, eta0, phi0);
             if(ids.size()==0)
             {
-                cout<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
@@ -405,17 +406,94 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
                 if(dr>clusterSize) continue;
                 cluster.addHit(*hit);
                 usedHits.insert(hit);
-                //cout<<"    Adding hit eta="<<hit->eta()<<", phi="<<hit->phi()<<"\n";
+                //cerr<<"    Adding hit eta="<<hit->eta()<<", phi="<<hit->phi()<<"\n";
             }
         }
-        // calibrate energy
-        towerCalibrator.calibrate(cluster);
-        clusters.push_back(cluster);
-        //cout<<"cluster ET="<<cluster.calibratedEt()<<", eta="<<cluster.eta()<<", phi="<<cluster.phi()<<"\n";
-        //cout<<" NHits="<<cluster.nHits()<<"\n";
-        //cout<<" Layer energies = ";
-        //for(int l=1;l<=30;l++) cout<<cluster.layerEnergy(l)<<",";
-        //cout<<"\n";
+        if(cluster.energy()>0.)
+        {
+            // calibrate energy
+            towerCalibrator.calibrate(cluster);
+            clusters.push_back(cluster);
+            //cerr<<"cluster ET="<<cluster.calibratedEt()<<", eta="<<cluster.eta()<<", phi="<<cluster.phi()<<"\n";
+        }
+        //cerr<<"cluster ET="<<cluster.calibratedEt()<<", eta="<<cluster.eta()<<", phi="<<cluster.phi()<<"\n";
+        //cerr<<" NHits="<<cluster.nHits()<<"\n";
+        //cerr<<" Layer energies = ";
+        //for(int l=1;l<=30;l++) cerr<<cluster.layerEnergy(l)<<",";
+        //cerr<<"\n";
     } // end seeds loop
     
+}
+
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::superClustering(const vector<Tower>& clusters, vector<SuperCluster>& superClusters)
+/*****************************************************************/
+{
+    //cerr<<"In superClustering()\n";
+    vector<SuperCluster*> sortedSuperClusters;
+    // Find seed clusters
+    // Seed clusters are clusters with max Et in a 0.05x0.15 eta x phi window
+    for(const auto& cluster : clusters)
+    {
+        double eta0 = cluster.eta();
+        double phi0 = cluster.phi();
+        double et0 = cluster.et();
+        bool isSeedCluster = true;
+        // find neighbour clusters
+        for(const auto& subcluster : clusters)
+        {
+            double eta = subcluster.eta();
+            double phi = subcluster.phi();
+            double et = subcluster.et();
+            double deta = (eta-eta0);
+            double dphi = TVector2::Phi_mpi_pi(phi-phi0);
+            if(fabs(deta)<1.e-5 && fabs(dphi)<1.e-5) continue;
+            if(fabs(deta)>0.05 || fabs(dphi)>0.15) continue;
+            if(et>et0) 
+            {
+                isSeedCluster = false;
+                break;
+            }
+        }
+        if(isSeedCluster) 
+        {
+            superClusters.push_back( SuperCluster() );
+            superClusters.back().addCluster(&cluster);
+            //cerr<<"seed cluster eta="<<cluster.eta()<<", phi="<<cluster.phi()<<", Et="<<cluster.calibratedEt()<<"\n";
+        }
+    }
+    for(auto& sc : superClusters)
+    {
+        //cerr<<"seed cluster eta="<<sc.eta()<<", phi="<<sc.phi()<<", Et="<<sc.et()<<"\n";
+        sortedSuperClusters.push_back(&sc);
+    }
+    sort(sortedSuperClusters.begin(), sortedSuperClusters.end(), AnHiMa::superClusterSort);
+
+
+    std::set<const Tower*> usedClusters;
+    // Gather subclusters
+    for(auto sc : sortedSuperClusters)
+    {
+        double eta0 = sc->eta();
+        double phi0 = sc->phi();
+        //cerr<<"seed cluster eta="<<eta0<<", phi="<<phi0<<", Et="<<sc->et()<<"\n";
+        for(const auto& subcluster : clusters)
+        {
+            if(usedClusters.find(&subcluster)!=usedClusters.end()) continue;
+            double eta = subcluster.eta();
+            double phi = subcluster.phi();
+            double deta = (eta-eta0);
+            double dphi = TVector2::Phi_mpi_pi(phi-phi0);
+            // discard seed cluster
+            if(fabs(deta)<1.e-5 && fabs(dphi)<1.e-5) continue;
+            // outside window
+            if(fabs(deta)>0.05 || fabs(dphi)>0.15) continue;
+            //
+            //cerr<<"   Add subcluster eta="<<eta<<", phi="<<phi<<", Et="<<subcluster.calibratedEt()<<"\n";
+            sc->addCluster(&subcluster);
+            usedClusters.insert(&subcluster);
+        }
+    }
+    //cerr<<"End superClustering()\n";
 }

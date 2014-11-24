@@ -19,6 +19,8 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 
+#include <iostream>
+
 
 using namespace AnHiMa;
 using namespace std;
@@ -39,6 +41,7 @@ Tower::Tower():
     m_eta(0.),
     m_phi(0.),
     m_energy(0.),
+    m_calibratedEnergy(0.),
     m_layerEnergies(31),
     m_layerHits(31)
 /*****************************************************************/
@@ -50,12 +53,35 @@ Tower::Tower():
     }
 }
 
+/*****************************************************************/
+Tower::Tower(const Tower& tower):
+    m_eta(tower.eta()),
+    m_phi(tower.phi()),
+    m_energy(tower.energy()),
+    m_calibratedEnergy(tower.calibratedEnergy()),
+    m_layerEnergies(31),
+    m_layerHits(31)
+/*****************************************************************/
+{
+    //cerr<<"Copy tower eta="<<m_eta<<",phi="<<m_phi<<",Et="<<calibratedEt()<<"\n";
+    for(unsigned l=0;l<m_layerEnergies.size();l++)
+    {
+        m_layerEnergies[l] = tower.layerEnergy(l);
+        m_layerHits[l] = tower.layerNHits(l);
+    }
+    for(const auto hit : tower.hits())
+    {
+        m_hits.push_back(hit);
+    }
+}
+
 
 
 /*****************************************************************/
 Tower::~Tower()
 /*****************************************************************/
 {
+    //cerr<<"Destroying tower eta="<<m_eta<<",phi="<<m_phi<<",Et="<<calibratedEt()<<"\n";
 }
 
 

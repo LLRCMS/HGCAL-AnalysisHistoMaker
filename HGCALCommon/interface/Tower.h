@@ -32,6 +32,7 @@ namespace AnHiMa
     {
         public:
             Tower();
+            Tower(const Tower& tower);
             ~Tower();
 
             void addHit(const SimHit& hit);

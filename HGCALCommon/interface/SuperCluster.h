@@ -30,9 +30,10 @@ namespace AnHiMa
     {
         public:
             SuperCluster();
+            SuperCluster(const SuperCluster& sc);
             ~SuperCluster();
 
-            void addCluster(const Tower* tower);
+            void addCluster(const Tower* cluster);
             //
             int nClusters() const {return m_clusters.size();}
             const Tower* cluster(unsigned i) const;

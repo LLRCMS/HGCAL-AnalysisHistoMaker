@@ -27,6 +27,7 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
 
@@ -56,17 +57,20 @@ namespace AnHiMa
             void execute();
 
         private:
-            void fillHistos();
+            void fillHistos(bool fiducialCut);
             void matchCluster(int i);
+            void matchSuperCluster(int i);
 
             TriggerEGammaAlgorithm m_egammaAlgo;
 
 
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
+            std::vector<SuperCluster> m_superClusters;
 
             const GenParticle* m_genParticle;
             std::vector<const Tower*> m_matchedClusters;
+            const SuperCluster* m_matchedSuperCluster;
 
 
     };

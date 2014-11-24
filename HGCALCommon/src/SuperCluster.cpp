@@ -19,6 +19,8 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
+#include <iostream>
+
 
 using namespace std;
 using namespace AnHiMa;
@@ -32,12 +34,27 @@ bool AnHiMa::superClusterSort(const SuperCluster* sc1, const SuperCluster* sc2)
 };
 
 /*****************************************************************/
-SuperCluster::SuperCluster():m_eta(0.),
+SuperCluster::SuperCluster():
+    m_eta(0.),
     m_phi(0.),
     m_energy(0.),
     m_et(0.)
 /*****************************************************************/
 {
+}
+
+/*****************************************************************/
+SuperCluster::SuperCluster(const SuperCluster& sc):
+    m_eta(sc.eta()),
+    m_phi(sc.phi()),
+    m_energy(sc.energy()),
+    m_et(sc.et())
+/*****************************************************************/
+{
+    for(const auto cluster : sc.clusters())
+    {
+        m_clusters.push_back(cluster);
+    }
 }
 
 
@@ -50,17 +67,19 @@ SuperCluster::~SuperCluster()
 
 
 /*****************************************************************/
-void SuperCluster::addCluster(const Tower* tower)
+void SuperCluster::addCluster(const Tower* cluster)
 /*****************************************************************/
 {
+    //cerr<<"  Adding cluster ";
+    //cerr<<"   eta="<<cluster->eta()<<",phi="<<cluster->phi()<<",Et="<<cluster->calibratedEt()<<"\n";
     if(m_clusters.size()==0) 
     {
-        m_eta = tower->eta();
-        m_phi = tower->phi();
+        m_eta = cluster->eta();
+        m_phi = cluster->phi();
     }
-    m_clusters.push_back(tower);
-    m_energy += tower->calibratedEnergy();
-    m_et += tower->calibratedEt();
+    m_clusters.push_back(cluster);
+    m_energy += cluster->calibratedEnergy();
+    m_et += cluster->calibratedEt();
 }
 
 
