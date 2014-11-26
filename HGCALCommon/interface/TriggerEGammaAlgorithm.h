@@ -26,6 +26,8 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
+//
+#include "AnHiMaHGCAL/HGCALCommon/interface/GBRForest.h"
 
 namespace AnHiMa
 {
@@ -39,14 +41,17 @@ namespace AnHiMa
             void initialize(const EventHGCAL& event, TEnv& params);
 
             void seeding(const EventHGCAL& event, std::vector<Tower>& seeds);
-            void clustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<Tower>& clusters);
+            void clustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<Tower>& clusters, bool hardHits=false, bool pileupTh=true);
+            void clusterCorrection(std::vector<Tower>& clusters);
             void superClustering(const std::vector<Tower>& clusters, std::vector<SuperCluster>& superClusters);
 
-        private:
-            void fillPileupEstimators(const EventHGCAL& event);
             float pileupThreshold(float eta, int layer, int nhits);
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
             int triggerRegionHits(int triggerRegion, int layer);
+
+        private:
+            void fillPileupEstimators(const EventHGCAL& event);
+
 
             // pileup related 
             std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParams;
@@ -54,7 +59,11 @@ namespace AnHiMa
             std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveTh; 
             // clustering related
             std::map<int, float> m_clusterSizes; 
-
+            // cluster energy corrections
+            GBRForest* m_pileupSubtraction_up;
+            GBRForest* m_pileupSubtraction_down;
+            GBRForest* m_thresholdCorrection_up;
+            GBRForest* m_thresholdCorrection_down;
     };
 
 };

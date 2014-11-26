@@ -71,6 +71,8 @@ namespace AnHiMa
 
             const SimHit* simhit(int zside, int layer, int sector, int subsector, int cell) const;
             const SimHit* simhit(const HGCEEDetId& detid) const;
+            const SimHit* hardsimhit(int zside, int layer, int sector, int subsector, int cell) const;
+            const SimHit* hardsimhit(const HGCEEDetId& detid) const;
 
             unsigned cellIndex(int zside, int layer, int sector, int subsector, int cell) const;
             unsigned cellIndex(const HGCEEDetId& detid) const;
@@ -97,6 +99,7 @@ namespace AnHiMa
             GenParticleFactory m_genparticleFactory;
 
             std::vector<const SimHit*> m_sortedHits;
+            std::vector<const SimHit*> m_sortedHardHits;
             std::vector<const SimHit*> m_energySortedHits;
             std::vector<const SimHit*> m_energySortedSeedingHits;
 

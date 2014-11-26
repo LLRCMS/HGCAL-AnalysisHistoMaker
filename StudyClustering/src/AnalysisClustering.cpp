@@ -77,31 +77,40 @@ bool AnalysisClustering::initialize(const string& parameterFile)
 void AnalysisClustering::execute()
 /*****************************************************************/
 {
-    //cerr<<"Event "<<event().event()<<"\n";
+    cerr<<"Event "<<event().event()<<"\n";
     event().update();
     if(!event().passSelection()) return;
 
     m_seeds.clear();
     m_clusters.clear();
+    m_clustersHard.clear();
+    m_clustersHardNoPUThreshold.clear();
     m_superClusters.clear();
+    m_superClustersHard.clear();
+    m_superClustersHardNoPUThreshold.clear();
     //cerr<<"seeding\n";
     m_egammaAlgo.seeding(event(), m_seeds);
     //cerr<<"clustering\n";
     m_egammaAlgo.clustering(event(), m_seeds, m_clusters);
+    m_egammaAlgo.clustering(event(), m_seeds, m_clustersHard, true, true);
+    m_egammaAlgo.clustering(event(), m_seeds, m_clustersHardNoPUThreshold, true, false);
+    // calibration
+    m_egammaAlgo.clusterCorrection(m_clusters);
     //cerr<<"superClustering\n";
     m_egammaAlgo.superClustering(m_clusters, m_superClusters);
+    m_egammaAlgo.superClustering(m_clustersHard, m_superClustersHard);
+    m_egammaAlgo.superClustering(m_clustersHardNoPUThreshold, m_superClustersHardNoPUThreshold);
 
 
-    fillHistos(false);
     m_genParticle = &event().genparticles()[0];
     if(fabs(m_genParticle->Eta())<2.9 && fabs(m_genParticle->Eta())>1.6) 
     {
-        fillHistos(true);
+        fillHistos();
     }
 }
 
 /*****************************************************************/
-void AnalysisClustering::fillHistos(bool fiducialCut)
+void AnalysisClustering::fillHistos()
 /*****************************************************************/
 {
 
@@ -109,7 +118,6 @@ void AnalysisClustering::fillHistos(bool fiducialCut)
     float weight = 1.;
     int hoffset  = 0;
 
-    if(fiducialCut) hoffset += 10000;
 
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
@@ -184,6 +192,35 @@ void AnalysisClustering::fillHistos(bool fiducialCut)
             //m_histos.FillHisto(77+hoffset, m_genParticle->Phi(), weight, sysNum);
             m_histos.FillHisto(77+hoffset, localPhi, weight, sysNum);
         }
+
+
+        // 
+        matchSuperClusterHard(i);
+        matchSuperClusterHardNoPUThreshold(i);
+        const Tower* seed = m_matchedSuperCluster->cluster(0);
+        const Tower* seedHard = (m_matchedSuperClusterHard ? findSeedClusterHard(m_matchedSuperCluster) : 0);
+        const Tower* seedHardNoTh = (m_matchedSuperClusterHardNoPUThreshold ? findSeedClusterHardNoPUThreshold(m_matchedSuperCluster) : 0);
+        //if(seedHard) cout<<"seed Et="<<m_matchedSuperCluster->cluster(0)->calibratedEt()<<" -> hard="<<seedHard->calibratedEt()<<"\n";
+        //if(seedHardNoTh) cout<<"seed Et="<<m_matchedSuperCluster->cluster(0)->calibratedEt()<<" -> hard no th="<<seedHardNoTh->calibratedEt()<<"\n";
+        int triggerRegion = m_egammaAlgo.triggerRegionIndex(seed->hits()[0]->eta(), seed->hits()[0]->zside(), seed->hits()[0]->sector(), seed->hits()[0]->subsector());
+        int nhits = 0;
+        nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 1);
+        nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 2);
+        nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 3);
+        nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 4);
+        nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 5);
+        if(seedHard && seedHardNoTh)
+        {
+            m_histos.FillHisto(100+hoffset, seedHard->eta() - seed->eta(), weight, sysNum);
+            m_histos.FillHisto(101+hoffset, TVector2::Phi_mpi_pi(seedHard->phi() - seed->phi()), weight, sysNum);
+            m_histos.FillHisto(102+hoffset, seedHard->calibratedEnergy() - seed->calibratedEnergy(), weight, sysNum);
+            m_histos.FillHisto(103+hoffset, seed->eta(), weight, sysNum);
+            m_histos.FillHisto(104+hoffset, seed->calibratedEnergy(), weight, sysNum);
+            m_histos.FillHisto(105+hoffset, nhits, weight, sysNum);
+            m_histos.FillHisto(106+hoffset, seedHardNoTh->calibratedEnergy()/seedHard->calibratedEnergy(), weight, sysNum);
+
+            m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
+        }
     }
 
 }
@@ -210,19 +247,59 @@ void AnalysisClustering::matchCluster(int i)
         }
     }
     sort(m_matchedClusters.begin(), m_matchedClusters.end(), AnHiMa::towerSort);
-    //cerr<<"Clusters Et:";
-    //for(const auto cluster : m_matchedClusters)
-    //{
-    //    cerr<<cluster->calibratedEt()<<", ";
-    //}
-    //cerr<<"\n";
+
+}
+
+/*****************************************************************/
+void AnalysisClustering::matchClusterHard(int i)
+/*****************************************************************/
+{
+    m_matchedClustersHard.clear();
+
+    m_genParticle = &event().genparticles()[i];
+    double eta = m_genParticle->Eta();
+    double phi = m_genParticle->Phi();
+    for(const auto& cluster : m_clustersHard )
+    {
+        double deta = (cluster.eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(cluster.phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.3)
+        {
+            m_matchedClustersHard.push_back(&cluster);
+        }
+    }
+    sort(m_matchedClustersHard.begin(), m_matchedClustersHard.end(), AnHiMa::towerSort);
+
+}
+
+/*****************************************************************/
+void AnalysisClustering::matchClusterHardNoPUThreshold(int i)
+/*****************************************************************/
+{
+    m_matchedClustersHardNoPUThreshold.clear();
+
+    m_genParticle = &event().genparticles()[i];
+    double eta = m_genParticle->Eta();
+    double phi = m_genParticle->Phi();
+    for(const auto& cluster : m_clustersHardNoPUThreshold )
+    {
+        double deta = (cluster.eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(cluster.phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.3)
+        {
+            m_matchedClustersHardNoPUThreshold.push_back(&cluster);
+        }
+    }
+    sort(m_matchedClustersHardNoPUThreshold.begin(), m_matchedClustersHardNoPUThreshold.end(), AnHiMa::towerSort);
+
 }
 
 /*****************************************************************/
 void AnalysisClustering::matchSuperCluster(int i)
 /*****************************************************************/
 {
-    //cerr<<"In matchSuperCluster()\n";
     m_matchedSuperCluster = 0;
 
     m_genParticle = &event().genparticles()[i];
@@ -240,5 +317,98 @@ void AnalysisClustering::matchSuperCluster(int i)
             maxEt = sc.et();
         }
     }
-    //cerr<<"End matchSuperCluster()\n";
+}
+
+/*****************************************************************/
+void AnalysisClustering::matchSuperClusterHard(int i)
+/*****************************************************************/
+{
+    m_matchedSuperClusterHard = 0;
+
+    m_genParticle = &event().genparticles()[i];
+    double eta = m_genParticle->Eta();
+    double phi = m_genParticle->Phi();
+    double maxEt = 0.;
+    for(const auto& sc : m_superClustersHard )
+    {
+        double deta = (sc.eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(sc.phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.2 && sc.et()>maxEt)
+        {
+            m_matchedSuperClusterHard = &sc;
+            maxEt = sc.et();
+        }
+    }
+}
+
+/*****************************************************************/
+void AnalysisClustering::matchSuperClusterHardNoPUThreshold(int i)
+/*****************************************************************/
+{
+    m_matchedSuperClusterHardNoPUThreshold = 0;
+
+    m_genParticle = &event().genparticles()[i];
+    double eta = m_genParticle->Eta();
+    double phi = m_genParticle->Phi();
+    double maxEt = 0.;
+    for(const auto& sc : m_superClustersHardNoPUThreshold )
+    {
+        double deta = (sc.eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(sc.phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.2 && sc.et()>maxEt)
+        {
+            m_matchedSuperClusterHardNoPUThreshold = &sc;
+            maxEt = sc.et();
+        }
+    }
+}
+
+
+
+/*****************************************************************/
+const Tower* AnalysisClustering::findSeedClusterHard(const SuperCluster* sc)
+/*****************************************************************/
+{
+    const Tower* seed = sc->cluster(0);
+    const Tower* matchedSeed = 0;
+    double eta = seed->eta();
+    double phi = seed->phi();
+    double minDR = 9999.;
+    for(const auto& cl : m_matchedSuperClusterHard->clusters())
+    {
+        double deta = (cl->eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(cl->phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.05 && dr<minDR)
+        {
+            matchedSeed = cl;
+            minDR = dr;
+        }
+    }
+    return matchedSeed;
+}
+
+/*****************************************************************/
+const Tower* AnalysisClustering::findSeedClusterHardNoPUThreshold(const SuperCluster* sc)
+/*****************************************************************/
+{
+    const Tower* seed = sc->cluster(0);
+    const Tower* matchedSeed = 0;
+    double eta = seed->eta();
+    double phi = seed->phi();
+    double minDR = 9999.;
+    for(const auto& cl : m_matchedSuperClusterHardNoPUThreshold->clusters())
+    {
+        double deta = (cl->eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(cl->phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.05 && dr<minDR)
+        {
+            matchedSeed = cl;
+            minDR = dr;
+        }
+    }
+    return matchedSeed;
 }

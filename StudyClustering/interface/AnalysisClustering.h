@@ -57,20 +57,35 @@ namespace AnHiMa
             void execute();
 
         private:
-            void fillHistos(bool fiducialCut);
+            void fillHistos();
             void matchCluster(int i);
+            void matchClusterHard(int i);
+            void matchClusterHardNoPUThreshold(int i);
             void matchSuperCluster(int i);
+            void matchSuperClusterHard(int i);
+            void matchSuperClusterHardNoPUThreshold(int i);
+            //
+            const Tower* findSeedClusterHard(const SuperCluster* sc);
+            const Tower* findSeedClusterHardNoPUThreshold(const SuperCluster* sc);
 
             TriggerEGammaAlgorithm m_egammaAlgo;
 
 
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
+            std::vector<Tower> m_clustersHard;
+            std::vector<Tower> m_clustersHardNoPUThreshold;
             std::vector<SuperCluster> m_superClusters;
+            std::vector<SuperCluster> m_superClustersHard;
+            std::vector<SuperCluster> m_superClustersHardNoPUThreshold;
 
             const GenParticle* m_genParticle;
             std::vector<const Tower*> m_matchedClusters;
+            std::vector<const Tower*> m_matchedClustersHard;
+            std::vector<const Tower*> m_matchedClustersHardNoPUThreshold;
             const SuperCluster* m_matchedSuperCluster;
+            const SuperCluster* m_matchedSuperClusterHard;
+            const SuperCluster* m_matchedSuperClusterHardNoPUThreshold;
 
 
     };

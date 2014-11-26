@@ -18,6 +18,8 @@ batch.cmsswDir   = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/"
 batch.queue      = "cms"
 
 batch.additionalParameters["Sample"] = "electronPU"
+batch.additionalParameters["PileupSubtractionFile"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/StudyClustering/data/GBR_Trigger_HGCAL_PUsubtraction_eta_nhits_results.root"
+batch.additionalParameters["ThresholdCorrectionFile"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/StudyClustering/data/GBR_Trigger_HGCAL_thresholdCorr_E_eta_results.root"
 
 
 

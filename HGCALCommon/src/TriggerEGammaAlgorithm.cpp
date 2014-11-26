@@ -20,6 +20,7 @@
 #include <fstream>
 
 #include "TEnv.h"
+#include "TFile.h"
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Constants.h"
@@ -31,7 +32,11 @@ using namespace AnHiMa;
 
 
 /*****************************************************************/
-TriggerEGammaAlgorithm::TriggerEGammaAlgorithm()
+TriggerEGammaAlgorithm::TriggerEGammaAlgorithm():
+    m_pileupSubtraction_up(0),
+    m_pileupSubtraction_down(0),
+    m_thresholdCorrection_up(0),
+    m_thresholdCorrection_down(0)
 /*****************************************************************/
 {
 }
@@ -42,6 +47,10 @@ TriggerEGammaAlgorithm::TriggerEGammaAlgorithm()
 TriggerEGammaAlgorithm::~TriggerEGammaAlgorithm()
 /*****************************************************************/
 {
+    if(m_pileupSubtraction_up)   delete m_pileupSubtraction_up;
+    if(m_pileupSubtraction_down) delete m_pileupSubtraction_down;
+    if(m_thresholdCorrection_up)   delete m_thresholdCorrection_up;
+    if(m_thresholdCorrection_down) delete m_thresholdCorrection_down;
 }
 
 
@@ -129,6 +138,22 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
         m_clusterSizes[layer] = size;
     }
     stream.close();
+
+    // initialize cluster energy corrections
+    string pileupSubtractionFileName = params.GetValue("PileupSubtractionFile", "");
+    TFile* pileupSubtractionFile = TFile::Open(pileupSubtractionFileName.c_str());
+    string thresholdCorrectionFileName = params.GetValue("ThresholdCorrectionFile", "");
+    TFile* thresholdCorrectionFile = TFile::Open(thresholdCorrectionFileName.c_str());
+    assert(pileupSubtractionFile);
+    assert(thresholdCorrectionFile);
+    m_pileupSubtraction_up = (GBRForest*)pileupSubtractionFile->Get("EBCorrection");
+    m_pileupSubtraction_down = (GBRForest*)pileupSubtractionFile->Get("EECorrection");
+    m_thresholdCorrection_up = (GBRForest*)thresholdCorrectionFile->Get("EBCorrection");
+    m_thresholdCorrection_down = (GBRForest*)thresholdCorrectionFile->Get("EECorrection");
+    assert(m_pileupSubtraction_up);
+    assert(m_pileupSubtraction_down);
+    assert(m_thresholdCorrection_up);
+    assert(m_thresholdCorrection_down);
 }
 
 
@@ -307,9 +332,11 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
 }
 
 /*****************************************************************/
-void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<Tower>& seeds, vector<Tower>& clusters)
+void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<Tower>& seeds, vector<Tower>& clusters, bool hardHits, bool pileupTh)
 /*****************************************************************/
 {
+    const vector<SimHit>& simhits = (hardHits ? event.hardsimhits() : event.simhits());
+
     //cerr<<"Calling clustering\n";
     // count number of hits in each trigger region, needed for pileup threshold
     fillPileupEstimators(event);
@@ -320,13 +347,13 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
     {
         hitsAboveThreshold[l] = vector<const SimHit*>();
     }
-    for(const auto& hit : event.simhits())
+    for(const auto& hit : simhits)
     {
         int triggerRegion = triggerRegionIndex(hit.eta(), hit.zside(), hit.sector(), hit.subsector());
         int nhits = triggerRegionHits(triggerRegion, hit.layer());
         float threshold = pileupThreshold(hit.eta(), hit.layer(), nhits);
         //float threshold = 5.;
-        if(hit.energy()>=threshold*mip) hitsAboveThreshold[hit.layer()].push_back(&hit);
+        if(!pileupTh|| hit.energy()>=threshold*mip) hitsAboveThreshold[hit.layer()].push_back(&hit);
     }
 
 
@@ -423,6 +450,40 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
         //cerr<<"\n";
     } // end seeds loop
     
+}
+
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::clusterCorrection(vector<Tower>& clusters)
+/*****************************************************************/
+{
+    for(auto& cluster : clusters)
+    {
+        int triggerRegion = triggerRegionIndex(cluster.hits()[0]->eta(), cluster.hits()[0]->zside(), cluster.hits()[0]->sector(), cluster.hits()[0]->subsector());
+        int nhits = 0;
+        nhits += triggerRegionHits(triggerRegion, 1);
+        nhits += triggerRegionHits(triggerRegion, 2);
+        nhits += triggerRegionHits(triggerRegion, 3);
+        nhits += triggerRegionHits(triggerRegion, 4);
+        nhits += triggerRegionHits(triggerRegion, 5);
+        double eta = fabs(cluster.eta());
+        double energy = cluster.calibratedEnergy();
+        float* puInputs = new float[2];
+        float* thInputs = new float[2];
+        puInputs[0] = eta;
+        puInputs[1] = nhits;
+        thInputs[0] = energy;
+        thInputs[1] = eta;
+        double esub = (eta<=1.8 ? m_pileupSubtraction_up->GetResponse(puInputs) : m_pileupSubtraction_down->GetResponse(puInputs));
+        double ecorr = (eta<=1.8 ? m_thresholdCorrection_up->GetResponse(thInputs) : m_thresholdCorrection_down->GetResponse(thInputs));
+        //cout<<"Subtracting energy "<<esub<<"\n";
+        //cout<<"Threshold correction = "<<ecorr<<"\n";
+        cluster.setCalibratedEnergy(energy+esub);
+        cluster.setCalibratedEnergy(cluster.calibratedEnergy()*ecorr);
+
+        delete[] puInputs;
+        delete[] thInputs;
+    }
 }
 
 
