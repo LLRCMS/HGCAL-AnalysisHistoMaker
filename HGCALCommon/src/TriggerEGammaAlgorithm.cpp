@@ -36,7 +36,8 @@ TriggerEGammaAlgorithm::TriggerEGammaAlgorithm():
     m_pileupSubtraction_up(0),
     m_pileupSubtraction_down(0),
     m_thresholdCorrection_up(0),
-    m_thresholdCorrection_down(0)
+    m_thresholdCorrection_down(0),
+    m_superClusterCorrection(0)
 /*****************************************************************/
 {
 }
@@ -47,10 +48,10 @@ TriggerEGammaAlgorithm::TriggerEGammaAlgorithm():
 TriggerEGammaAlgorithm::~TriggerEGammaAlgorithm()
 /*****************************************************************/
 {
-    if(m_pileupSubtraction_up)   delete m_pileupSubtraction_up;
-    if(m_pileupSubtraction_down) delete m_pileupSubtraction_down;
-    if(m_thresholdCorrection_up)   delete m_thresholdCorrection_up;
-    if(m_thresholdCorrection_down) delete m_thresholdCorrection_down;
+    //if(m_pileupSubtraction_up)   delete m_pileupSubtraction_up;
+    //if(m_pileupSubtraction_down) delete m_pileupSubtraction_down;
+    //if(m_thresholdCorrection_up)   delete m_thresholdCorrection_up;
+    //if(m_thresholdCorrection_down) delete m_thresholdCorrection_down;
 }
 
 
@@ -144,16 +145,22 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     TFile* pileupSubtractionFile = TFile::Open(pileupSubtractionFileName.c_str());
     string thresholdCorrectionFileName = params.GetValue("ThresholdCorrectionFile", "");
     TFile* thresholdCorrectionFile = TFile::Open(thresholdCorrectionFileName.c_str());
+    string superClusterCorrectionFileName = params.GetValue("SuperClusterCorrectionFile", "");
+    TFile* superClusterCorrectionFile = TFile::Open(superClusterCorrectionFileName.c_str());
     assert(pileupSubtractionFile);
     assert(thresholdCorrectionFile);
+    assert(superClusterCorrectionFile);
+    //
     m_pileupSubtraction_up = (GBRForest*)pileupSubtractionFile->Get("EBCorrection");
     m_pileupSubtraction_down = (GBRForest*)pileupSubtractionFile->Get("EECorrection");
     m_thresholdCorrection_up = (GBRForest*)thresholdCorrectionFile->Get("EBCorrection");
     m_thresholdCorrection_down = (GBRForest*)thresholdCorrectionFile->Get("EECorrection");
+    m_superClusterCorrection = (GBRForest*)superClusterCorrectionFile->Get("EBCorrection");
     assert(m_pileupSubtraction_up);
     assert(m_pileupSubtraction_down);
     assert(m_thresholdCorrection_up);
     assert(m_thresholdCorrection_down);
+    assert(m_superClusterCorrection);
 }
 
 
@@ -454,7 +461,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
 
 
 /*****************************************************************/
-void TriggerEGammaAlgorithm::clusterCorrection(vector<Tower>& clusters)
+void TriggerEGammaAlgorithm::clusterPileupSubtraction(vector<Tower>& clusters)
 /*****************************************************************/
 {
     for(auto& cluster : clusters)
@@ -469,19 +476,37 @@ void TriggerEGammaAlgorithm::clusterCorrection(vector<Tower>& clusters)
         double eta = fabs(cluster.eta());
         double energy = cluster.calibratedEnergy();
         float* puInputs = new float[2];
-        float* thInputs = new float[2];
         puInputs[0] = eta;
         puInputs[1] = nhits;
-        thInputs[0] = energy;
-        thInputs[1] = eta;
-        double esub = (eta<=1.8 ? m_pileupSubtraction_up->GetResponse(puInputs) : m_pileupSubtraction_down->GetResponse(puInputs));
-        double ecorr = (eta<=1.8 ? m_thresholdCorrection_up->GetResponse(thInputs) : m_thresholdCorrection_down->GetResponse(thInputs));
-        //cout<<"Subtracting energy "<<esub<<"\n";
-        //cout<<"Threshold correction = "<<ecorr<<"\n";
+        double esub = (eta<=1.8 ? m_pileupSubtraction_up->GetResponse(puInputs) : m_pileupSubtraction_down->GetResponse(puInputs))*(double)cluster.nHits();
+        //cout<<"nhits="<<nhits<<",eta="<<eta<<",esub="<<esub<<"\n";
         cluster.setCalibratedEnergy(energy+esub);
-        cluster.setCalibratedEnergy(cluster.calibratedEnergy()*ecorr);
 
         delete[] puInputs;
+    }
+}
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::clusterThresholdCorrection(vector<Tower>& clusters)
+/*****************************************************************/
+{
+    for(auto& cluster : clusters)
+    {
+        int triggerRegion = triggerRegionIndex(cluster.hits()[0]->eta(), cluster.hits()[0]->zside(), cluster.hits()[0]->sector(), cluster.hits()[0]->subsector());
+        int nhits = 0;
+        nhits += triggerRegionHits(triggerRegion, 1);
+        nhits += triggerRegionHits(triggerRegion, 2);
+        nhits += triggerRegionHits(triggerRegion, 3);
+        nhits += triggerRegionHits(triggerRegion, 4);
+        nhits += triggerRegionHits(triggerRegion, 5);
+        double eta = fabs(cluster.eta());
+        double energy = cluster.calibratedEnergy();
+        float* thInputs = new float[2];
+        thInputs[0] = energy;
+        thInputs[1] = eta;
+        double ecorr = (eta<=1.8 ? m_thresholdCorrection_up->GetResponse(thInputs) : m_thresholdCorrection_down->GetResponse(thInputs));
+        cluster.setCalibratedEnergy(energy*ecorr);
+
         delete[] thInputs;
     }
 }
@@ -557,4 +582,29 @@ void TriggerEGammaAlgorithm::superClustering(const vector<Tower>& clusters, vect
         }
     }
     //cerr<<"End superClustering()\n";
+}
+
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::superClusterCorrection(vector<SuperCluster>& superClusters)
+/*****************************************************************/
+{
+    for(auto& sc : superClusters)
+    {
+        double eta = fabs(sc.eta());
+        double phi = sc.phi();
+        double reducedPhi = (phi+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhi = (reducedPhi - floor(reducedPhi))*(2*TMath::Pi()/18.);
+        int ncl = sc.nClusters();
+        float* inputs = new float[3];
+        inputs[0] = eta;
+        inputs[1] = localPhi;
+        inputs[2] = (float)ncl;
+        double ecorr = m_superClusterCorrection->GetResponse(inputs);
+        //cout<<"eta="<<eta<<",phi="<<localPhi<<",ncl="<<ncl<<",ecorr="<<ecorr<<"\n";
+        sc.setEnergy(sc.energy()*ecorr);
+        sc.setEt(sc.et()*ecorr);
+
+        delete[] inputs;
+    }
 }

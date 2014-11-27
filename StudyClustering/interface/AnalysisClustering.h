@@ -64,6 +64,7 @@ namespace AnHiMa
             void matchSuperCluster(int i);
             void matchSuperClusterHard(int i);
             void matchSuperClusterHardNoPUThreshold(int i);
+            void matchSuperClusterCorr(int i);
             //
             const Tower* findSeedClusterHard(const SuperCluster* sc);
             const Tower* findSeedClusterHardNoPUThreshold(const SuperCluster* sc);
@@ -75,9 +76,11 @@ namespace AnHiMa
             std::vector<Tower> m_clusters;
             std::vector<Tower> m_clustersHard;
             std::vector<Tower> m_clustersHardNoPUThreshold;
+            std::vector<Tower> m_clustersCorr;
             std::vector<SuperCluster> m_superClusters;
             std::vector<SuperCluster> m_superClustersHard;
             std::vector<SuperCluster> m_superClustersHardNoPUThreshold;
+            std::vector<SuperCluster> m_superClustersCorr;
 
             const GenParticle* m_genParticle;
             std::vector<const Tower*> m_matchedClusters;
@@ -86,6 +89,7 @@ namespace AnHiMa
             const SuperCluster* m_matchedSuperCluster;
             const SuperCluster* m_matchedSuperClusterHard;
             const SuperCluster* m_matchedSuperClusterHardNoPUThreshold;
+            const SuperCluster* m_matchedSuperClusterCorr;
 
 
     };

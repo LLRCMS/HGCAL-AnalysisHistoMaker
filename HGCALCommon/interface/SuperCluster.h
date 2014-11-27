@@ -43,6 +43,9 @@ namespace AnHiMa
             float phi()     const {return m_phi;}
             float energy()  const {return m_energy;}
             float et()      const {return m_et;}
+            //
+            void setEnergy(double energy) {m_energy = energy;}
+            void setEt(double et) {m_et = et;}
 
         private:
             double m_eta;

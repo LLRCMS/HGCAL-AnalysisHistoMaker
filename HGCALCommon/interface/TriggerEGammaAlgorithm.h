@@ -42,8 +42,10 @@ namespace AnHiMa
 
             void seeding(const EventHGCAL& event, std::vector<Tower>& seeds);
             void clustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<Tower>& clusters, bool hardHits=false, bool pileupTh=true);
-            void clusterCorrection(std::vector<Tower>& clusters);
+            void clusterPileupSubtraction(std::vector<Tower>& clusters);
+            void clusterThresholdCorrection(std::vector<Tower>& clusters);
             void superClustering(const std::vector<Tower>& clusters, std::vector<SuperCluster>& superClusters);
+            void superClusterCorrection(std::vector<SuperCluster>& superClusters);
 
             float pileupThreshold(float eta, int layer, int nhits);
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
@@ -64,6 +66,7 @@ namespace AnHiMa
             GBRForest* m_pileupSubtraction_down;
             GBRForest* m_thresholdCorrection_up;
             GBRForest* m_thresholdCorrection_down;
+            GBRForest* m_superClusterCorrection;
     };
 
 };

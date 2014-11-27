@@ -85,21 +85,28 @@ void AnalysisClustering::execute()
     m_clusters.clear();
     m_clustersHard.clear();
     m_clustersHardNoPUThreshold.clear();
+    m_clustersCorr.clear();
     m_superClusters.clear();
     m_superClustersHard.clear();
     m_superClustersHardNoPUThreshold.clear();
+    m_superClustersCorr.clear();
     //cerr<<"seeding\n";
     m_egammaAlgo.seeding(event(), m_seeds);
     //cerr<<"clustering\n";
     m_egammaAlgo.clustering(event(), m_seeds, m_clusters);
     m_egammaAlgo.clustering(event(), m_seeds, m_clustersHard, true, true);
     m_egammaAlgo.clustering(event(), m_seeds, m_clustersHardNoPUThreshold, true, false);
-    // calibration
-    m_egammaAlgo.clusterCorrection(m_clusters);
+    // cluster energy corrections
+    m_clustersCorr = m_clusters;
+    m_egammaAlgo.clusterPileupSubtraction(m_clustersCorr);
+    m_egammaAlgo.clusterThresholdCorrection(m_clustersCorr);
     //cerr<<"superClustering\n";
     m_egammaAlgo.superClustering(m_clusters, m_superClusters);
     m_egammaAlgo.superClustering(m_clustersHard, m_superClustersHard);
     m_egammaAlgo.superClustering(m_clustersHardNoPUThreshold, m_superClustersHardNoPUThreshold);
+    m_egammaAlgo.superClustering(m_clustersCorr, m_superClustersCorr);
+    // supercluster energy corrections
+    m_egammaAlgo.superClusterCorrection(m_superClustersCorr);
 
 
     m_genParticle = &event().genparticles()[0];
@@ -192,6 +199,12 @@ void AnalysisClustering::fillHistos()
             //m_histos.FillHisto(77+hoffset, m_genParticle->Phi(), weight, sysNum);
             m_histos.FillHisto(77+hoffset, localPhi, weight, sysNum);
         }
+        //
+        matchSuperClusterCorr(i);
+        double responseCorr = (m_matchedSuperClusterCorr->et() - m_genParticle->Et())/m_genParticle->Et();
+        m_histos.FillHisto(80+hoffset, responseCorr, weight, sysNum);
+        m_histos.FillHisto(81+hoffset, responseCorr, fabs(m_genParticle->Eta()), weight, sysNum);
+        m_histos.FillHisto(82+hoffset, responseCorr, localPhi, weight, sysNum);
 
 
         // 
@@ -213,13 +226,27 @@ void AnalysisClustering::fillHistos()
         {
             m_histos.FillHisto(100+hoffset, seedHard->eta() - seed->eta(), weight, sysNum);
             m_histos.FillHisto(101+hoffset, TVector2::Phi_mpi_pi(seedHard->phi() - seed->phi()), weight, sysNum);
-            m_histos.FillHisto(102+hoffset, seedHard->calibratedEnergy() - seed->calibratedEnergy(), weight, sysNum);
+            m_histos.FillHisto(102+hoffset, (seedHard->calibratedEnergy() - seed->calibratedEnergy())/seed->nHits(), weight, sysNum);
             m_histos.FillHisto(103+hoffset, seed->eta(), weight, sysNum);
             m_histos.FillHisto(104+hoffset, seed->calibratedEnergy(), weight, sysNum);
             m_histos.FillHisto(105+hoffset, nhits, weight, sysNum);
             m_histos.FillHisto(106+hoffset, seedHardNoTh->calibratedEnergy()/seedHard->calibratedEnergy(), weight, sysNum);
 
             m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
+        }
+        if(m_matchedSuperClusterCorr && m_matchedSuperClusterCorr->et()>7.)
+        {
+            double scReducedPhi = (m_matchedSuperClusterCorr->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+            double scLocalPhi = (scReducedPhi - floor(scReducedPhi))*(2*TMath::Pi()/18.);
+            m_histos.FillHisto(200+hoffset, m_matchedSuperClusterCorr->eta(), weight, sysNum);
+            m_histos.FillHisto(201+hoffset, scLocalPhi, weight, sysNum);
+            m_histos.FillHisto(202+hoffset, m_matchedSuperClusterCorr->energy(), weight, sysNum);
+            m_histos.FillHisto(203+hoffset, m_matchedSuperClusterCorr->et(), weight, sysNum);
+            m_histos.FillHisto(204+hoffset, nhits, weight, sysNum);
+            m_histos.FillHisto(205+hoffset, m_matchedSuperClusterCorr->nClusters(), weight, sysNum);
+            m_histos.FillHisto(206+hoffset, m_genParticle->Et()/m_matchedSuperClusterCorr->et(), weight, sysNum);
+
+            m_histos.FillNtuple(600+hoffset, event().run(), event().event(), weight, sysNum);
         }
     }
 
@@ -365,6 +392,28 @@ void AnalysisClustering::matchSuperClusterHardNoPUThreshold(int i)
     }
 }
 
+/*****************************************************************/
+void AnalysisClustering::matchSuperClusterCorr(int i)
+/*****************************************************************/
+{
+    m_matchedSuperClusterCorr = 0;
+
+    m_genParticle = &event().genparticles()[i];
+    double eta = m_genParticle->Eta();
+    double phi = m_genParticle->Phi();
+    double maxEt = 0.;
+    for(const auto& sc : m_superClustersCorr )
+    {
+        double deta = (sc.eta() - eta);
+        double dphi = TVector2::Phi_mpi_pi(sc.phi() - phi);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        if(dr<0.2 && sc.et()>maxEt)
+        {
+            m_matchedSuperClusterCorr = &sc;
+            maxEt = sc.et();
+        }
+    }
+}
 
 
 /*****************************************************************/
