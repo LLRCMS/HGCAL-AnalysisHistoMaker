@@ -1,0 +1,8 @@
+<use name="root"/>
+<use name="DataFormats/ForwardDetId"/>
+<use name="AnHiMaHGCAL/Core"/>
+<use name="AnHiMaHGCAL/HGCALCommon"/>
+<use name="AnHiMaHGCAL/HGCALGeometry"/>
+<export>
+   <lib name="1"/>
+</export>

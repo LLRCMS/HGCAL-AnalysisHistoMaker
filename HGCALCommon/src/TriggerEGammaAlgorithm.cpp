@@ -113,6 +113,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
         cerr<<"ERROR: Cannot open pileup parameters file '"<<pileupParamsFile<<"'\n";
         return;
     }
+    cout<<"INFO: PileupParams = "<<pileupParamsFile<<"\n";
     while(!stream.eof())
     {
         int up, layer, subeta;
@@ -131,6 +132,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
         cerr<<"ERROR: Cannot open cluster size file '"<<clusterSizeFile<<"'\n";
         return;
     }
+    cout<<"INFO: ClusterSize = "<<clusterSizeFile<<"\n";
     while(!stream.eof())
     {
         int layer;
@@ -150,6 +152,9 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     assert(pileupSubtractionFile);
     assert(thresholdCorrectionFile);
     assert(superClusterCorrectionFile);
+    cout<<"INFO: PileupSubtractionFile = "<<pileupSubtractionFileName<<"\n";
+    cout<<"INFO: ThresholdCorrectionFile = "<<thresholdCorrectionFileName<<"\n";
+    cout<<"INFO: SuperClusterCorrectionFile = "<<superClusterCorrectionFileName<<"\n";
     //
     m_pileupSubtraction_up = (GBRForest*)pileupSubtractionFile->Get("EBCorrection");
     m_pileupSubtraction_down = (GBRForest*)pileupSubtractionFile->Get("EECorrection");
