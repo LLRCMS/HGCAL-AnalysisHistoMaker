@@ -1,0 +1,74 @@
+Histos: SuperClustering_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+### seed cluster sizes and nhits
+1binvh1f 100 seedCluster_size_x_vs_layer ' energy weighted x size '  80 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh1f 150 seedCluster_size_y_vs_layer ' energy weighted y size '  80 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 200 seedCluster_size_xy_vs_layer ' energy weighted x-y size '  40 0. 4. 40 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh1f 250 seedCluster_nhits_vs_layer ' nhits '  100 0. 100.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 300 seedCluster_dr_nhits_vs_layer ' dr vs nhits ' 40 0. 4. 100 0. 100.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+### sub clusters sizes and nhits
+1binvh1f 500 subCluster_size_x_vs_layer ' energy weighted x size '  80 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh1f 550 subCluster_size_y_vs_layer ' energy weighted y size '  80 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 600 subCluster_size_xy_vs_layer ' energy weighted x-y size '  40 0. 4. 40 0. 4.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh1f 650 subCluster_nhits_vs_layer ' nhits '  100 0. 100.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+#### sub clusters position wrt seed cluster
+1binvh1f 1000 subSeedCluster_dx_vs_eta  ' x position wrt seed cluster ' 100 0. 10.
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 1010 subSeedCluster_dy_vs_eta  ' y position wrt seed cluster ' 100 0. 10.
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh2f 1020 subSeedCluster_dxdy_vs_eta  ' x-y position wrt seed cluster ' 100 0. 10. 100 0. 10.
+ETA 3
+1.5 2. 2.5 3
+#
+1binvh1f 1030 subSeedCluster_dr_vs_eta  ' r(x,y) position wrt seed cluster ' 100 0. 10.
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 1040 subSeedCluster_deta_vs_eta  ' eta position wrt seed cluster ' 100 0. 0.1
+ETA 3
+1.5 2. 2.5 3.
+#
+1binvh1f 1050 subSeedCluster_dphi_vs_eta  ' phi position wrt seed cluster ' 100 0. 0.2
+ETA 3
+1.5 2. 2.5 3.
+
+
+end_Histos
+
+
+
+

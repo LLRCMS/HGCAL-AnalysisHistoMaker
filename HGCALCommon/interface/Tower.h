@@ -44,6 +44,8 @@ namespace AnHiMa
 
             float eta()     const {return m_eta;}
             float phi()     const {return m_phi;}
+            float x()     const {return m_x;}
+            float y()     const {return m_y;}
             float energy()  const {return m_energy;}
             float calibratedEnergy()  const {return m_calibratedEnergy;}
             float et()      const {return m_energy/cosh(m_eta);}
@@ -62,6 +64,8 @@ namespace AnHiMa
         private:
             float m_eta;
             float m_phi;
+            float m_x;
+            float m_y;
             float m_energy;
             float m_calibratedEnergy;
 

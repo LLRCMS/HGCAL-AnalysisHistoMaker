@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="superclustering.exe">
+  <use name="AnHiMaHGCAL/StudySuperClustering"/>
+</bin>

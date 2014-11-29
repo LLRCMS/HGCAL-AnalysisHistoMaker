@@ -40,6 +40,8 @@ bool AnHiMa::towerSort(const Tower* tw1, const Tower* tw2)
 Tower::Tower():
     m_eta(0.),
     m_phi(0.),
+    m_x(0.),
+    m_y(0.),
     m_energy(0.),
     m_calibratedEnergy(0.),
     m_layerEnergies(31),
@@ -57,6 +59,8 @@ Tower::Tower():
 Tower::Tower(const Tower& tower):
     m_eta(tower.eta()),
     m_phi(tower.phi()),
+    m_x(tower.x()),
+    m_y(tower.y()),
     m_energy(tower.energy()),
     m_calibratedEnergy(tower.calibratedEnergy()),
     m_layerEnergies(31),
@@ -92,12 +96,18 @@ void Tower::addHit(const SimHit& hit)
     m_hits.push_back(&hit);
     m_eta *= m_energy;
     m_phi *= m_energy;
+    m_x *= m_energy;
+    m_y *= m_energy;
 
     m_energy += hit.energy();
     m_eta += hit.eta()*hit.energy();
     m_phi += hit.phi()*hit.energy();
+    m_x += hit.x()*hit.energy();
+    m_y += hit.y()*hit.energy();
     m_eta /= m_energy;
     m_phi /= m_energy;
+    m_x /= m_energy;
+    m_y /= m_energy;
     int layer = hit.layer();
     m_layerEnergies[layer] += hit.energy();
     m_layerHits[layer]++;
@@ -137,6 +147,8 @@ void Tower::clear()
 {
     m_eta = 0.;
     m_phi = 0.;
+    m_x = 0.;
+    m_y = 0.;
     m_energy = 0.;
     m_hits.clear();
     for(unsigned l=0;l<m_layerEnergies.size();l++)
