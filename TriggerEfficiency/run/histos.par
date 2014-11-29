@@ -23,6 +23,11 @@ h1f 40 nMatchedSuperCluster_eta ' |#eta| ' 30 1.5 3.
 h1f 41 nMatchedSuperCluster_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 42 nMatchedSuperCluster_npu ' N_{PU} ' 40 120 160
 
+## number of matched ideal clusters
+h1f 50 nMatchedIdealCluster_eta ' |#eta| ' 30 1.5 3.
+h1f 51 nMatchedIdealCluster_phi ' local #phi ' 35 0. 0.349065850398865896 
+h1f 52 nMatchedIdealCluster_npu ' N_{PU} ' 40 120 160
+
 end_Histos
 
 

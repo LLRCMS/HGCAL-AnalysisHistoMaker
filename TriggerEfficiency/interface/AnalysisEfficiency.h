@@ -68,11 +68,19 @@ namespace AnHiMa
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
             std::vector<SuperCluster> m_superClusters;
+            std::vector<Tower> m_idealClusters;
 
             const GenParticle* m_genParticle;
             const Tower* m_matchedSeed;
             const Tower* m_matchedCluster;
             const SuperCluster* m_matchedSuperCluster;
+            const Tower* m_matchedIdealCluster;
+
+            std::vector<int> m_thresholds;
+            TTree** m_failAndPassTrees;
+            double m_gen_pt[1];
+            double m_gen_eta[1];
+            int m_failAndPassBits[1][100];
 
 
     };

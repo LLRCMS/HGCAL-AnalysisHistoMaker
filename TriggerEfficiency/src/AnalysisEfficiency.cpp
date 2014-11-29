@@ -43,7 +43,8 @@ AnalysisEfficiency::AnalysisEfficiency():IAnalysis(),
     m_genParticle(0),
     m_matchedSeed(0),
     m_matchedCluster(0),
-    m_matchedSuperCluster(0)
+    m_matchedSuperCluster(0),
+    m_matchedIdealCluster(0)
 /*****************************************************************/
 {
 
@@ -55,6 +56,11 @@ AnalysisEfficiency::AnalysisEfficiency():IAnalysis(),
 AnalysisEfficiency::~AnalysisEfficiency()
 /*****************************************************************/
 {
+    for(int i=0;i<1;++i)
+    {
+         m_failAndPassTrees[i]->Write();
+    }
+
 }
 
 
@@ -71,6 +77,38 @@ bool AnalysisEfficiency::initialize(const string& parameterFile)
     //string pileupParamsFile = m_reader.params().GetValue("PileupParams", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/ElectronClusterThreshold/data/thresholdParameters.txt");
 
     m_egammaAlgo.initialize(event(), m_reader.params());
+
+
+    ///// turn-on trees
+    m_thresholds = {25,27,30,35,40};
+    m_failAndPassTrees = new TTree*[1];
+    m_failAndPassTrees[0] = new TTree("TurnOn_L1SuperCluster_failAndPassTree","TurnOn_L1SuperCluster_failAndPassTree");
+    m_outputFile->cd();
+    for(int i=0;i<1;++i)
+    {
+        //cerr<<i<<"\n";
+        TTree* tree = m_failAndPassTrees[i];
+        m_gen_pt[i] = 0.;
+        m_gen_eta[i] = 0.;
+        stringstream genptvar, genptvartype, genetavar, genetavartype;
+        genptvar << "gen_pt";
+        genptvartype << "gen_pt/D";
+        genetavar << "gen_eta";
+        genetavartype << "gen_eta/D";
+        tree->Branch(genptvar.str().c_str(), &m_gen_pt[i], genptvartype.str().c_str());
+        tree->Branch(genetavar.str().c_str(), &m_gen_eta[i], genetavartype.str().c_str());
+        for(unsigned j=0;j<m_thresholds.size();j++)
+        {
+            int th = m_thresholds[j];
+            stringstream pass, passtype;
+            pass << "l1_pass_" << th;
+            passtype << "l1_pass_" << th<<"/I";
+            m_failAndPassBits[i][th] = 0;
+            tree->Branch(pass.str().c_str(), &m_failAndPassBits[i][th], passtype.str().c_str());
+        }
+    }
+
+
     return true;
 }
 
@@ -105,6 +143,10 @@ void AnalysisEfficiency::execute()
         m_genParticle = &event().genparticles()[i];
         if(fabs(m_genParticle->Eta())<2.9 && fabs(m_genParticle->Eta())>1.6) 
         {
+            // ideal clustering
+            m_idealClusters.clear();
+            m_egammaAlgo.idealClustering(event(), m_idealClusters, m_genParticle->Eta(), m_genParticle->Phi());
+            m_matchedIdealCluster = (m_idealClusters.size()>0 ? &m_idealClusters[0] : 0);
             // match seed, cluster and super-cluster to gen electron
             matchSeed();
             matchCluster();
@@ -156,6 +198,25 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(40+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(41+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(42+hoffset, event().npu(), weight, sysNum);
+
+
+        // fill turn-on tree
+        m_gen_pt[0] = m_genParticle->Pt();
+        m_gen_eta[0] = m_genParticle->Eta();
+        for(unsigned i=0;i<m_thresholds.size();i++)
+        {
+            int th = m_thresholds[i];
+            m_failAndPassBits[0][th] = (m_matchedSuperCluster->et()>=(double)th);
+        }
+
+        m_failAndPassTrees[0]->Fill();
+    }
+    //
+    if(m_matchedIdealCluster && m_matchedIdealCluster->calibratedEt()>10.)
+    {
+        m_histos.FillHisto(50+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+        m_histos.FillHisto(51+hoffset, localPhi, weight, sysNum);
+        m_histos.FillHisto(52+hoffset, event().npu(), weight, sysNum);
     }
 
 }

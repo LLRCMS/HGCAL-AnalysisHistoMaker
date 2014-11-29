@@ -613,3 +613,34 @@ void TriggerEGammaAlgorithm::superClusterCorrection(vector<SuperCluster>& superC
         delete[] inputs;
     }
 }
+
+
+/*****************************************************************/
+void TriggerEGammaAlgorithm::idealClustering(const EventHGCAL& event, vector<Tower>& clusters, double eta0, double phi0)
+/*****************************************************************/
+{
+    const vector<SimHit>& simhits = event.hardsimhits();
+
+    // to calibrate clusters
+    TowerCalibrator towerCalibrator;
+
+    // Build clusters around specified direction
+    Tower cluster;
+    for(const auto& hit: simhits)
+    {
+        float eta = hit.eta();
+        float phi = hit.phi();
+        double deta = (eta-eta0);
+        double dphi = (phi-phi0);
+        float dr = sqrt(deta*deta+dphi*dphi);
+        if(dr>0.3) continue;
+        cluster.addHit(hit);
+    }
+    if(cluster.energy()>0.)
+    {
+        // calibrate energy
+        towerCalibrator.calibrate(cluster);
+        clusters.push_back(cluster);
+    }
+
+}
