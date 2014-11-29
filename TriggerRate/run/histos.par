@@ -1,0 +1,14 @@
+Histos: Rate_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+h1f 100 l1eg_all_pt ' p_{T} [GeV] ' 100 0. 100.
+h1f 101 l1eg_all_eta ' |#eta| ' 15 1.5 3.
+
+
+end_Histos
+
+
+
+

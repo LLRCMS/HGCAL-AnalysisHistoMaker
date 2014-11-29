@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="rate.exe">
+  <use name="AnHiMaHGCAL/TriggerRate"/>
+</bin>
