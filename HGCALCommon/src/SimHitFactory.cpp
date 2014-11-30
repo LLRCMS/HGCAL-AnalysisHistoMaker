@@ -161,13 +161,13 @@ void SimHitFactory::update()
     for(int i=0;i<m_hit_n;i++)
     {
         SimHit hit;
-        hit.setDetid     ( (*m_hit_detid)[i] );
-        hit.setSubdet    ( (*m_hit_subdet)[i] );
-        hit.setCell      ( (*m_hit_cell)[i] );
-        hit.setSector    ( (*m_hit_sector)[i] );
-        hit.setSubsector ( (*m_hit_subsector)[i] );
-        hit.setLayer     ( (*m_hit_layer)[i] );
-        hit.setZside     ( (*m_hit_zside)[i] );
+        hit.setDetid     ( (unsigned)(*m_hit_detid)[i] );
+        hit.setSubdet    ( (int)(*m_hit_subdet)[i] );
+        hit.setCell      ( (int)(*m_hit_cell)[i] );
+        hit.setSector    ( (int)(*m_hit_sector)[i] );
+        hit.setSubsector ( (int)(*m_hit_subsector)[i] );
+        hit.setLayer     ( (int)(*m_hit_layer)[i] );
+        hit.setZside     ( (int)(*m_hit_zside)[i] );
         hit.setEnergy    ( (*m_hit_energy)[i] );
         hit.setEta       ( (*m_hit_eta)[i] );
         hit.setPhi       ( (*m_hit_phi)[i] );

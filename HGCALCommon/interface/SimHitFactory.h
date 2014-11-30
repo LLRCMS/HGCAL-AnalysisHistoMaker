@@ -40,13 +40,13 @@ namespace AnHiMa
             HitType m_type;
 
             int                    m_hit_n;
-            std::vector<unsigned> *m_hit_detid;
-            std::vector<int>      *m_hit_subdet;
-            std::vector<int>      *m_hit_cell;
-            std::vector<int>      *m_hit_sector;
-            std::vector<int>      *m_hit_subsector;
-            std::vector<int>      *m_hit_layer;
-            std::vector<int>      *m_hit_zside;
+            std::vector<uint32_t> *m_hit_detid;
+            std::vector<uint8_t>  *m_hit_subdet;
+            std::vector<uint16_t> *m_hit_cell;
+            std::vector<uint8_t>  *m_hit_sector;
+            std::vector<char>     *m_hit_subsector;
+            std::vector<uint8_t>  *m_hit_layer;
+            std::vector<char>     *m_hit_zside;
             std::vector<float>    *m_hit_energy;
             std::vector<float>    *m_hit_eta;
             std::vector<float>    *m_hit_phi;

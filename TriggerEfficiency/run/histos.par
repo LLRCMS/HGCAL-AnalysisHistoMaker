@@ -7,26 +7,31 @@ h1f 0 nevents ' Number of events ' 1 0.5 1.5
 h1f 10 nGen_eta ' |#eta| ' 30 1.5 3.
 h1f 11 nGen_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 12 nGen_npu ' N_{PU} ' 40 120 160
+h1f 13 nGen_pt ' p_{T} [GeV] ' 30 20. 50.
 
 ## number of matched seeds
 h1f 20 nMatchedSeed_eta ' |#eta| ' 30 1.5 3.
 h1f 21 nMatchedSeed_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 22 nMatchedSeed_npu ' N_{PU} ' 40 120 160
+h1f 23 nMatchedSeed_pt ' p_{T} [GeV] ' 30 20. 50.
 
 ## number of matched clusters
 h1f 30 nMatchedCluster_eta ' |#eta| ' 30 1.5 3.
 h1f 31 nMatchedCluster_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 32 nMatchedCluster_npu ' N_{PU} ' 40 120 160
+h1f 33 nMatchedCluster_pt ' p_{T} [GeV] ' 30 20. 50.
 
 ## number of matched super-clusters
 h1f 40 nMatchedSuperCluster_eta ' |#eta| ' 30 1.5 3.
 h1f 41 nMatchedSuperCluster_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 42 nMatchedSuperCluster_npu ' N_{PU} ' 40 120 160
+h1f 43 nMatchedSuperCluster_pt ' p_{T} [GeV] ' 30 20. 50.
 
 ## number of matched ideal clusters
 h1f 50 nMatchedIdealCluster_eta ' |#eta| ' 30 1.5 3.
 h1f 51 nMatchedIdealCluster_phi ' local #phi ' 35 0. 0.349065850398865896 
 h1f 52 nMatchedIdealCluster_npu ' N_{PU} ' 40 120 160
+h1f 53 nMatchedIdealCluster_pt ' p_{T} [GeV] ' 30 20. 50.
 
 end_Histos
 

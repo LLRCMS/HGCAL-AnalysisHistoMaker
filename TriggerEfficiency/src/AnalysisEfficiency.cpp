@@ -177,6 +177,7 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(10+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(11+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(12+hoffset, event().npu(), weight, sysNum);
+        m_histos.FillHisto(13+hoffset, m_genParticle->Pt(), weight, sysNum);
     }
     //
     if(m_matchedSeed)
@@ -184,6 +185,7 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(20+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(21+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(22+hoffset, event().npu(), weight, sysNum);
+        m_histos.FillHisto(23+hoffset, m_genParticle->Pt(), weight, sysNum);
     }
     //
     if(m_matchedCluster && m_matchedCluster->calibratedEt()>5.)
@@ -191,6 +193,7 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(30+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(31+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(32+hoffset, event().npu(), weight, sysNum);
+        m_histos.FillHisto(33+hoffset, m_genParticle->Pt(), weight, sysNum);
     }
     //
     if(m_matchedSuperCluster && m_matchedSuperCluster->et()>5.)
@@ -198,6 +201,7 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(40+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(41+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(42+hoffset, event().npu(), weight, sysNum);
+        m_histos.FillHisto(43+hoffset, m_genParticle->Pt(), weight, sysNum);
 
 
         // fill turn-on tree
@@ -217,6 +221,7 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(50+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
         m_histos.FillHisto(51+hoffset, localPhi, weight, sysNum);
         m_histos.FillHisto(52+hoffset, event().npu(), weight, sysNum);
+        m_histos.FillHisto(53+hoffset, m_genParticle->Pt(), weight, sysNum);
     }
 
 }
