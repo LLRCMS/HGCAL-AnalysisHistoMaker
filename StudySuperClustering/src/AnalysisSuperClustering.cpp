@@ -41,7 +41,8 @@ using namespace std;
 /*****************************************************************/
 AnalysisSuperClustering::AnalysisSuperClustering():IAnalysis(),
     m_genParticle(0),
-    m_matchedSuperCluster(0)
+    m_matchedSuperCluster(0),
+    m_matchedIdealCluster(0)
 /*****************************************************************/
 {
 
@@ -102,6 +103,11 @@ void AnalysisSuperClustering::execute()
         m_genParticle = &event().genparticles()[i];
         if(fabs(m_genParticle->Eta())<2.9 && fabs(m_genParticle->Eta())>1.6) 
         {
+            // ideal clustering
+            m_idealClusters.clear();
+            m_egammaAlgo.idealClustering(event(), m_idealClusters, m_genParticle->Eta(), m_genParticle->Phi());
+            m_matchedIdealCluster = (m_idealClusters.size()>0 ? &m_idealClusters[0] : 0);
+            // match supercluster
             matchSuperCluster();
             fillHistos();
         }
@@ -171,6 +177,77 @@ void AnalysisSuperClustering::fillHistos()
         }
     }
 
+    // difference with ideal cluster
+    if(m_matchedIdealCluster)
+    {
+        double eta0 = m_matchedIdealCluster->eta();
+        double phi0 = m_matchedIdealCluster->phi();
+        double x0 = m_matchedIdealCluster->x();
+        double y0 = m_matchedIdealCluster->y();
+        for(const auto hit : m_matchedIdealCluster->hits())
+        {
+            bool found = false;
+            for(int c=0;c<m_matchedSuperCluster->nClusters();c++)
+            {
+                const Tower* cluster = m_matchedSuperCluster->cluster(c);
+                for(const auto hit2 : cluster->hits())
+                {
+                    if(hit->detid()==hit2->detid())
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(found==true) break;
+            }
+            if(!found)
+            {
+                int layer = hit->layer();
+                double eta = hit->eta();
+                double phi = hit->phi();
+                double x = hit->x();
+                double y = hit->y();
+                double energy = hit->energy();
+                double deta = (eta - eta0);
+                double dphi = TVector2::Phi_mpi_pi(phi - phi0);
+                double dx = (x - x0);
+                double dy = (y - y0);
+                // bad super-cluster
+                if((m_matchedSuperCluster->et()-m_genParticle->Pt())/m_genParticle->Pt()<-0.7)
+                {
+                    m_histos.Fill1BinHisto(2200+hoffset, layer, deta, dphi, weight*energy, sysNum);
+                    m_histos.Fill1BinHisto(2300+hoffset, layer, dx, dy, weight*energy, sysNum);
+                }
+                // good super-cluster
+                else
+                {
+                    m_histos.Fill1BinHisto(2000+hoffset, layer, deta, dphi, weight*energy, sysNum);
+                    m_histos.Fill1BinHisto(2100+hoffset, layer, dx, dy, weight*energy, sysNum);
+                }
+            }
+        }
+        double seedEta = m_matchedSuperCluster->cluster(0)->eta();
+        double seedPhi = m_matchedSuperCluster->cluster(0)->phi();
+        double seedX   = m_matchedSuperCluster->cluster(0)->x();
+        double seedY   = m_matchedSuperCluster->cluster(0)->y();
+        double seedDeta = (seedEta - eta0);
+        double seedDphi = TVector2::Phi_mpi_pi(seedPhi - phi0);
+        double seedDx = (seedX - x0);
+        double seedDy = (seedY - y0);
+        // bad super-cluster
+        if((m_matchedSuperCluster->et()-m_genParticle->Pt())/m_genParticle->Pt()<-0.7)
+        {
+            m_histos.FillHisto(2502+hoffset, seedDeta, seedDphi, weight, sysNum);
+            m_histos.FillHisto(2503+hoffset, seedDx, seedDy, weight, sysNum);
+        }
+        // good super-cluster
+        else
+        {
+            m_histos.FillHisto(2500+hoffset, seedDeta, seedDphi, weight, sysNum);
+            m_histos.FillHisto(2501+hoffset, seedDx, seedDy, weight, sysNum);
+        }
+             
+    }
 }
 
 

@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="calibration.exe">
+  <use name="AnHiMaHGCAL/TriggerCalibration"/>
+</bin>

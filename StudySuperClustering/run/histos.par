@@ -65,7 +65,29 @@ ETA 3
 1binvh1f 1050 subSeedCluster_dphi_vs_eta  ' phi position wrt seed cluster ' 100 0. 0.2
 ETA 3
 1.5 2. 2.5 3.
-
+#
+#### Missing energy wrt ideal cluster
+1binvh2f 2000 missingEnergyPos_detadphi_good_vs_layer ' missing energy position wrt ideal cluster '  120 -0.3 0.3 120 -0.3 0.3
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 2100 missingEnergyPos_dxdy_good_vs_layer ' missing energy position wrt ideal cluster '  80 -10. 10. 80 -10. 10.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 2200 missingEnergyPos_detadphi_bad_vs_layer ' missing energy position wrt ideal cluster '  120 -0.3 0.3 120 -0.3 0.3
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+#
+1binvh2f 2300 missingEnergyPos_dxdy_bad_vs_layer ' missing energy position wrt ideal cluster '  80 -10. 10. 80 -10. 10.
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+###
+###
+h2f 2500 mainCluster_detadphi_good_vs_layer ' main cluster position wrt ideal cluster '  120 -0.3 0.3 120 -0.3 0.3
+h2f 2501 mainCluster_dxdy_good_vs_layer ' main cluster position wrt ideal cluster '  80 -10. 10. 80 -10. 10.
+h2f 2502 mainCluster_detadphi_bad_vs_layer ' main cluster position wrt ideal cluster '  120 -0.3 0.3 120 -0.3 0.3
+h2f 2503 mainCluster_dxdy_bad_vs_layer ' main cluster position wrt ideal cluster '  80 -10. 10. 80 -10. 10.
 
 end_Histos
 
