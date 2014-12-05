@@ -23,6 +23,8 @@
 #include <vector>
 #include <string>
 
+#include "TMVA/Reader.h"
+
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
@@ -47,6 +49,7 @@ namespace AnHiMa
             void superClustering(const std::vector<Tower>& clusters, std::vector<SuperCluster>& superClusters);
             void superClusterCorrection(std::vector<SuperCluster>& superClusters);
             void idealClustering(const EventHGCAL& event, std::vector<Tower>& clusters, double eta0, double phi0);
+            double bdtOutput(const Tower& tower);
 
             float pileupThreshold(float eta, int layer, int nhits);
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
@@ -68,6 +71,11 @@ namespace AnHiMa
             GBRForest* m_thresholdCorrection_up;
             GBRForest* m_thresholdCorrection_down;
             GBRForest* m_superClusterCorrection;
+            // identification
+            TMVA::Reader* m_tmvaReader;
+            float m_maxLayer;
+            float m_firstLayer;
+            float m_energyRatio;
     };
 
 };

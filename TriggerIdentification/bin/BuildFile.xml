@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="identification.exe">
+  <use name="AnHiMaHGCAL/TriggerIdentification"/>
+</bin>

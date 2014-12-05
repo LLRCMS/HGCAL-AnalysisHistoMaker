@@ -50,6 +50,11 @@ void TowerCalibrator::calibrate(Tower& tower)
     const vector<const SimHit*>& hits = tower.hits();
     // Taken from  https://github.com/cms-sw/cmssw/blob/CMSSW_6_2_X_SLHC/RecoParticleFlow/PFClusterProducer/src/HGCEEElectronEnergyCalibrator.cc
     double eCorr = 0.0;
+    vector<double> eCorrLayer(31);
+    for(unsigned l=0;l<eCorrLayer.size();l++)
+    {
+        eCorrLayer[l] = 0.;
+    }
     double eta = tower.eta();
     for( const auto& h : hits ) 
     {
@@ -57,9 +62,14 @@ void TowerCalibrator::calibrate(Tower& tower)
         int layer = hit.layer();
         double energy_MIP = hit.energy()/m_mipValueInGeV;
         eCorr += m_weights[layer-1]*energy_MIP;
+        eCorrLayer[layer] += m_weights[layer-1]*energy_MIP;
     }
 
     double effMIP_to_InvGeV = m_coeff_a/(1.0 + exp(-m_coeff_c - m_coeff_b*cosh(eta)));
 
     tower.setCalibratedEnergy(eCorr/effMIP_to_InvGeV);
+    for(unsigned l=1;l<eCorrLayer.size();l++)
+    {
+        tower.setLayerCalibratedEnergy(l, eCorrLayer[l]/effMIP_to_InvGeV);
+    }
 }

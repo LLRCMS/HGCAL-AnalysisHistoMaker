@@ -1,5 +1,5 @@
 /**
- *  @file  AnalysisRate.h
+ *  @file  AnalysisIdentification.h
  *  @brief  
  *
  *
@@ -18,8 +18,8 @@
 
 
 
-#ifndef ANALYSISRATE_H
-#define ANALYSISRATE_H
+#ifndef ANALYSISEFFICIENCY_H
+#define ANALYSISEFFICIENCY_H
 
 #include "AnHiMaHGCAL/Core/interface/IAnalysis.h"
 #include "AnHiMaHGCAL/Core/interface/EventAware.h"
@@ -46,11 +46,11 @@
 namespace AnHiMa
 {
 
-    class AnalysisRate: public IAnalysis, EventAware<EventHGCAL>
+    class AnalysisIdentification: public IAnalysis, EventAware<EventHGCAL>
     {
         public:
-            AnalysisRate();
-            ~AnalysisRate();
+            AnalysisIdentification();
+            ~AnalysisIdentification();
 
             bool initialize(const std::string& parameterFile);
 
@@ -58,7 +58,7 @@ namespace AnHiMa
 
         private:
             void fillHistos();
-            void applyIdentification();
+            void matchSuperCluster();
 
             TriggerEGammaAlgorithm m_egammaAlgo;
 
@@ -66,9 +66,12 @@ namespace AnHiMa
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
             std::vector<SuperCluster> m_superClusters;
-            std::vector<const SuperCluster*> m_sortedSuperClusters;
-            std::vector<const SuperCluster*> m_sortedSuperClustersLooseID;
-            std::vector<const SuperCluster*> m_sortedSuperClustersMediumID;
+
+            const GenParticle* m_genParticle;
+            const SuperCluster* m_superCluster;
+
+            std::string m_sample;
+            float m_etCut;
 
     };
 }

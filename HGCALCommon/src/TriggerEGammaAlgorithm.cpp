@@ -21,6 +21,7 @@
 
 #include "TEnv.h"
 #include "TFile.h"
+#include "TMVA/Tools.h"
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Constants.h"
@@ -166,6 +167,14 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     assert(m_thresholdCorrection_up);
     assert(m_thresholdCorrection_down);
     assert(m_superClusterCorrection);
+
+    // initialize BDT for identification
+    TMVA::Tools::Instance();
+    m_tmvaReader = new TMVA::Reader( "!Color:!Silent" );
+    m_tmvaReader->AddVariable( "seed_maxLayer", &m_maxLayer);
+    m_tmvaReader->AddVariable( "seed_firstLayer", &m_firstLayer);
+    m_tmvaReader->AddVariable( "(seed_layer28_energy+seed_layer29_energy+seed_layer30_energy)/seed_energy", &m_energyRatio);
+    m_tmvaReader->BookMVA( "BDTG", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_pu_firstLayerMaxLayerEratio.xml");
 }
 
 
@@ -643,4 +652,30 @@ void TriggerEGammaAlgorithm::idealClustering(const EventHGCAL& event, vector<Tow
         clusters.push_back(cluster);
     }
 
+}
+
+
+/*****************************************************************/
+double TriggerEGammaAlgorithm::bdtOutput(const Tower& tower)
+/*****************************************************************/
+{
+    int maxLayer = 0;
+    double maxLayerEnergy = 0.;
+    int firstLayer = 0;
+    for(unsigned l=1;l<=30;l++)
+    {
+        double energy = tower.layerCalibratedEnergy(l);
+        if(energy>maxLayerEnergy)
+        {
+            maxLayer = l;
+            maxLayerEnergy = energy;
+        }
+        if(firstLayer==0 && energy>0.) firstLayer = l;
+    }
+    double energyRatio = (tower.layerCalibratedEnergy(28)+tower.layerCalibratedEnergy(29)+tower.layerCalibratedEnergy(30))/tower.calibratedEnergy();
+    m_firstLayer = firstLayer;
+    m_maxLayer = maxLayer;
+    m_energyRatio = energyRatio;
+    double value = m_tmvaReader->EvaluateMVA( "BDTG" );
+    return value;
 }

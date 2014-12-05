@@ -45,12 +45,14 @@ Tower::Tower():
     m_energy(0.),
     m_calibratedEnergy(0.),
     m_layerEnergies(31),
+    m_layerCalibratedEnergies(31),
     m_layerHits(31)
 /*****************************************************************/
 {
     for(unsigned l=0;l<m_layerEnergies.size();l++)
     {
         m_layerEnergies[l] = 0.;
+        m_layerCalibratedEnergies[l] = 0.;
         m_layerHits[l] = 0;
     }
 }
@@ -64,6 +66,7 @@ Tower::Tower(const Tower& tower):
     m_energy(tower.energy()),
     m_calibratedEnergy(tower.calibratedEnergy()),
     m_layerEnergies(31),
+    m_layerCalibratedEnergies(31),
     m_layerHits(31)
 /*****************************************************************/
 {
@@ -71,6 +74,7 @@ Tower::Tower(const Tower& tower):
     for(unsigned l=0;l<m_layerEnergies.size();l++)
     {
         m_layerEnergies[l] = tower.layerEnergy(l);
+        m_layerCalibratedEnergies[l] = tower.layerCalibratedEnergy(l);
         m_layerHits[l] = tower.layerNHits(l);
     }
     for(const auto hit : tower.hits())
@@ -128,6 +132,19 @@ float Tower::layersEnergy(unsigned l1, unsigned l2) const
 }
 
 /*****************************************************************/
+float Tower::layersCalibratedEnergy(unsigned l1, unsigned l2) const
+/*****************************************************************/
+{
+
+    double energy = 0.;
+    for(unsigned l=l1; l<=l2; l++)
+    {
+        energy += (double)m_layerCalibratedEnergies[l];
+    }
+    return (float)energy;
+}
+
+/*****************************************************************/
 int Tower::nLayers() const
 /*****************************************************************/
 {
@@ -154,6 +171,7 @@ void Tower::clear()
     for(unsigned l=0;l<m_layerEnergies.size();l++)
     {
         m_layerEnergies[l] = 0.;
+        m_layerCalibratedEnergies[l] = 0.;
         m_layerHits[l] = 0;
     }
 }

@@ -21,6 +21,8 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
 
+#include <iostream>
+
 using namespace AnHiMa;
 using namespace std;
 

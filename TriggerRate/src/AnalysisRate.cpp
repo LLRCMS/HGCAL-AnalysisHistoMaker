@@ -86,6 +86,8 @@ void AnalysisRate::execute()
     m_clusters.clear();
     m_superClusters.clear();
     m_sortedSuperClusters.clear();
+    m_sortedSuperClustersLooseID.clear();
+    m_sortedSuperClustersMediumID.clear();
 
     // seeding
     m_egammaAlgo.seeding(event(), m_seeds);
@@ -101,6 +103,8 @@ void AnalysisRate::execute()
     // sort superclusters
     for(const auto& sc : m_superClusters) m_sortedSuperClusters.push_back(&sc);
     sort(m_sortedSuperClusters.begin(), m_sortedSuperClusters.end(), AnHiMa::superClusterSort);
+    // filter identified clusters
+    applyIdentification();
 
     fillHistos();
 }
@@ -115,12 +119,45 @@ void AnalysisRate::fillHistos()
     int hoffset  = 0;
 
     const SuperCluster* maxCandidate = (m_sortedSuperClusters.size()>0 ? m_sortedSuperClusters[0] : 0);
+    const SuperCluster* maxCandidateLooseID = (m_sortedSuperClustersLooseID.size()>0 ? m_sortedSuperClustersLooseID[0] : 0);
+    const SuperCluster* maxCandidateMediumID = (m_sortedSuperClustersMediumID.size()>0 ? m_sortedSuperClustersMediumID[0] : 0);
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
     //
 
     m_histos.FillHisto(100+hoffset, (maxCandidate ? maxCandidate->et() : 0.) , weight, sysNum);
     m_histos.FillHisto(101+hoffset, (maxCandidate ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
+    //
+    m_histos.FillHisto(110+hoffset, (maxCandidateLooseID ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(111+hoffset, (maxCandidateLooseID ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
+    //
+    m_histos.FillHisto(120+hoffset, (maxCandidateMediumID ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(121+hoffset, (maxCandidateMediumID ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+}
+
+
+
+/*****************************************************************/
+void AnalysisRate::applyIdentification()
+/*****************************************************************/
+{
+    for(const auto sc : m_sortedSuperClusters)
+    {
+        double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0));
+        bool passLoose = (bdt>=-0.84);
+        bool passMedium = (bdt>=-0.76);
+        double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        bool regionLoose = (fabs(sc->eta())<2.2 || sc->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
+        if((regionLoose && passLoose) || (!regionLoose && passMedium))
+        {
+            m_sortedSuperClustersLooseID.push_back(sc);
+        }
+        if(passMedium)
+        {
+            m_sortedSuperClustersMediumID.push_back(sc);
+        }
+    }
 }
 
 

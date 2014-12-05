@@ -41,6 +41,7 @@ namespace AnHiMa
             void setPhi(float phi) {m_phi = phi;}
             void setEnergy(float energy) {m_energy = energy;}
             void setCalibratedEnergy(float energy) {m_calibratedEnergy = energy;}
+            void setLayerCalibratedEnergy(unsigned l, float energy) {m_layerCalibratedEnergies[l] = energy;}
 
             float eta()     const {return m_eta;}
             float phi()     const {return m_phi;}
@@ -55,6 +56,8 @@ namespace AnHiMa
             int   layerNHits(unsigned l)   const {return m_layerHits[l];}
             float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
             float layersEnergy(unsigned l1, unsigned l2) const;
+            float layerCalibratedEnergy(unsigned l) const {return m_layerCalibratedEnergies[l];}
+            float layersCalibratedEnergy(unsigned l1, unsigned l2) const;
             float longitudinalBarycenter();
             const std::vector<const SimHit*>& hits() const {return m_hits;}
 
@@ -70,6 +73,7 @@ namespace AnHiMa
             float m_calibratedEnergy;
 
             std::vector<float> m_layerEnergies;
+            std::vector<float> m_layerCalibratedEnergies;
             std::vector<int> m_layerHits;
             std::vector<const SimHit*> m_hits;
     };

@@ -203,6 +203,27 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(42+hoffset, event().npu(), weight, sysNum);
         m_histos.FillHisto(43+hoffset, m_genParticle->Pt(), weight, sysNum);
 
+        double bdt = m_egammaAlgo.bdtOutput(*m_matchedSuperCluster->cluster(0));
+        bool passLoose = (bdt>=-0.84);
+        bool passMedium = (bdt>=-0.76);
+        double reducedPhiSC = (m_matchedSuperCluster->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        bool regionLoose = (fabs(m_matchedSuperCluster->eta())<2.2 || m_matchedSuperCluster->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
+        if((regionLoose && passLoose) || (!regionLoose && passMedium))
+        {
+            m_histos.FillHisto(60+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(61+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(62+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(63+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+        if(passMedium)
+        {
+            m_histos.FillHisto(70+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(71+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(72+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(73+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+
 
         // fill turn-on tree
         m_gen_pt[0] = m_genParticle->Pt();

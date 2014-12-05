@@ -33,6 +33,18 @@ h1f 51 nMatchedIdealCluster_phi ' local #phi ' 35 0. 0.349065850398865896
 h1f 52 nMatchedIdealCluster_npu ' N_{PU} ' 40 120 160
 h1f 53 nMatchedIdealCluster_pt ' p_{T} [GeV] ' 30 20. 50.
 
+## number of matched super-clusters passing loose ID
+h1f 60 nMatchedSuperClusterLoose_eta ' |#eta| ' 30 1.5 3.
+h1f 61 nMatchedSuperClusterLoose_phi ' local #phi ' 35 0. 0.349065850398865896 
+h1f 62 nMatchedSuperClusterLoose_npu ' N_{PU} ' 40 120 160
+h1f 63 nMatchedSuperClusterLoose_pt ' p_{T} [GeV] ' 30 20. 50.
+
+## number of matched super-clusters passing medium ID
+h1f 70 nMatchedSuperClusterMedium_eta ' |#eta| ' 30 1.5 3.
+h1f 71 nMatchedSuperClusterMedium_phi ' local #phi ' 35 0. 0.349065850398865896 
+h1f 72 nMatchedSuperClusterMedium_npu ' N_{PU} ' 40 120 160
+h1f 73 nMatchedSuperClusterMedium_pt ' p_{T} [GeV] ' 30 20. 50.
+
 end_Histos
 
 

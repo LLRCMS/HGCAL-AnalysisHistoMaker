@@ -12,11 +12,11 @@ h1f 14 response_corrTh   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1
 h1f 15 response_corrFull ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
 h1f 16 response_ideal    ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
 
-h1f 50 diff_pu_raw        ' E_{T}^{PU} - E_{T}^{no PU} ' 100 -10. 10.
-h1f 51 diff_pu_corr       ' E_{T}^{PU} - E_{T}^{no PU} ' 100 -10. 10.
-h1f 52 response_th_noPU   ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 100 -1. 1.
-h1f 53 response_th_corrPU ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 100 -1. 1.
-h1f 54 response_th_corrTh ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 100 -1. 1.
+h1f 50 diff_pu_raw        ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
+h1f 51 diff_pu_corr       ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
+h1f 52 response_th_noPU   ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
+h1f 53 response_th_corrPU ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
+h1f 54 response_th_corrTh ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
 
 
 h1f 100 corrPU ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
