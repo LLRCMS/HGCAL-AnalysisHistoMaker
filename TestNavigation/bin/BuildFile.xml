@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="testNavigation.exe">
+  <use name="AnHiMaHGCAL/TestNavigation"/>
+</bin>
