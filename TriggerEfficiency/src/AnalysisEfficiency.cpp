@@ -78,6 +78,27 @@ bool AnalysisEfficiency::initialize(const string& parameterFile)
 
     m_egammaAlgo.initialize(event(), m_reader.params());
 
+    /// get BDT cuts
+    TFile* fileBDTcuts = TFile::Open("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta.root");
+    TGraph* bdtCuts995 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.995");
+    TGraph* bdtCuts99  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.99");
+    TGraph* bdtCuts985 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.985");
+    TGraph* bdtCuts98  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.98");
+    TGraph* bdtCuts975 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.975");
+    TGraph* bdtCuts97  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.97");
+    m_bdtCuts[995] = bdtCuts995;
+    m_bdtCuts[99]  = bdtCuts99;
+    m_bdtCuts[985] = bdtCuts985;
+    m_bdtCuts[98]  = bdtCuts98;
+    m_bdtCuts[975] = bdtCuts975;
+    m_bdtCuts[97]  = bdtCuts97;
+    for(auto& eff_graph : m_bdtCuts)
+    {
+        TGraph* g = eff_graph.second;
+        assert(g);
+    }
+    fileBDTcuts->Close();
+
 
     ///// turn-on trees
     m_thresholds = {25,27,30,35,40};
@@ -105,6 +126,11 @@ bool AnalysisEfficiency::initialize(const string& parameterFile)
             passtype << "l1_pass_" << th<<"/I";
             m_failAndPassBits[i][th] = 0;
             tree->Branch(pass.str().c_str(), &m_failAndPassBits[i][th], passtype.str().c_str());
+            stringstream passID, passIDtype;
+            passID << "l1_passID_" << th;
+            passIDtype << "l1_passID_" << th<<"/I";
+            m_failAndPassIDBits[i][th] = 0;
+            tree->Branch(passID.str().c_str(), &m_failAndPassIDBits[i][th], passIDtype.str().c_str());
         }
     }
 
@@ -204,35 +230,77 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(43+hoffset, m_genParticle->Pt(), weight, sysNum);
 
         double bdt = m_egammaAlgo.bdtOutput(*m_matchedSuperCluster->cluster(0));
-        bool passLoose = (bdt>=-0.84);
-        bool passMedium = (bdt>=-0.76);
-        double reducedPhiSC = (m_matchedSuperCluster->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
-        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
-        bool regionLoose = (fabs(m_matchedSuperCluster->eta())<2.2 || m_matchedSuperCluster->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
-        if((regionLoose && passLoose) || (!regionLoose && passMedium))
+        bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(m_matchedSuperCluster->eta())));
+        bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(m_matchedSuperCluster->eta())));
+        bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(m_matchedSuperCluster->eta())));
+        bool pass98  = (bdt>=m_bdtCuts[98] ->Eval(fabs(m_matchedSuperCluster->eta())));
+        bool pass975 = (bdt>=m_bdtCuts[975]->Eval(fabs(m_matchedSuperCluster->eta())));
+        bool pass97  = (bdt>=m_bdtCuts[97] ->Eval(fabs(m_matchedSuperCluster->eta())));
+        //double reducedPhiSC = (m_matchedSuperCluster->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        //double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        //bool regionLoose = (fabs(m_matchedSuperCluster->eta())<2.2 || m_matchedSuperCluster->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
+        if(pass995)
         {
             m_histos.FillHisto(60+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
             m_histos.FillHisto(61+hoffset, localPhi, weight, sysNum);
             m_histos.FillHisto(62+hoffset, event().npu(), weight, sysNum);
             m_histos.FillHisto(63+hoffset, m_genParticle->Pt(), weight, sysNum);
         }
-        if(passMedium)
+        if(pass99)
         {
             m_histos.FillHisto(70+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
             m_histos.FillHisto(71+hoffset, localPhi, weight, sysNum);
             m_histos.FillHisto(72+hoffset, event().npu(), weight, sysNum);
             m_histos.FillHisto(73+hoffset, m_genParticle->Pt(), weight, sysNum);
         }
+        if(pass985)
+        {
+            m_histos.FillHisto(80+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(81+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(82+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(83+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+        if(pass98)
+        {
+            m_histos.FillHisto(90+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(91+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(92+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(93+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+        if(pass975)
+        {
+            m_histos.FillHisto(100+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(101+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(102+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(103+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+        if(pass97)
+        {
+            m_histos.FillHisto(110+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(111+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(112+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(113+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
+        if( (m_matchedSuperCluster->et()<30. && pass99) || (m_matchedSuperCluster->et()>30. && pass98))
+        {
+            m_histos.FillHisto(120+hoffset, fabs(m_genParticle->Eta()), weight, sysNum);
+            m_histos.FillHisto(121+hoffset, localPhi, weight, sysNum);
+            m_histos.FillHisto(122+hoffset, event().npu(), weight, sysNum);
+            m_histos.FillHisto(123+hoffset, m_genParticle->Pt(), weight, sysNum);
+        }
 
 
         // fill turn-on tree
         m_gen_pt[0] = m_genParticle->Pt();
         m_gen_eta[0] = m_genParticle->Eta();
+        bool passID = ( (m_matchedSuperCluster->et()<30. && pass99) || (m_matchedSuperCluster->et()>30. && pass98) );
         for(unsigned i=0;i<m_thresholds.size();i++)
         {
             int th = m_thresholds[i];
             m_failAndPassBits[0][th] = (m_matchedSuperCluster->et()>=(double)th);
+            m_failAndPassIDBits[0][th] = (m_matchedSuperCluster->et()>=(double)th && passID );
         }
+
 
         m_failAndPassTrees[0]->Fill();
     }

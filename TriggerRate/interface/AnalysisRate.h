@@ -34,6 +34,7 @@
 #include <TRandom3.h>
 #include <TLorentzVector.h>
 #include <TH2F.h>
+#include <TGraph.h>
 
 #include <string>
 #include <vector>
@@ -69,6 +70,8 @@ namespace AnHiMa
             std::vector<const SuperCluster*> m_sortedSuperClusters;
             std::vector<const SuperCluster*> m_sortedSuperClustersLooseID;
             std::vector<const SuperCluster*> m_sortedSuperClustersMediumID;
+
+            std::map<int, TGraph*> m_bdtCuts;
 
     };
 }

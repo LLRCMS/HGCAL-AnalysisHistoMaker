@@ -18,6 +18,10 @@ h1f 52 response_th_noPU   ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 
 h1f 53 response_th_corrPU ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
 h1f 54 response_th_corrTh ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
 
+1binvh1f 60 layerEnergyFractions ' Energy fraction ' 100 0. 1.01
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+
 
 h1f 100 corrPU ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
 h1f 101 corrTh ' (E_{T}^{noth}/E_{T}^{th}) ' 100 0. 5.

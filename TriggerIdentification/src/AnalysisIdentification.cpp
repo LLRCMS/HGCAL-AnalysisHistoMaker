@@ -147,12 +147,14 @@ void AnalysisIdentification::fillHistos()
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
     //
-    
+    double reducedPhiSC = (m_superCluster->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+    double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
     const Tower* seed = m_superCluster->cluster(0);
     m_histos.FillHisto(10+hoffset, seed->eta(), weight, sysNum); 
     m_histos.FillHisto(11+hoffset, seed->phi(), weight, sysNum); 
     m_histos.FillHisto(12+hoffset, seed->calibratedEnergy(), weight, sysNum); 
     m_histos.FillHisto(13+hoffset, seed->calibratedEt(), weight, sysNum); 
+    m_histos.FillHisto(14+hoffset, localPhiSC, weight, sysNum); 
     //
     m_histos.FillHisto(20+hoffset, seed->layerCalibratedEnergy(20), weight, sysNum); 
     m_histos.FillHisto(21+hoffset, seed->layerCalibratedEnergy(21), weight, sysNum); 
@@ -213,6 +215,10 @@ void AnalysisIdentification::fillHistos()
     m_histos.FillHisto(101+hoffset, firstLayer, weight, sysNum);
     m_histos.FillHisto(102+hoffset, lastLayer, weight, sysNum);
     m_histos.FillHisto(103+hoffset, maxLayerH, weight, sysNum);
+
+    /// BDT
+    double bdt = m_egammaAlgo.bdtOutput(*seed);
+    m_histos.FillHisto(120+hoffset, bdt, weight, sysNum);
 
     m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 }

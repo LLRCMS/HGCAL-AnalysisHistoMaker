@@ -7,6 +7,7 @@ h1f 10 seed_eta     ' #eta ' 60 -3. 3.
 h1f 11 seed_phi     ' #phi ' 60 -3.14159265359 3.14159265359
 h1f 12 seed_energy  ' E [GeV] ' 300 0. 300.
 h1f 13 seed_et      ' E_{T} [GeV] ' 50 0. 50.
+h1f 14 seed_sectorPhi ' local #phi ' 100 0. 0.349065850398865896
 #
 h1f 20 seed_layer20_energy ' E [GeV] ' 100 0. 100.
 h1f 21 seed_layer21_energy ' E [GeV] ' 100 0. 100.
@@ -36,8 +37,10 @@ h1f 100 seed_maxLayer ' max layer ' 31 0. 31.
 h1f 101 seed_firstLayer ' first layer ' 31 0. 31.
 h1f 102 seed_lastLayer ' last layer ' 31 0. 31.
 h1f 103 seed_maxHitLayer ' max hit layer ' 31 0. 31.
+#
+h1f 120 seed_bdt0 ' BDT0 output ' 200 -1. 1.
 
-ntuple 500 identificationTree ' ID tree '  seed_eta:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer
+ntuple 500 identificationTree ' ID tree '  seed_eta:seed_sectorPhi:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer:seed_bdt0
 
 end_Histos
 

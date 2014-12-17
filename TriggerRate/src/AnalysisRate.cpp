@@ -69,6 +69,27 @@ bool AnalysisRate::initialize(const string& parameterFile)
 
     m_egammaAlgo.initialize(event(), m_reader.params());
 
+    /// get BDT cuts
+    TFile* fileBDTcuts = TFile::Open("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta.root");
+    TGraph* bdtCuts995 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.995");
+    TGraph* bdtCuts99  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.99");
+    TGraph* bdtCuts985 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.985");
+    TGraph* bdtCuts98  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.98");
+    TGraph* bdtCuts975 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.975");
+    TGraph* bdtCuts97  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.97");
+    m_bdtCuts[995] = bdtCuts995;
+    m_bdtCuts[99]  = bdtCuts99;
+    m_bdtCuts[985] = bdtCuts985;
+    m_bdtCuts[98]  = bdtCuts98;
+    m_bdtCuts[975] = bdtCuts975;
+    m_bdtCuts[97]  = bdtCuts97;
+    for(auto& eff_graph : m_bdtCuts)
+    {
+        TGraph* g = eff_graph.second;
+        assert(g);
+    }
+    fileBDTcuts->Close();
+
 
     return true;
 }
@@ -123,16 +144,45 @@ void AnalysisRate::fillHistos()
     const SuperCluster* maxCandidateMediumID = (m_sortedSuperClustersMediumID.size()>0 ? m_sortedSuperClustersMediumID[0] : 0);
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
+    m_histos.FillHisto(10+hoffset, m_seeds.size(), weight, sysNum);
     //
 
-    m_histos.FillHisto(100+hoffset, (maxCandidate ? maxCandidate->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(101+hoffset, (maxCandidate ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(100+hoffset, (maxCandidate && maxCandidate->et()<100. ? maxCandidate->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(101+hoffset, (maxCandidate && maxCandidate->et()<100. ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
     //
-    m_histos.FillHisto(110+hoffset, (maxCandidateLooseID ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(111+hoffset, (maxCandidateLooseID ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(110+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(111+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
     //
-    m_histos.FillHisto(120+hoffset, (maxCandidateMediumID ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(121+hoffset, (maxCandidateMediumID ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(120+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(121+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+
+    for(const auto sc : m_sortedSuperClusters)
+    {
+        if(sc->et()<5. || sc->et()>100.) continue;
+        double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        m_histos.FillHisto(200+hoffset, sc->et() , weight, sysNum);
+        m_histos.FillHisto(201+hoffset, fabs(sc->eta()) , weight, sysNum);
+        m_histos.FillHisto(202+hoffset, localPhiSC , weight, sysNum);
+    }
+    for(const auto sc : m_sortedSuperClustersLooseID)
+    {
+        if(sc->et()<5. || sc->et()>100.) continue;
+        double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        m_histos.FillHisto(210+hoffset, sc->et() , weight, sysNum);
+        m_histos.FillHisto(211+hoffset, fabs(sc->eta()) , weight, sysNum);
+        m_histos.FillHisto(212+hoffset, localPhiSC , weight, sysNum);
+    }
+    for(const auto sc : m_sortedSuperClustersMediumID)
+    {
+        if(sc->et()<5. || sc->et()>100.) continue;
+        double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        m_histos.FillHisto(220+hoffset, sc->et() , weight, sysNum);
+        m_histos.FillHisto(221+hoffset, fabs(sc->eta()) , weight, sysNum);
+        m_histos.FillHisto(222+hoffset, localPhiSC , weight, sysNum);
+    }
 }
 
 
@@ -144,16 +194,20 @@ void AnalysisRate::applyIdentification()
     for(const auto sc : m_sortedSuperClusters)
     {
         double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0));
-        bool passLoose = (bdt>=-0.84);
-        bool passMedium = (bdt>=-0.76);
-        double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
-        double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
-        bool regionLoose = (fabs(sc->eta())<2.2 || sc->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
-        if((regionLoose && passLoose) || (!regionLoose && passMedium))
+        //bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(sc->eta())));
+        bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(sc->eta())));
+        bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(sc->eta())));
+        bool pass98  = (bdt>=m_bdtCuts[98] ->Eval(fabs(sc->eta())));
+        //bool pass975 = (bdt>=m_bdtCuts[975]->Eval(fabs(sc->eta())));
+        //bool pass97  = (bdt>=m_bdtCuts[97] ->Eval(fabs(sc->eta())));
+        //double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
+        //double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
+        //bool regionLoose = (fabs(sc->eta())<2.2 || sc->et()<30. || localPhiSC<0.05 || localPhiSC>(2*TMath::Pi()/18.-0.05));
+        if((sc->et()<30. && pass99) || (sc->et()>30. && pass98))
         {
             m_sortedSuperClustersLooseID.push_back(sc);
         }
-        if(passMedium)
+        if(pass985)
         {
             m_sortedSuperClustersMediumID.push_back(sc);
         }

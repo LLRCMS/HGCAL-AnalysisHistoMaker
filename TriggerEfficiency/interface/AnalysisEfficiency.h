@@ -34,6 +34,7 @@
 #include <TRandom3.h>
 #include <TLorentzVector.h>
 #include <TH2F.h>
+#include <TGraph.h>
 
 #include <string>
 #include <vector>
@@ -81,6 +82,9 @@ namespace AnHiMa
             double m_gen_pt[1];
             double m_gen_eta[1];
             int m_failAndPassBits[1][100];
+            int m_failAndPassIDBits[1][100];
+
+            std::map<int, TGraph*> m_bdtCuts;
 
 
     };

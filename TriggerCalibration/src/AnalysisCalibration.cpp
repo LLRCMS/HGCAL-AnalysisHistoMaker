@@ -191,6 +191,14 @@ void AnalysisCalibration::fillHistos()
     m_histos.FillHisto(53+hoffset, responseThCorrPU, weight, sysNum);
     m_histos.FillHisto(54+hoffset, responseThCorrTh, weight, sysNum);
 
+
+    // layer energy fractions in ideal clusters
+    for(int l=1;l<=30;l++)   
+    {
+        double layerEnergy = m_matchedIdealCluster->layerEnergy(l);
+        m_histos.Fill1BinHisto(60+hoffset, l, layerEnergy/m_matchedIdealCluster->energy(), weight, sysNum);
+    }
+
     // cluster corrections
     double corrPU = (seedHard->calibratedEt() - seedRaw->calibratedEt())/(double)seedRaw->nHits();
     double corrTh = seedHardNoTh->calibratedEt()/seedHard->calibratedEt();

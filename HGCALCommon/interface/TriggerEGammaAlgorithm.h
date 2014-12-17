@@ -49,6 +49,7 @@ namespace AnHiMa
             void superClustering(const std::vector<Tower>& clusters, std::vector<SuperCluster>& superClusters);
             void superClusterCorrection(std::vector<SuperCluster>& superClusters);
             void idealClustering(const EventHGCAL& event, std::vector<Tower>& clusters, double eta0, double phi0);
+            void coneClustering(const EventHGCAL& event, std::vector<Tower>& clusters, double eta0, double phi0);
             double bdtOutput(const Tower& tower);
 
             float pileupThreshold(float eta, int layer, int nhits);

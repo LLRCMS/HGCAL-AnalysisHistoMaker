@@ -3,6 +3,8 @@ Histos: Rate_
 # General event 
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
+h1f 10 seeds_n ' Number of seeds ' 50 0. 50.
+
 h1f 100 l1eg_all_pt ' p_{T} [GeV] ' 100 0. 100.
 h1f 101 l1eg_all_eta ' |#eta| ' 15 1.5 3.
 
@@ -11,6 +13,19 @@ h1f 111 l1eg_looseID_eta ' |#eta| ' 15 1.5 3.
 
 h1f 120 l1eg_mediumID_pt ' p_{T} [GeV] ' 100 0. 100.
 h1f 121 l1eg_mediumID_eta ' |#eta| ' 15 1.5 3.
+
+###
+h1f 200 l1egAll_all_pt ' p_{T} [GeV] ' 100 0. 100.
+h1f 201 l1egAll_all_eta ' |#eta| ' 15 1.5 3.
+h1f 202 l1egAll_all_localPhi ' sector #phi ' 35 0. 0.349065850398865896
+
+h1f 210 l1egAll_looseID_pt ' p_{T} [GeV] ' 100 0. 100.
+h1f 211 l1egAll_looseID_eta ' |#eta| ' 15 1.5 3.
+h1f 212 l1egAll_looseID_localPhi ' sector #phi ' 35 0. 0.349065850398865896
+
+h1f 220 l1egAll_mediumID_pt ' p_{T} [GeV] ' 100 0. 100.
+h1f 221 l1egAll_mediumID_eta ' |#eta| ' 15 1.5 3.
+h1f 222 l1egAll_mediumID_lcoalPhi ' sector #phi ' 35 0. 0.349065850398865896
 
 
 end_Histos
