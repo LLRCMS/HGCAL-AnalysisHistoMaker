@@ -27,6 +27,7 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/TowerFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/GenParticleFactory.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/GenJetFactory.h"
 
 #include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
 
@@ -62,12 +63,16 @@ namespace AnHiMa
 
             const HGCALNavigator& hgcalNavigator() const {return m_hgcalNavigator;}
 
+            // hits
             const std::vector<SimHit>& simhits() const {return m_simhitFactoryAll.data();}
             const std::vector<SimHit>& hardsimhits() const {return m_simhitFactoryHard.data();}
             const std::vector<const SimHit*>& sortedHits() const {return m_energySortedHits;}
             const std::vector<const SimHit*>& sortedSeedingHits() const {return m_energySortedSeedingHits;}
             const std::vector<Tower>& towers() const {return m_towerFactory.data();}
+
+            // gen info
             const std::vector<GenParticle>& genparticles() const {return m_genparticleFactory.data();}
+            const std::vector<GenJet>& genjets() const {return m_genjetFactory.data();}
 
             const SimHit* simhit(int zside, int layer, int sector, int subsector, int cell) const;
             const SimHit* simhit(const HGCEEDetId& detid) const;
@@ -97,6 +102,7 @@ namespace AnHiMa
             SimHitFactory      m_simhitFactoryHard;
             TowerFactory       m_towerFactory;
             GenParticleFactory m_genparticleFactory;
+            GenJetFactory      m_genjetFactory;
 
             std::vector<const SimHit*> m_sortedHits;
             std::vector<const SimHit*> m_sortedHardHits;

@@ -73,6 +73,7 @@ void EventHGCAL::connectVariables(TChain* inputChain)
     registerCallback((void*)this, EventHGCAL::callback);
     //m_towerFactory.initialize(this, inputChain, this);
     m_genparticleFactory.initialize(this, inputChain);
+    m_genjetFactory.initialize(this, inputChain);
 
 }
 
