@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="projectionMapping.exe">
+  <use name="AnHiMaHGCAL/ProjectionMapping"/>
+</bin>
