@@ -73,3 +73,16 @@ void TowerCalibrator::calibrate(Tower& tower)
         tower.setLayerCalibratedEnergy(l, eCorrLayer[l]/effMIP_to_InvGeV);
     }
 }
+
+
+/*****************************************************************/
+double TowerCalibrator::calibratedEnergy(double energy, double eta, int layer)
+/*****************************************************************/
+{
+;
+    double energy_MIP = energy/m_mipValueInGeV;
+    double eCorr = m_weights[layer-1]*energy_MIP;
+    double effMIP_to_InvGeV = m_coeff_a/(1.0 + exp(-m_coeff_c - m_coeff_b*cosh(eta)));
+
+    return eCorr/effMIP_to_InvGeV;
+}

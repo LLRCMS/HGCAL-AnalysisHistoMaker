@@ -73,6 +73,11 @@ bool AnalysisEfficiency::initialize(const string& parameterFile)
     if(!status) return status;
     event().connectVariables(m_inputChain);
 
+    // will built projected hits onto the HGCEE layer 1
+    string projectionMappingFile(m_reader.params().GetValue("ProjectionMapping", ""));
+    //event().initializeHitProjection(projectionMappingFile);
+
+
     // Read parameters
     //string pileupParamsFile = m_reader.params().GetValue("PileupParams", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/ElectronClusterThreshold/data/thresholdParameters.txt");
 

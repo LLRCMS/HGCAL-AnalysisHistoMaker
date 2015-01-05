@@ -17,6 +17,7 @@ namespace AnHiMa
             ~TowerCalibrator();
 
             void calibrate(Tower& tower);
+            double calibratedEnergy(double energy, double eta, int layer);
 
         private:
             double m_mipValueInGeV;

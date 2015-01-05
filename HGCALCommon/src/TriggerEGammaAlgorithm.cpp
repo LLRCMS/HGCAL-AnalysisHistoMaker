@@ -175,6 +175,7 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     m_tmvaReader->AddVariable( "seed_firstLayer", &m_firstLayer);
     m_tmvaReader->AddVariable( "(seed_layer28_energy+seed_layer29_energy+seed_layer30_energy)/seed_energy", &m_energyRatio);
     m_tmvaReader->BookMVA( "BDTG", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_pu_firstLayerMaxLayerEratio.xml");
+
 }
 
 
@@ -200,6 +201,9 @@ void TriggerEGammaAlgorithm::fillPileupEstimators(const EventHGCAL& event)
         }
     }
 }
+
+
+
 
 /*****************************************************************/
 float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits)
@@ -707,3 +711,6 @@ double TriggerEGammaAlgorithm::bdtOutput(const Tower& tower)
     double value = m_tmvaReader->EvaluateMVA( "BDTG" );
     return value;
 }
+
+
+

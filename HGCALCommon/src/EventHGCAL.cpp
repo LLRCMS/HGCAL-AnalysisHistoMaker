@@ -29,8 +29,10 @@ using namespace std;
 /*****************************************************************/
 EventHGCAL::EventHGCAL():IEvent(),
     m_mip(0.000055),
-    m_sortedHits(5184000),
-    m_sortedHardHits(5184000)
+    //m_sortedHits(5184000), // ECAL only
+    //m_sortedHardHits(5184000) // ECAL only
+    m_sortedHits(7776000),
+    m_sortedHardHits(7776000)
 /*****************************************************************/
 {
 
@@ -75,6 +77,15 @@ void EventHGCAL::connectVariables(TChain* inputChain)
     m_genparticleFactory.initialize(this, inputChain);
     m_genjetFactory.initialize(this, inputChain);
 
+}
+
+
+/*****************************************************************/
+void EventHGCAL::initializeHitProjection(const string& projectionMappingFile)
+/*****************************************************************/
+{
+    m_projectedSimhitFactoryAll.initialize(this, inputChain(), this, projectionMappingFile, ProjectedSimHitFactory::ALL);
+    m_projectedSimhitFactoryHard.initialize(this, inputChain(), this, projectionMappingFile, ProjectedSimHitFactory::HARDINT);
 }
 
 
@@ -145,6 +156,54 @@ void EventHGCAL::buildHitsIndex()
 }
 
 /*****************************************************************/
+void EventHGCAL::buildHitsIndexFH()
+/*****************************************************************/
+{
+    // reset simhit pointers
+    for(unsigned i=0; i<m_sortedHitsFH.size(); i++) m_sortedHitsFH[i] = NULL;
+    // sort hits according to their index
+    for(auto itr=simhitsFH().cbegin(); itr!=simhitsFH().end(); itr++)
+    {
+        const SimHit& hit = *itr;
+        unsigned index = cellIndex(hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        m_sortedHitsFH[index] = &hit;
+    }
+    // do the same for hard hits
+    for(unsigned i=0; i<m_sortedHardHitsFH.size(); i++) m_sortedHardHitsFH[i] = NULL;
+    // sort hits according to their index
+    for(auto itr=hardsimhitsFH().cbegin(); itr!=hardsimhitsFH().end(); itr++)
+    {
+        const SimHit& hit = *itr;
+        unsigned index = cellIndex(hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        m_sortedHardHitsFH[index] = &hit;
+    }
+}
+
+/*****************************************************************/
+void EventHGCAL::buildHitsIndexBH()
+/*****************************************************************/
+{
+    // reset simhit pointers
+    for(unsigned i=0; i<m_sortedHitsBH.size(); i++) m_sortedHitsBH[i] = NULL;
+    // sort hits according to their index
+    for(auto itr=simhitsBH().cbegin(); itr!=simhitsBH().end(); itr++)
+    {
+        const SimHit& hit = *itr;
+        unsigned index = cellIndex(hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        m_sortedHitsBH[index] = &hit;
+    }
+    // do the same for hard hits
+    for(unsigned i=0; i<m_sortedHardHitsBH.size(); i++) m_sortedHardHitsBH[i] = NULL;
+    // sort hits according to their index
+    for(auto itr=hardsimhitsBH().cbegin(); itr!=hardsimhitsBH().end(); itr++)
+    {
+        const SimHit& hit = *itr;
+        unsigned index = cellIndex(hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        m_sortedHardHitsBH[index] = &hit;
+    }
+}
+
+/*****************************************************************/
 void EventHGCAL::sortHits()
 /*****************************************************************/
 {
@@ -165,6 +224,7 @@ void EventHGCAL::sortHits()
 }
 
 
+
 /*****************************************************************/
 unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, int cell) const
 /*****************************************************************/
@@ -174,12 +234,20 @@ unsigned EventHGCAL::cellIndex(int zside, int layer, int sector, int subsector, 
     int s = sector-1;
     int ss = (subsector==-1 ? 0 : 1);
     int c = cell;
-    return (unsigned)(c + ss*2400 + s*4800 + l*86400 + z*2592000);
+    //return (unsigned)(c + ss*2400 + s*4800 + l*86400 + z*2592000); // ECAL only
+    return (unsigned)(c + ss*3600 + s*7200 + l*129600 + z*3888000);
 }
 
 
 /*****************************************************************/
 unsigned EventHGCAL::cellIndex(const HGCEEDetId& detid) const
+/*****************************************************************/
+{
+    return cellIndex(detid.zside(), detid.layer(), detid.sector(), detid.subsector(), detid.cell());
+}
+
+/*****************************************************************/
+unsigned EventHGCAL::cellIndex(const HGCHEDetId& detid) const
 /*****************************************************************/
 {
     return cellIndex(detid.zside(), detid.layer(), detid.sector(), detid.subsector(), detid.cell());
@@ -194,6 +262,22 @@ const SimHit* EventHGCAL::simhit(int zside, int layer, int sector, int subsector
     return m_sortedHits[index];
 }
 
+/*****************************************************************/
+const SimHit* EventHGCAL::simhitFH(int zside, int layer, int sector, int subsector, int cell) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(zside, layer, sector, subsector, cell);
+    return m_sortedHitsFH[index];
+}
+
+/*****************************************************************/
+const SimHit* EventHGCAL::simhitBH(int zside, int layer, int sector, int subsector, int cell) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(zside, layer, sector, subsector, cell);
+    return m_sortedHitsBH[index];
+}
+
 
 /*****************************************************************/
 const SimHit* EventHGCAL::simhit(const HGCEEDetId& detid) const
@@ -201,6 +285,22 @@ const SimHit* EventHGCAL::simhit(const HGCEEDetId& detid) const
 {
     unsigned index = cellIndex(detid);
     return m_sortedHits[index];
+}
+
+/*****************************************************************/
+const SimHit* EventHGCAL::simhitFH(const HGCHEDetId& detid) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(detid);
+    return m_sortedHitsFH[index];
+}
+
+/*****************************************************************/
+const SimHit* EventHGCAL::simhitBH(const HGCHEDetId& detid) const
+/*****************************************************************/
+{
+    unsigned index = cellIndex(detid);
+    return m_sortedHitsBH[index];
 }
 
 /*****************************************************************/

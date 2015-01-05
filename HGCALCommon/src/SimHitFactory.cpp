@@ -49,6 +49,9 @@ void SimHitFactory::initialize(IEvent* event, TChain* chain, HitType type)
 {
     m_type = type;
     initialize(event, chain);
+    m_data.push_back( vector<SimHit>() ); // HE
+    m_data.push_back( vector<SimHit>() ); // FH
+    m_data.push_back( vector<SimHit>() ); // BH
 }
 
 
@@ -159,7 +162,10 @@ void SimHitFactory::callback(void* object)
 void SimHitFactory::update()
 /*****************************************************************/
 {
-    m_data.clear();
+    m_data[0].clear();
+    m_data[1].clear();
+    m_data[2].clear();
+    
     for(int i=0;i<m_hit_n;i++)
     {
         SimHit hit;
@@ -177,6 +183,12 @@ void SimHitFactory::update()
         hit.setY         ( (*m_hit_y)[i] );
         hit.setZ         ( (*m_hit_z)[i] );
 
-        m_data.push_back( hit );
+        unsigned iCol = hit.subdet() - 3;
+        if(iCol>2)
+        {
+            cerr<<"WARNING: Unknown subdetector '"<<hit.subdet()<<"'\n";
+            continue;
+        }
+        m_data[iCol].push_back( hit );
     }
 }

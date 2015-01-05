@@ -42,8 +42,8 @@ namespace AnHiMa
             void registerCallback(void* objectPtr, CallBack function);
             virtual void update();
 
-        //protected:
-        //    TChain* inputChain() {return m_inputChain;}
+        protected:
+            TChain* inputChain() {return m_inputChain;}
 
         private:
             TChain* m_inputChain;

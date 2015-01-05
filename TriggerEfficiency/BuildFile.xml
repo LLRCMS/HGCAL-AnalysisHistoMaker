@@ -1,3 +1,4 @@
+<flags CXXFLAGS="-g -O0"/>
 <use name="root"/>
 <use name="DataFormats/ForwardDetId"/>
 <use name="AnHiMaHGCAL/Core"/>

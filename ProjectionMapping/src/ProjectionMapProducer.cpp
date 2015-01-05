@@ -1,6 +1,7 @@
 
 
 #include <sstream>
+#include <fstream>
 
 #include "TVector2.h"
 
@@ -122,11 +123,24 @@ void ProjectionMapProducer::produce()
                     }
                 }
                 m_unProjected->Fill(x,y);
-                cout<<"Cannot project cell "<<cell<<" layer "<<lay<<" on layer 1\n";
-                cout<<" Project on "<<cellid<<" instead (dr = "<<drmin<<"\n";
+                m_cellToBin[make_pair(lay,cell)] = cellid;
+                m_binToCell[cellid].push_back(make_pair(lay,cell));
+                //cout<<"Cannot project cell "<<cell<<" layer "<<lay<<" on layer 1\n";
+                //cout<<" Project on "<<cellid<<" instead (dr = "<<drmin<<"\n";
             }
         }
     }
+
+    fstream output("projectionMapping.txt", std::fstream::out);
+    if(!output.is_open()) cout<<"Cannot open output file\n";
+    for(auto cell_bin : m_cellToBin)
+    {
+        int layer = cell_bin.first.first;
+        int cell  = cell_bin.first.second;
+        int id = cell_bin.second;
+        output<<layer<<" "<<cell<<" "<<id<<"\n";
+    }
+    output.close();
 
     //for(unsigned id=0;id<m_binToCell.size();id++)
     //{

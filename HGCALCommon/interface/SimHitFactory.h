@@ -11,7 +11,7 @@
 
 namespace AnHiMa
 {
-    typedef std::vector<SimHit> SimHitCollection;
+    typedef std::vector< std::vector<SimHit> > SimHitCollection;
 
     bool simHitSort(const SimHit* hit1, const SimHit* hit2);
 
