@@ -41,7 +41,7 @@ namespace AnHiMa
             void setPhi(float phi) {m_phi = phi;}
             void setEnergy(float energy) {m_energy = energy;}
             void setCalibratedEnergy(float energy) {m_calibratedEnergy = energy;}
-            void setLayerCalibratedEnergy(unsigned l, float energy) {m_layerCalibratedEnergies[l] = energy;}
+            void setLayerCalibratedEnergy(unsigned l, float energy, unsigned subdet=3) {m_layerCalibratedEnergies[subdet-3][l] = energy;}
 
             float eta()     const {return m_eta;}
             float phi()     const {return m_phi;}
@@ -52,13 +52,13 @@ namespace AnHiMa
             float et()      const {return m_energy/cosh(m_eta);}
             float calibratedEt()  const {return m_calibratedEnergy/cosh(m_eta);}
             int   nHits()   const {return m_hits.size();}
-            int   nLayers() const;
-            int   layerNHits(unsigned l)   const {return m_layerHits[l];}
-            float layerEnergy(unsigned l) const {return m_layerEnergies[l];}
-            float layersEnergy(unsigned l1, unsigned l2) const;
-            float layerCalibratedEnergy(unsigned l) const {return m_layerCalibratedEnergies[l];}
-            float layersCalibratedEnergy(unsigned l1, unsigned l2) const;
-            float longitudinalBarycenter();
+            int   nLayers(unsigned subdet=3) const;
+            int   layerNHits(unsigned l, unsigned subdet=3)   const {return m_layerHits[subdet-3][l];}
+            float layerEnergy(unsigned l, unsigned subdet=3) const {return m_layerEnergies[subdet-3][l];}
+            float layersEnergy(unsigned l1, unsigned l2, unsigned subdet=3) const;
+            float layerCalibratedEnergy(unsigned l, unsigned subdet=3) const {return m_layerCalibratedEnergies[subdet-3][l];}
+            float layersCalibratedEnergy(unsigned l1, unsigned l2, unsigned subdet=3) const;
+            float longitudinalBarycenter(unsigned subdet=3) const;
             const std::vector<const SimHit*>& hits() const {return m_hits;}
 
             void clear();
@@ -72,13 +72,14 @@ namespace AnHiMa
             float m_energy;
             float m_calibratedEnergy;
 
-            std::vector<float> m_layerEnergies;
-            std::vector<float> m_layerCalibratedEnergies;
-            std::vector<int> m_layerHits;
+            std::vector< std::vector<float> > m_layerEnergies;
+            std::vector< std::vector<float> > m_layerCalibratedEnergies;
+            std::vector< std::vector<int> > m_layerHits;
             std::vector<const SimHit*> m_hits;
     };
 
     bool towerSort(const Tower* tw1, const Tower* tw2);
+    bool towerSortE(const Tower* tw1, const Tower* tw2);
 
 };
 

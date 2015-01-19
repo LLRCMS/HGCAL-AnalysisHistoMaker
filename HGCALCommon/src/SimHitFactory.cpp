@@ -183,8 +183,8 @@ void SimHitFactory::update()
         hit.setY         ( (*m_hit_y)[i] );
         hit.setZ         ( (*m_hit_z)[i] );
 
-        unsigned iCol = hit.subdet() - 3;
-        if(iCol>2)
+        int iCol = hit.subdet() - 3;
+        if(iCol>2 || iCol<0)
         {
             cerr<<"WARNING: Unknown subdetector '"<<hit.subdet()<<"'\n";
             continue;

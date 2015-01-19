@@ -19,6 +19,8 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
+#include "TVector2.h"
+
 #include <iostream>
 
 
@@ -89,4 +91,39 @@ const Tower* SuperCluster::cluster(unsigned i) const
 {
     if(m_clusters.size()>i) return m_clusters[i];
     return 0;
+}
+
+
+/*****************************************************************/
+float SuperCluster::weightedEta() const
+/*****************************************************************/
+{
+    //cout<<"Computing weighted Eta\n";
+    double eta = 0.;
+    for(const auto cluster : clusters())
+    {
+        //cout<<"  eta cluster = "<<cluster->eta()<<"\n";
+        eta += (double)cluster->eta()*cluster->calibratedEt();
+    }
+    //cout<<" eta SC = "<<eta/m_et<<"\n";
+    return eta/m_et;
+}
+
+/*****************************************************************/
+float SuperCluster::weightedPhi() const
+/*****************************************************************/
+{
+    //cout<<"Computing weighted Phi\n";
+    double phi = 0.;
+    double energySum = 0.;
+    for(const auto cluster : clusters())
+    {
+        //cout<<"  phi cluster = "<<cluster->phi()<<"\n";
+        double previousPhi = (energySum>0. ? phi/energySum : 0.);
+        double diff = TVector2::Phi_mpi_pi(cluster->phi() - previousPhi);
+        phi += (double)(previousPhi + diff)*cluster->calibratedEt();
+        energySum += cluster->calibratedEt();
+    }
+    //cout<<" phi SC = "<<TVector2::Phi_mpi_pi(phi/m_et)<<"\n";
+    return TVector2::Phi_mpi_pi(phi/m_et);
 }

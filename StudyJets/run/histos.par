@@ -1,0 +1,103 @@
+Histos: Jets_, VBFJets_(1000), Random_(2000), Taus_(3000)
+
+# "Jets"
+h1f 10 jet_n            ' #jets '             51 -0.5 50.5
+h1f 11 jet_pt           ' p_{T}^{jet} [GeV] ' 200 0. 200.
+h1f 12 jet_eta          ' |#eta|^{jet} '      100 0. 5.
+h1f 13 jet_E            ' E^{jet} [GeV] '     200 0. 1000.
+h1f 14 jet_em           ' E^{jet,EM} [GeV] '  200 0. 1000.
+h1f 15 jet_emFrac       ' EM fraction '       102 0. 1.02
+h1f 16 jet_hadFrac      ' HAD fraction '      102 0. 1.02
+h1f 17 jet_invFrac      ' INV fraction '      102 0. 1.02
+h1f 18 jet_match_emFrac ' EM fraction '       102 0. 1.02
+h1f 19 tau_decay        ' decay mode '        10  0. 10.
+h1f 20 tau_match_decay  ' decay mode '        10  0. 10.
+
+## All had clusters
+h1f 21 hadclusters_n          ' # had clusters '       300 0. 3000.
+h1f 22 hadclustershard_n      ' # hard had clusters '  100  0. 100.
+h1f 23 hadclusters_et         ' E_{T}^{HAD clusters} ' 100 0. 100.
+h1f 24 hadclustershard_et     ' E_{T}^{HAD clusters} ' 100 0. 100.
+h1f 25 hadclusters_E          ' E^{HAD clusters} '     100 0. 100.
+h1f 26 hadclustershard_E      ' E^{HAD clusters} '     100 0. 100.
+h1f 27 hadclusters_hits       ' N_{hits} '             100 0. 100.
+h1f 28 hadclustershard_hits   ' N_{hits} '             100 0. 100.
+h1f 29 hadclusters_layers     ' N_{layers} '           12 1. 13.
+h1f 30 hadclustershard_layers ' N_{layers} '           12 1. 13.
+
+h1f 31 hadclusters_cuts_n  ' # had clusters after cuts ' 100 0. 100.
+
+# Clusters matched to jets
+h1f 50 clusters_match_n      ' N_{clusters} '            10 0. 10.
+h1f 51 clusters_match_E      ' E^{clusters} '            200 0. 1000.
+h1f 52 clusters_match_Emax   ' E^{leading cluster} '     200 0. 1000.
+h1f 53 clusters_match_Escd   ' E^{2nd leading cluster} ' 200 0. 1000.
+h1f 54 clusters_match_Ethd   ' E^{3rd leading cluster} ' 200 0. 1000.
+h1f 55 clusters_match_Etot   ' E^{all clusters} '        200 0. 1000.
+#
+h1f 56 hadclusters_match_n          ' # had clusters '           100 0. 100.
+h1f 57 hadclusters_match_Emax       ' E^{leading cluster} '      200 0. 1000.
+h1f 58 hadclusters_match_etmax      ' E_{T}^{leading clusters} ' 1000 0. 100.
+h1f 59 hadclusters_match_hitsmax    ' N_{hits} '                 100 0. 100.
+h1f 60 hadclusters_match_layersmax  ' N_{layers} '               12 1. 13.
+h1f 61 hadclusters_match_firstlayer ' First layers '             12 1. 13.
+h1f 62 hadclusters_match_maxlayer   ' Max layers '               12 1. 13.
+h1f 63 hadclusters_match_barycenter ' Longitudinal barycenter '  12 1. 13.
+h1f 64 hadclusters_match_dr         ' #Delta R '                 160 0. 0.4.
+h1f 65 hadclusters_match_drgen      ' #Delta R '                 160 0. 0.4.
+h1f 66 hadclusters_match_drcone     ' #Delta R '                 160 0. 0.4.
+h1f 67 hadclusters_match_etcut_n    ' # had clusters after et cut ' 100 0. 100.
+h1f 68 hadclusters_match_cuts_n     ' # had clusters after cuts ' 100 0. 100.
+
+
+# Cone around jets
+h1f 70 cone_005_em ' E^{cone, EM} ' 200 0. 1000.
+h1f 71 cone_01_em  ' E^{cone, EM} ' 200 0. 1000.
+h1f 72 cone_02_em  ' E^{cone, EM} ' 200 0. 1000.
+h1f 73 cone_04_em  ' E^{cone, EM} ' 200 0. 1000.
+#
+h1f 80 conehard_005_em ' E^{cone, EM hard} ' 200 0. 1000.
+h1f 81 conehard_01_em  ' E^{cone, EM hard} ' 200 0. 1000.
+h1f 82 conehard_02_em  ' E^{cone, EM hard} ' 200 0. 1000.
+h1f 83 conehard_04_em  ' E^{cone, EM hard} ' 200 0. 1000.
+
+# Dijet with max mass
+h1f 100 dijet_mass ' M [GeV] ' 100 0. 2000.
+h1f 101 dijet_deta ' #Delta #eta ' 80 0. 8.
+
+# Super clusters (Regions of interests)
+h1f 110 roi_n  ' # ROI  '  100 0. 100.
+#
+h1f 120 roi_match_n ' # matched ROI ' 10 0. 10.
+h1f 121 roi_match_dr ' #Delta R ' 160 0. 0.4
+h1f 122 roi_match_drgen ' #Delta R ' 160 0. 0.4
+
+## Trigger jets
+h1f 150 l1jet_match_n ' # matched L1 jets ' 10 0. 10.
+h1f 151 l1jet_match_dr ' #Delta R ' 160 0. 0.4
+h1f 152 l1jet_match_drgen ' #Delta R ' 160 0. 0.4
+#
+h1f 160 l1jet_match_et_005 ' E_{T} [GeV] ' 100 0. 100.
+h1f 161 l1jet_match_et_01 ' E_{T} [GeV] ' 100 0. 100.
+h1f 162 l1jet_match_et_015 ' E_{T} [GeV] ' 100 0. 100.
+h1f 163 l1jet_match_et_02 ' E_{T} [GeV] ' 100 0. 100.
+h1f 164 l1jet_match_et_025 ' E_{T} [GeV] ' 100 0. 100.
+h1f 165 l1jet_match_et_03 ' E_{T} [GeV] ' 100 0. 100.
+h1f 166 l1jet_match_et_04 ' E_{T} [GeV] ' 100 0. 100.
+h1f 170 l1jet_match_ethard_005 ' E_{T} [GeV] ' 100 0. 100.
+h1f 171 l1jet_match_ethard_01 ' E_{T} [GeV] ' 100 0. 100.
+h1f 172 l1jet_match_ethard_015 ' E_{T} [GeV] ' 100 0. 100.
+h1f 173 l1jet_match_ethard_02 ' E_{T} [GeV] ' 100 0. 100.
+h1f 174 l1jet_match_ethard_025 ' E_{T} [GeV] ' 100 0. 100.
+h1f 175 l1jet_match_ethard_03 ' E_{T} [GeV] ' 100 0. 100.
+h1f 176 l1jet_match_ethard_04 ' E_{T} [GeV] ' 100 0. 100.
+
+
+ntuple 500 jets_nt ' jets ' jet_eta:jet_pt:jet_E:jet_em:jet_emFrac:tau_decay:clusters_match_n:clusters_match_Etot:clusters_match_Emax:clusters_match_Escd:clusters_match_Ethd:cone_005_em:cone_01_em:cone_02_em:cone_04_em:conehard_005_em:conehard_01_em:conehard_02_em:conehard_04_em:hadclusters_match_n:hadclusters_match_etmax:hadclusters_match_hitsmax:hadclusters_match_layersmax:hadclusters_match_firstlayer:hadclusters_match_maxlayer:hadclusters_match_barycenter:hadclusters_match_cuts_n:hadclusters_match_etcut_n:roi_match_n:l1jet_match_n:l1jet_match_et_005:l1jet_match_et_01:l1jet_match_et_015:l1jet_match_et_02:l1jet_match_et_025:l1jet_match_et_03:l1jet_match_et_04:l1jet_match_ethard_005:l1jet_match_ethard_01:l1jet_match_ethard_015:l1jet_match_ethard_02:l1jet_match_ethard_025:l1jet_match_ethard_03:l1jet_match_ethard_04
+
+
+end_Histos
+
+
+
+

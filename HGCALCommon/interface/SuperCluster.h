@@ -41,6 +41,8 @@ namespace AnHiMa
             //
             float eta()     const {return m_eta;}
             float phi()     const {return m_phi;}
+            float weightedEta() const;
+            float weightedPhi() const;
             float energy()  const {return m_energy;}
             float et()      const {return m_et;}
             //

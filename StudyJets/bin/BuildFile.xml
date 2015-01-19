@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="jets.exe">
+  <use name="AnHiMaHGCAL/StudyJets"/>
+</bin>

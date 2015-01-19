@@ -24,6 +24,7 @@ namespace AnHiMa
 {
 
     const double mip = 0.000055;
+    const double mip_HF = 0.000085;
 
 };
 

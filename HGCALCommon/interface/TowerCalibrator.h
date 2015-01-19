@@ -17,14 +17,27 @@ namespace AnHiMa
             ~TowerCalibrator();
 
             void calibrate(Tower& tower);
-            double calibratedEnergy(double energy, double eta, int layer);
+            double calibratedEnergy(double energy, double eta, int layer, int subdet=3);
 
         private:
-            double m_mipValueInGeV;
-            double m_coeff_a;
-            double m_coeff_b;
-            double m_coeff_c;
-            std::vector<double> m_weights;
+            // EE
+            double m_mipValueInGeV_EE;
+            double m_coeff_a_EE;
+            double m_coeff_b_EE;
+            double m_coeff_c_EE;
+            std::vector<double> m_weights_EE;
+            // HEF
+            double m_mipValueInGeV_HEF;
+            double m_coeff_a_HEF;
+            double m_coeff_b_HEF;
+            double m_coeff_c_HEF;
+            std::vector<double> m_weights_HEF;
+            // HEB
+            double m_mipValueInGeV_HEB;
+            double m_coeff_a_HEB;
+            double m_coeff_b_HEB;
+            double m_coeff_c_HEB;
+            std::vector<double> m_weights_HEB;
 
     };
 
