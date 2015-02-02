@@ -70,7 +70,8 @@ bool AnalysisRate::initialize(const string& parameterFile)
     m_egammaAlgo.initialize(event(), m_reader.params());
 
     /// get BDT cuts
-    TFile* fileBDTcuts = TFile::Open("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta.root");
+    string bdtCuts = m_reader.params().GetValue("BDTCuts","/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_7_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta.root");
+    TFile* fileBDTcuts = TFile::Open(bdtCuts.c_str());
     TGraph* bdtCuts995 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.995");
     TGraph* bdtCuts99  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.99");
     TGraph* bdtCuts985 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.985");
@@ -142,19 +143,38 @@ void AnalysisRate::fillHistos()
     const SuperCluster* maxCandidate = (m_sortedSuperClusters.size()>0 ? m_sortedSuperClusters[0] : 0);
     const SuperCluster* maxCandidateLooseID = (m_sortedSuperClustersLooseID.size()>0 ? m_sortedSuperClustersLooseID[0] : 0);
     const SuperCluster* maxCandidateMediumID = (m_sortedSuperClustersMediumID.size()>0 ? m_sortedSuperClustersMediumID[0] : 0);
+    //
+    const SuperCluster* max2ndCandidate = (m_sortedSuperClusters.size()>1 ? m_sortedSuperClusters[1] : 0);
+    const SuperCluster* max2ndCandidateLooseID = (m_sortedSuperClustersLooseID.size()>1 ? m_sortedSuperClustersLooseID[1] : 0);
+    const SuperCluster* max2ndCandidateMediumID = (m_sortedSuperClustersMediumID.size()>1 ? m_sortedSuperClustersMediumID[1] : 0);
 
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
     m_histos.FillHisto(10+hoffset, m_seeds.size(), weight, sysNum);
     //
 
-    m_histos.FillHisto(100+hoffset, (maxCandidate && maxCandidate->et()<100. ? maxCandidate->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(101+hoffset, (maxCandidate && maxCandidate->et()<100. ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
+    //m_histos.FillHisto(100+hoffset, (maxCandidate && maxCandidate->et()<100. ? maxCandidate->et() : 0.) , weight, sysNum);
+    //m_histos.FillHisto(101+hoffset, (maxCandidate && maxCandidate->et()<100. ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
+    //m_histos.FillHisto(102+hoffset, (max2ndCandidate && max2ndCandidate->et()<100. ? max2ndCandidate->et() : 0.) , weight, sysNum);
+    ////
+    //m_histos.FillHisto(110+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
+    //m_histos.FillHisto(111+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
+    //m_histos.FillHisto(112+hoffset, (max2ndCandidateLooseID && max2ndCandidateLooseID->et()<100. ? max2ndCandidateLooseID->et() : 0.) , weight, sysNum);
+    ////
+    //m_histos.FillHisto(120+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
+    //m_histos.FillHisto(121+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+    //m_histos.FillHisto(122+hoffset, (max2ndCandidateMediumID && max2ndCandidateMediumID->et()<100. ? max2ndCandidateMediumID->et() : 0.) , weight, sysNum);
+
+    m_histos.FillHisto(100+hoffset, (maxCandidate  ? maxCandidate->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(101+hoffset, (maxCandidate  ? fabs(maxCandidate->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(102+hoffset, (max2ndCandidate  ? max2ndCandidate->et() : 0.) , weight, sysNum);
     //
-    m_histos.FillHisto(110+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(111+hoffset, (maxCandidateLooseID && maxCandidateLooseID->et()<100. ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(110+hoffset, (maxCandidateLooseID  ? maxCandidateLooseID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(111+hoffset, (maxCandidateLooseID  ? fabs(maxCandidateLooseID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(112+hoffset, (max2ndCandidateLooseID  ? max2ndCandidateLooseID->et() : 0.) , weight, sysNum);
     //
-    m_histos.FillHisto(120+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
-    m_histos.FillHisto(121+hoffset, (maxCandidateMediumID && maxCandidateMediumID->et()<100. ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(120+hoffset, (maxCandidateMediumID  ? maxCandidateMediumID->et() : 0.) , weight, sysNum);
+    m_histos.FillHisto(121+hoffset, (maxCandidateMediumID  ? fabs(maxCandidateMediumID->eta()) : 0.) , weight, sysNum);
+    m_histos.FillHisto(122+hoffset, (max2ndCandidateMediumID  ? max2ndCandidateMediumID->et() : 0.) , weight, sysNum);
 
     for(const auto sc : m_sortedSuperClusters)
     {
@@ -193,7 +213,7 @@ void AnalysisRate::applyIdentification()
 {
     for(const auto sc : m_sortedSuperClusters)
     {
-        double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0));
+        double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0), "BDTG_QCD");
         //bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(sc->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(sc->eta())));
         bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(sc->eta())));

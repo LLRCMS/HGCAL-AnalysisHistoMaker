@@ -32,7 +32,11 @@ EventHGCAL::EventHGCAL():IEvent(),
     //m_sortedHits(5184000), // ECAL only
     //m_sortedHardHits(5184000) // ECAL only
     m_sortedHits(7776000),
-    m_sortedHardHits(7776000)
+    m_sortedHitsFH(7776000),
+    m_sortedHitsBH(7776000),
+    m_sortedHardHits(7776000),
+    m_sortedHardHitsFH(7776000),
+    m_sortedHardHitsBH(7776000)
 /*****************************************************************/
 {
 
@@ -112,6 +116,8 @@ void EventHGCAL::callback(void* object)
 {
     EventHGCAL* myself = reinterpret_cast<EventHGCAL*>(object);
     myself->buildHitsIndex();
+    myself->buildHitsIndexFH();
+    myself->buildHitsIndexBH();
     myself->sortHits();
 }
 

@@ -11,22 +11,53 @@ using namespace std;
 using namespace AnHiMa;
 
 
-const int ProjectionMapProducer::NCELLS = 2145;
+const int ProjectionMapProducer::MAXCELLS = 2386;
 
 /*****************************************************************/
 ProjectionMapProducer::ProjectionMapProducer():
     m_output(0),
     m_projectedBins(0),
     m_unProjected(0),
-    m_binToCell(NCELLS),
+    m_binToCell(MAXCELLS),
     m_xN(0),
     m_yN(0),
     m_xMin(0.),
     m_xMax(0.),
     m_yMin(0.),
-    m_yMax(0.)
+    m_yMax(0.),
+    m_cellsInLayers(30)
 /*****************************************************************/
 {
+    m_cellsInLayers[0]  = 2117;
+    m_cellsInLayers[1]  = 2124;
+    m_cellsInLayers[2]  = 2124;
+    m_cellsInLayers[3]  = 2126;
+    m_cellsInLayers[4]  = 2126;
+    m_cellsInLayers[5]  = 2159;
+    m_cellsInLayers[6]  = 2159;
+    m_cellsInLayers[7]  = 2163;
+    m_cellsInLayers[8]  = 2163;
+    m_cellsInLayers[9]  = 2194;
+    m_cellsInLayers[10] = 2194;
+    m_cellsInLayers[11] = 2201;
+    m_cellsInLayers[12] = 2201;
+    m_cellsInLayers[13] = 2231;
+    m_cellsInLayers[14] = 2231;
+    m_cellsInLayers[15] = 2238;
+    m_cellsInLayers[16] = 2238;
+    m_cellsInLayers[17] = 2268;
+    m_cellsInLayers[18] = 2268;
+    m_cellsInLayers[19] = 2275;
+    m_cellsInLayers[20] = 2275;
+    m_cellsInLayers[21] = 2312;
+    m_cellsInLayers[22] = 2312;
+    m_cellsInLayers[23] = 2314;
+    m_cellsInLayers[24] = 2314;
+    m_cellsInLayers[25] = 2348;
+    m_cellsInLayers[26] = 2348;
+    m_cellsInLayers[27] = 2356;
+    m_cellsInLayers[28] = 2356;
+    m_cellsInLayers[29] = 2386;
 }
 
 /*****************************************************************/
@@ -71,7 +102,7 @@ void ProjectionMapProducer::produce()
     int lay = 1;
     int subsec = 1;
     // fill bin ID in layer 1
-    for (int cell=0; cell<NCELLS; ++cell) 
+    for (int cell=0; cell<m_cellsInLayers[lay-1]; ++cell) 
     {
         const HGCEEDetId id(HGCEE,iz,lay,sec,subsec,cell);
         if (!m_hgcalNavigator.valid(id)) continue;
@@ -80,14 +111,14 @@ void ProjectionMapProducer::produce()
         double y = point.y();
         int bx = m_projectedBins->GetXaxis()->FindBin(x);
         int by = m_projectedBins->GetYaxis()->FindBin(y);
-        //cout<<cell<<":"<<x<<","<<y<<" -> "<<bx<<","<<by<<"\n";
+
         m_projectedBins->SetBinContent(bx,by,cell);
     }
 
     // project all layers onto layer 1
     for (int lay=1; lay<=30; ++lay)
     {
-        for (int cell=0; cell<NCELLS; ++cell) 
+        for (int cell=0; cell<m_cellsInLayers[lay-1]; ++cell) 
         {
             const HGCEEDetId id(HGCEE,iz,lay,sec,subsec,cell);
             if (!m_hgcalNavigator.valid(id)) continue;
@@ -96,15 +127,19 @@ void ProjectionMapProducer::produce()
             double y = point.y();
             int bx = m_projectedBins->GetXaxis()->FindBin(x);
             int by = m_projectedBins->GetYaxis()->FindBin(y);
+
             int cellid = m_projectedBins->GetBinContent(bx,by);
             if(cellid!=-1)
             {
+
                 m_cellToBin[make_pair(lay,cell)] = cellid;
                 m_binToCell[cellid].push_back(make_pair(lay,cell));
             }
             else
             {
                 double drmin = 99999.;
+                double xc = m_projectedBins->GetXaxis()->GetBinCenter(bx);
+                double yc = m_projectedBins->GetYaxis()->GetBinCenter(by);
                 for(int bbx=1;bbx<m_projectedBins->GetNbinsX();bbx++)
                 {
                     for(int bby=1;bby<m_projectedBins->GetNbinsY();bby++)
@@ -119,8 +154,15 @@ void ProjectionMapProducer::produce()
                         {
                             drmin = dr;
                             cellid = m_projectedBins->GetBinContent(bbx,bby);
+                            xc = m_projectedBins->GetXaxis()->GetBinCenter(bbx);
+                            yc = m_projectedBins->GetYaxis()->GetBinCenter(bby);
                         }
                     }
+                }
+                if(point.eta()>1.6 && (fabs(x-xc)>0.475 || fabs(y-yc)>0.475))
+                {
+                    cout<<cell<<":"<<x-xc<<","<<y-yc<<" (eta="<<point.eta()<<",phi="<<point.phi()<<",layer="<<lay<<")\n";
+                    cout<<"   "<<cell<<" -> "<<cellid<<"\n";
                 }
                 m_unProjected->Fill(x,y);
                 m_cellToBin[make_pair(lay,cell)] = cellid;
@@ -166,8 +208,8 @@ void ProjectionMapProducer::findBinning()
     int sec = 1;
     int lay = 1;
     int subsec = 1;
-    // fill cell positions
-    for (int cell=0; cell<NCELLS; ++cell) 
+    // fill cell positions in the first layer
+    for (int cell=0; cell<m_cellsInLayers[lay-1]; ++cell) 
     {
         const HGCEEDetId id(HGCEE,iz,lay,sec,subsec,cell);
         if (!m_hgcalNavigator.valid(id)) continue;
@@ -217,6 +259,7 @@ void ProjectionMapProducer::findBinning()
     yMin -= drMin*(int)(yN/10);
     yMax += drMin*(int)(yN/10);
 
+    cout<<(xMax-xMin)/drMin<<"\n";
     m_xN = (xMax-xMin)/drMin;
     m_xMin = xMin;
     m_xMax = xMax;

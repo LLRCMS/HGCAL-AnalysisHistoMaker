@@ -72,7 +72,8 @@ void ProjectedSimHitFactory::callback(void* object)
 void ProjectedSimHitFactory::update()
 /*****************************************************************/
 {
-    map<unsigned, pair<unsigned,SimHit*> > hitMap;
+    map<unsigned, SimHit> hitMap;
+    //map<unsigned, Tower> towerMap;
     m_data.clear();
     const vector<SimHit>* simhits;
     switch(m_type)
@@ -87,16 +88,17 @@ void ProjectedSimHitFactory::update()
             simhits = &(m_event->simhits());
             break;
     }
-        cerr<<"toto\n";
     for(const auto& hit : *simhits)
     {
         HGCEEDetId projId = projectCell( (HGCEEDetId)hit.detid() );
-        cerr<<"hit "<<projId.rawId()<<"\n";
         if(projId==HGCEEDetId(0))
         {
             cerr<<"WARNING: Invalid projected cell\n";
         }
         auto itr = hitMap.find(projId.rawId());
+        //auto itrTower = towerMap.find(projId.rawId());
+        //double dx = 0.;
+        //double dy = 0.;
         if(itr==hitMap.end())
         {
             double calibEnergy = m_calibrator.calibratedEnergy(hit.energy(), hit.eta(), hit.layer());
@@ -115,16 +117,38 @@ void ProjectedSimHitFactory::update()
             hitProj.setX         ( projPoint.x() );
             hitProj.setY         ( projPoint.y() );
             hitProj.setZ         ( projPoint.z() );
+            //Tower tower;
+            //tower.addHit(hit);
 
-            m_data.push_back( hitProj );
-            hitMap[projId.rawId()] = make_pair( m_data.size()-1, &(*(m_data.end()--)) );
+            //dx = projPoint.x() - hit.x();
+            //dy = projPoint.y() - hit.y();
+
+            //m_data.push_back( hitProj );
+            hitMap[projId.rawId()] = hitProj;
+            //towerMap[projId.rawId()] = tower;
         }
         else
         {
             double calibEnergy = m_calibrator.calibratedEnergy(hit.energy(), hit.eta(), hit.layer());
-            itr->second.second->setEnergy(itr->second.second->energy() + calibEnergy);
+            itr->second.setEnergy(itr->second.energy() + calibEnergy);
+            //dx = itr->second.x()-hit.x();
+            //dy = itr->second.y()-hit.y();
+            //itrTower->second.addHit(hit);
         }
-
+    }
+    m_data.reserve(hitMap.size());
+    //for(auto& id_tower : towerMap)
+    //{
+    //    auto& tower = id_tower.second;
+    //    auto& hit = hitMap[id_tower.first];
+    //    m_calibrator.calibrate(tower);
+    //    tower.setX(hit.x());
+    //    tower.setY(hit.y());
+    //    m_data.push_back(tower);
+    //}
+    for(const auto& id_hit : hitMap)
+    {
+        m_data.push_back(id_hit.second);
     }
 }
 

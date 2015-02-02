@@ -217,8 +217,10 @@ void AnalysisIdentification::fillHistos()
     m_histos.FillHisto(103+hoffset, maxLayerH, weight, sysNum);
 
     /// BDT
-    double bdt = m_egammaAlgo.bdtOutput(*seed);
-    m_histos.FillHisto(120+hoffset, bdt, weight, sysNum);
+    double bdt_pu = m_egammaAlgo.bdtOutput(*seed, "BDTG");
+    double bdt_qcd = m_egammaAlgo.bdtOutput(*seed, "BDTG_QCD");
+    m_histos.FillHisto(120+hoffset, bdt_pu, weight, sysNum);
+    m_histos.FillHisto(121+hoffset, bdt_qcd, weight, sysNum);
 
     m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 }

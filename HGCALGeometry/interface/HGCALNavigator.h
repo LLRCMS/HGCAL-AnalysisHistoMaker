@@ -36,11 +36,11 @@ class HGCALNavigator
 
         bool initialize();
 
-        bool valid(const DetId& id) const {return m_hgctopo->valid(id);}; 
-        std::vector<DetId> north(const DetId& id)const {return m_hgctopo->north(id);};
-        std::vector<DetId> south(const DetId& id)const {return m_hgctopo->south(id);};
-        std::vector<DetId> east(const DetId& id) const {return m_hgctopo->east(id);};
-        std::vector<DetId> west(const DetId& id) const {return m_hgctopo->west(id);};
+        bool valid(const DetId& id, int subdet=3) const {return m_hgctopo.at(subdet)->valid(id);}; 
+        std::vector<DetId> north(const DetId& id, int subdet=3)const {return m_hgctopo.at(subdet)->north(id);};
+        std::vector<DetId> south(const DetId& id, int subdet=3)const {return m_hgctopo.at(subdet)->south(id);};
+        std::vector<DetId> east(const DetId& id, int subdet=3) const {return m_hgctopo.at(subdet)->east(id);};
+        std::vector<DetId> west(const DetId& id, int subdet=3) const {return m_hgctopo.at(subdet)->west(id);};
         // FIXME: topo.up() and down() give no DetId... 
         //std::vector<DetId> up(const DetId& id)   {return m_hgctopo->up(id);};
         //std::vector<DetId> down(const DetId& id) {return m_hgctopo->down(id);};
@@ -51,16 +51,16 @@ class HGCALNavigator
         std::vector<HGCEEDetId> upProj(const HGCEEDetId& id, int nz=1, double refEta=999., double refPhi=999.) const;
         std::vector<HGCEEDetId> downProj(const HGCEEDetId& id, int nz=1, double refEta=999., double refPhi=999.) const;
 
-        const HGCalGeometry* geometry() const {return m_hgcgeom;};
-        const HGCalTopology* topology() const {return m_hgctopo;};
-        const HGCalDDDConstants* dddConstants() const {return m_hgcdc;};
+        const HGCalGeometry* geometry(int subdet=3) const {return m_hgcgeom.at(subdet);};
+        const HGCalTopology* topology(int subdet=3) const {return m_hgctopo.at(subdet);};
+        const HGCalDDDConstants* dddConstants(int subdet=3) const {return m_hgcdc.at(subdet);};
 
 
     private:
         DDCompactView* m_ddcv;
-        HGCalDDDConstants* m_hgcdc;
-        HGCalTopology* m_hgctopo;
-        HGCalGeometry* m_hgcgeom;
+        std::map<int, HGCalDDDConstants*> m_hgcdc;
+        std::map<int, HGCalTopology*> m_hgctopo;
+        std::map<int, HGCalGeometry*> m_hgcgeom;
 
 };
 

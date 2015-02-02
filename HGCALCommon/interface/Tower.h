@@ -39,6 +39,8 @@ namespace AnHiMa
 
             void setEta(float eta) {m_eta = eta;}
             void setPhi(float phi) {m_phi = phi;}
+            void setX(float x) {m_x = x;}
+            void setY(float y) {m_y = y;}
             void setEnergy(float energy) {m_energy = energy;}
             void setCalibratedEnergy(float energy) {m_calibratedEnergy = energy;}
             void setLayerCalibratedEnergy(unsigned l, float energy, unsigned subdet=3) {m_layerCalibratedEnergies[subdet-3][l] = energy;}

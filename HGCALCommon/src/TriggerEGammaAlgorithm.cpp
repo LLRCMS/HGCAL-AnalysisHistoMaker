@@ -18,6 +18,7 @@
 
 
 #include <fstream>
+#include <sstream>
 
 #include "TEnv.h"
 #include "TFile.h"
@@ -117,11 +118,12 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
     cout<<"INFO: PileupParams = "<<pileupParamsFile<<"\n";
     while(!stream.eof())
     {
-        int up, layer, subeta;
+        int up, subdet, layer, subeta;
         float a, b;
-        stream >> up >> layer >> subeta >> a >> b;
+        stream >> up >> subdet >> layer >> subeta >> a >> b;
         int eta = subeta + 6*up;
-        m_pileupParams[make_pair(eta,layer)] = make_pair(a,b);
+        if(subdet==3) m_pileupParamsECAL[make_pair(eta,layer)] = make_pair(a,b);
+        else if(subdet==4) m_pileupParamsHCAL[make_pair(eta,layer)] = make_pair(a,b);
     }
     stream.close();
 
@@ -170,11 +172,20 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
 
     // initialize BDT for identification
     TMVA::Tools::Instance();
+    int nBDT = params.GetValue("BDT.N", 1);
     m_tmvaReader = new TMVA::Reader( "!Color:!Silent" );
     m_tmvaReader->AddVariable( "seed_maxLayer", &m_maxLayer);
     m_tmvaReader->AddVariable( "seed_firstLayer", &m_firstLayer);
     m_tmvaReader->AddVariable( "(seed_layer28_energy+seed_layer29_energy+seed_layer30_energy)/seed_energy", &m_energyRatio);
-    m_tmvaReader->BookMVA( "BDTG", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_pu_firstLayerMaxLayerEratio.xml");
+    for(int i=0;i<nBDT;i++)
+    {
+        stringstream bdtName, bdtFile;
+        bdtName << "BDT." << i+1 << ".Name";
+        bdtFile << "BDT." << i+1 << ".File";
+        string name = params.GetValue(bdtName.str().c_str(), "BDTG");
+        string file = params.GetValue(bdtFile.str().c_str(), "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_pu_firstLayerMaxLayerEratio.xml");
+        m_tmvaReader->BookMVA( name.c_str(), file.c_str());
+    }
 
 }
 
@@ -206,7 +217,7 @@ void TriggerEGammaAlgorithm::fillPileupEstimators(const EventHGCAL& event)
 
 
 /*****************************************************************/
-float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits)
+float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits, int subdet)
 /*****************************************************************/
 {
     int etaIndex = 0;
@@ -219,14 +230,30 @@ float TriggerEGammaAlgorithm::pileupThreshold(float eta, int layer, int nhits)
     else if(fabs(eta)>=1.5 && fabs(eta)<1.6) etaIndex = 6;
     else if(fabs(eta)>=1.6 && fabs(eta)<1.7) etaIndex = 7;
     else if(fabs(eta)>=1.7 && fabs(eta)<1.8) etaIndex = 8;
-    const auto itr = m_pileupParams.find(make_pair(etaIndex,layer));
-    if(itr==m_pileupParams.end())
+    double a = 0.;
+    double b = 1.;
+    if(subdet==3)
     {
-        cerr<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
-        return 1.;
+        const auto itr = m_pileupParamsECAL.find(make_pair(etaIndex,layer));
+        if(itr==m_pileupParamsECAL.end())
+        {
+            cerr<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
+            return 1.;
+        }
+        a = itr->second.first;
+        b = itr->second.second;
     }
-    double a = itr->second.first;
-    double b = itr->second.second;
+    else if(subdet==4)
+    {
+        const auto itr = m_pileupParamsHCAL.find(make_pair(etaIndex,layer));
+        if(itr==m_pileupParamsHCAL.end())
+        {
+            cerr<<"ERROR: cannot find pileup parameters for eta="<<eta<<",layer="<<layer<<"\n";
+            return 1.;
+        }
+        a = itr->second.first;
+        b = itr->second.second;
+    }
     return a*(double)nhits + b;
 }
 
@@ -688,7 +715,7 @@ void TriggerEGammaAlgorithm::coneClustering(const EventHGCAL& event, vector<Towe
 
 
 /*****************************************************************/
-double TriggerEGammaAlgorithm::bdtOutput(const Tower& tower)
+double TriggerEGammaAlgorithm::bdtOutput(const Tower& tower, const string& name)
 /*****************************************************************/
 {
     int maxLayer = 0;
@@ -708,7 +735,7 @@ double TriggerEGammaAlgorithm::bdtOutput(const Tower& tower)
     m_firstLayer = firstLayer;
     m_maxLayer = maxLayer;
     m_energyRatio = energyRatio;
-    double value = m_tmvaReader->EvaluateMVA( "BDTG" );
+    double value = m_tmvaReader->EvaluateMVA( name.c_str() );
     return value;
 }
 

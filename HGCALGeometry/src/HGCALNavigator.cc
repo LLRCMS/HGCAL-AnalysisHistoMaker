@@ -65,9 +65,9 @@ HGCALNavigator::~HGCALNavigator()
 /*****************************************************************/
 {
     delete m_ddcv;
-    delete m_hgcdc;
-    delete m_hgctopo;
-    delete m_hgcgeom;
+    for(auto& itr : m_hgcdc) delete itr.second;
+    for(auto& itr : m_hgctopo) delete itr.second;
+    for(auto& itr : m_hgcgeom) delete itr.second;
 }
 
 
@@ -255,18 +255,21 @@ bool HGCALNavigator::initialize()
     }
     m_ddcv->lockdown();
     cout<<" OK\n";
-    string name("HGCalEESensitive");
+    string nameEE("HGCalEESensitive");
+    string nameHEF("HGCalHESiliconSensitive");
     cout<<"INFO: Building HGCAL topology: ";
     // Copy-paste from https://github.com/PFCal-dev/cmssw/blob/CMSSW_6_2_X_SLHC/Geometry/HGCalCommonData/plugins/HGCalNumberingInitialization.cc 
-    m_hgcdc = new HGCalDDDConstants(*m_ddcv, name);
-    if(!m_hgcdc)
+    m_hgcdc[3] = new HGCalDDDConstants(*m_ddcv, nameEE);
+    m_hgcdc[4] = new HGCalDDDConstants(*m_ddcv, nameHEF);
+    if(!m_hgcdc[3] || !m_hgcdc[4])
     {
         cout<<" Failed to build HGCalDDDConstants\n";
         return false;
     }
     // Copy-paste from https://github.com/PFCal-dev/cmssw/blob/CMSSW_6_2_X_SLHC/Geometry/CaloEventSetup/plugins/HGCalTopologyBuilder.cc 
-    m_hgctopo = new HGCalTopology(*m_hgcdc, HGCEE, false);
-    if(!m_hgctopo)
+    m_hgctopo[3] = new HGCalTopology(*m_hgcdc[3], HGCEE, false);
+    m_hgctopo[4] = new HGCalTopology(*m_hgcdc[4], HGCHEF, false);
+    if(!m_hgctopo[3] || !m_hgctopo[4])
     {
         cout<<" Failed!\n";
         return false;
@@ -276,8 +279,9 @@ bool HGCALNavigator::initialize()
     // Copy-paste from https://github.com/cms-sw/cmssw/blob/CMSSW_6_2_X_SLHC/Geometry/FCalGeometry/plugins/HGCalGeometryESProducer.cc 
     cout<<"INFO: Building HGCAL geometry: ";
     HGCalGeometryLoader builder; 
-    m_hgcgeom = builder.build(*m_hgctopo);
-    if(!m_hgcgeom)
+    m_hgcgeom[3] = builder.build(*m_hgctopo[3]);
+    m_hgcgeom[4] = builder.build(*m_hgctopo[4]);
+    if(!m_hgcgeom[3] || !m_hgcgeom[4])
     {
         cout<<" Failed!\n";
         return false;
@@ -298,10 +302,13 @@ std::vector<HGCEEDetId> HGCALNavigator::up(const HGCEEDetId& id, int nz) const
     int layer = id.layer()+nz;
     if(layer<=0 || layer>30) return vCells;
 
-    std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
-    std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
+    HGCalDDDConstants* hgcdc = m_hgcdc.at(id.subdet());
+    HGCalTopology* hgctopo = m_hgctopo.at(id.subdet());
+
+    std::pair<float,float> xy = hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
+    std::pair<int,int>     kcell = hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
     int cell = kcell.second;
-    if(!m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
+    if(!hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
 
     vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
     return vCells;
@@ -315,10 +322,13 @@ std::vector<HGCEEDetId> HGCALNavigator::down(const HGCEEDetId& id, int nz) const
     int layer = id.layer()-nz;
     if(layer<=0 || layer>30) return vCells;
 
-    std::pair<float,float> xy = m_hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
-    std::pair<int,int>     kcell = m_hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
+    HGCalDDDConstants* hgcdc = m_hgcdc.at(id.subdet());
+    HGCalTopology* hgctopo = m_hgctopo.at(id.subdet());
+
+    std::pair<float,float> xy = hgcdc->locateCell(id.cell(), id.layer(), id.subsector(), true);
+    std::pair<int,int>     kcell = hgcdc->assignCell(xy.first, xy.second, layer, id.subsector(), true);
     int cell = kcell.second;
-    if(!m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
+    if(!hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell))) return vCells;
 
     vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), cell) );
     return vCells;
@@ -332,10 +342,13 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz, dou
     int layer = id.layer()+nz;
     if(layer<=0 || layer>30) return vCellsProj;
 
+    HGCalTopology* hgctopo = m_hgctopo.at(id.subdet());
+    HGCalGeometry* hgcgeom = m_hgcgeom.at(id.subdet());
+
     std::vector<HGCEEDetId> vCells = up(id, nz);
     if(vCells.size()==0) // try simple navigation
     {
-        if( !m_hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), id.cell())) ) return vCellsProj; // Simple navigation doesn't work neither
+        if( !hgctopo->valid(HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), id.cell())) ) return vCellsProj; // Simple navigation doesn't work neither
         vCells.push_back( HGCEEDetId(id.subdet(), id.zside(), layer, id.sector(), id.subsector(), id.cell()) );   
     }
 
@@ -344,68 +357,68 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz, dou
     // center
     ids.push_back( vCells[0]); // 0
     // first ring
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  1) ); // 1
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  1) ); // 2
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  1) ); // 3
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  0) ); // 4
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -1) ); // 5
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -1) ); // 6
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -1) ); // 7
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  0) ); // 8
+    ids.push_back( hgctopo->offsetBy(ids[0], -1,  1) ); // 1
+    ids.push_back( hgctopo->offsetBy(ids[0],  0,  1) ); // 2
+    ids.push_back( hgctopo->offsetBy(ids[0],  1,  1) ); // 3
+    ids.push_back( hgctopo->offsetBy(ids[0],  1,  0) ); // 4
+    ids.push_back( hgctopo->offsetBy(ids[0],  1, -1) ); // 5
+    ids.push_back( hgctopo->offsetBy(ids[0],  0, -1) ); // 6
+    ids.push_back( hgctopo->offsetBy(ids[0], -1, -1) ); // 7
+    ids.push_back( hgctopo->offsetBy(ids[0], -1,  0) ); // 8
     // second ring
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  2) ); // 9
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  2) ); // 10
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  2) ); // 11
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  2) ); // 12
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  2) ); // 13
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  1) ); // 14
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  0) ); // 15
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -1) ); // 16
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -2) ); // 17
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -2) ); // 18
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -2) ); // 19
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -2) ); // 20
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -2) ); // 21
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -1) ); // 22
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  0) ); // 23
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  1) ); // 24
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2,  2) ); // 9
+    ids.push_back( hgctopo->offsetBy(ids[0], -1,  2) ); // 10
+    ids.push_back( hgctopo->offsetBy(ids[0],  0,  2) ); // 11
+    ids.push_back( hgctopo->offsetBy(ids[0],  1,  2) ); // 12
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2,  2) ); // 13
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2,  1) ); // 14
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2,  0) ); // 15
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2, -1) ); // 16
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2, -2) ); // 17
+    ids.push_back( hgctopo->offsetBy(ids[0],  1, -2) ); // 18
+    ids.push_back( hgctopo->offsetBy(ids[0],  0, -2) ); // 19
+    ids.push_back( hgctopo->offsetBy(ids[0], -1, -2) ); // 20
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2, -2) ); // 21
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2, -1) ); // 22
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2,  0) ); // 23
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2,  1) ); // 24
     // third ring
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  3) ); // 25
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2,  3) ); // 26
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  3) ); // 27
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  3) ); // 28
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  3) ); // 29
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2,  3) ); // 30
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  3) ); // 31
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  2) ); // 32
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  1) ); // 33
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3,  0) ); // 34
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -1) ); // 35
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -2) ); // 36
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  3, -3) ); // 37
-    //ids.push_back( m_hgctopo->offsetBy(ids[0],  2, -3) ); // 38
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -3) ); // 39
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -3) ); // 40
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -3) ); // 41
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -2, -3) ); // 42
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -3) ); // 43
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -2) ); // 44
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3, -1) ); // 45
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  0) ); // 46
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  1) ); // 47
-    //ids.push_back( m_hgctopo->offsetBy(ids[0], -3,  2) ); // 48
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3,  3) ); // 25
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2,  3) ); // 26
+    ids.push_back( hgctopo->offsetBy(ids[0], -1,  3) ); // 27
+    ids.push_back( hgctopo->offsetBy(ids[0],  0,  3) ); // 28
+    ids.push_back( hgctopo->offsetBy(ids[0],  1,  3) ); // 29
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2,  3) ); // 30
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3,  3) ); // 31
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3,  2) ); // 32
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3,  1) ); // 33
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3,  0) ); // 34
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3, -1) ); // 35
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3, -2) ); // 36
+    //ids.push_back( hgctopo->offsetBy(ids[0],  3, -3) ); // 37
+    //ids.push_back( hgctopo->offsetBy(ids[0],  2, -3) ); // 38
+    ids.push_back( hgctopo->offsetBy(ids[0],  1, -3) ); // 39
+    ids.push_back( hgctopo->offsetBy(ids[0],  0, -3) ); // 40
+    ids.push_back( hgctopo->offsetBy(ids[0], -1, -3) ); // 41
+    //ids.push_back( hgctopo->offsetBy(ids[0], -2, -3) ); // 42
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3, -3) ); // 43
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3, -2) ); // 44
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3, -1) ); // 45
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3,  0) ); // 46
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3,  1) ); // 47
+    //ids.push_back( hgctopo->offsetBy(ids[0], -3,  2) ); // 48
     // fourth ring
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1,  4) );
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0,  4) );
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1,  4) );
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  1, -4) );
-    ids.push_back( m_hgctopo->offsetBy(ids[0],  0, -4) );
-    ids.push_back( m_hgctopo->offsetBy(ids[0], -1, -4) );
+    ids.push_back( hgctopo->offsetBy(ids[0], -1,  4) );
+    ids.push_back( hgctopo->offsetBy(ids[0],  0,  4) );
+    ids.push_back( hgctopo->offsetBy(ids[0],  1,  4) );
+    ids.push_back( hgctopo->offsetBy(ids[0],  1, -4) );
+    ids.push_back( hgctopo->offsetBy(ids[0],  0, -4) );
+    ids.push_back( hgctopo->offsetBy(ids[0], -1, -4) );
 
 
     if(refEta==999. && refPhi==999.)
     {
-        const GlobalPoint pos ( std::move( m_hgcgeom->getPosition(id ) ) ); 
+        const GlobalPoint pos ( std::move( hgcgeom->getPosition(id ) ) ); 
         refEta = (double)pos.eta();
         refPhi = (double)pos.phi();
     }
@@ -418,7 +431,7 @@ std::vector<HGCEEDetId> HGCALNavigator::upProj(const HGCEEDetId& id, int nz, dou
             drs.push_back(99999.);
             continue;
         }
-        poss.push_back( std::move( m_hgcgeom->getPosition(ids[i]) ) );
+        poss.push_back( std::move( hgcgeom->getPosition(ids[i]) ) );
         double deta = (double)poss[i].eta()-refEta;
         double dphi = TVector2::Phi_mpi_pi((double)poss[i].phi()-refPhi);
         double dr = sqrt(deta*deta + dphi*dphi);

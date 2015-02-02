@@ -45,8 +45,20 @@ namespace AnHiMa
             void superClustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<SuperCluster>& superClusters, double coneSize=0.4);
             void coneClustering(const EventHGCAL& event, const std::vector<SimHit>& hits, const std::vector<SuperCluster>& superClusters, std::vector<Tower>& cones, double coneSize=0.4);
 
+            float pileupThreshold(float eta, int layer, int nhits, int subdet=3);
+            int triggerRegionIndex(float eta, int zside, int sector, int subsector);
+            int triggerRegionHits(int triggerRegion, int layer, int subdet=3);
 
         private:
+            void fillPileupEstimators(const EventHGCAL& event);
+
+            // pileup related 
+            std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsECAL;
+            std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsHCAL;
+            std::map< std::pair<int,int>, std::vector< std::pair<HGCEEDetId, float> > > m_regionSimHitsECAL; 
+            std::map< std::pair<int,int>, std::vector< std::pair<HGCHEDetId, float> > > m_regionSimHitsHCAL;
+            std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveThECAL; 
+            std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveThHCAL; 
     };
 
 };

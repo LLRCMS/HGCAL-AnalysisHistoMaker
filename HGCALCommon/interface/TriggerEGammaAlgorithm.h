@@ -50,9 +50,9 @@ namespace AnHiMa
             void superClusterCorrection(std::vector<SuperCluster>& superClusters);
             void idealClustering(const EventHGCAL& event, std::vector<Tower>& clusters, double eta0, double phi0);
             void coneClustering(const EventHGCAL& event, std::vector<Tower>& clusters, double eta0, double phi0);
-            double bdtOutput(const Tower& tower);
+            double bdtOutput(const Tower& tower, const std::string& name="BDTG");
 
-            float pileupThreshold(float eta, int layer, int nhits);
+            float pileupThreshold(float eta, int layer, int nhits, int subdet=3);
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
             int triggerRegionHits(int triggerRegion, int layer);
 
@@ -61,7 +61,8 @@ namespace AnHiMa
 
 
             // pileup related 
-            std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParams;
+            std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsECAL;
+            std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsHCAL;
             std::map< std::pair<int,int>, std::vector< std::pair<HGCEEDetId, float> > > m_regionSimHits; 
             std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveTh; 
             // clustering related

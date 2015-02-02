@@ -59,7 +59,8 @@ namespace AnHiMa
             HGCALNavigator m_hgcalNavigator;
 
 
-            static const int NCELLS;
+            std::vector<int> m_cellsInLayers;
+            static const int MAXCELLS;
 
     };
 

@@ -1,15 +1,15 @@
 /**
- *  @file  AnalysisPileup.h
+ *  @file  AnalysisProjection.h
  *  @brief  
  *
  *
  *  @author  Jean-Baptiste Sauvan <sauvan@llr.in2p3.fr>
  *
- *  @date    19/10/2014
+ *  @date    23/01/2015
  *
  *  @internal
- *     Created :  19/10/2014
- * Last update :  19/10/2014 13:40:35
+ *     Created :  23/01/2015
+ * Last update :  23/01/2015 12:23:30
  *          by :  JB Sauvan
  *
  * =====================================================================================
@@ -18,19 +18,25 @@
 
 
 
-#ifndef ANALYSISPILEUP_H
-#define ANALYSISPILEUP_H
+
+
+#ifndef ANALYSISPROJECTION_H
+#define ANALYSISPROJECTION_H
 
 #include "AnHiMaHGCAL/Core/interface/IAnalysis.h"
 #include "AnHiMaHGCAL/Core/interface/EventAware.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 
+#include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
+
 #include "DataFormats/ForwardDetId/interface/HGCEEDetId.h"
-#include "DataFormats/ForwardDetId/interface/HGCHEDetId.h"
 
 #include <TRandom3.h>
 #include <TLorentzVector.h>
 #include <TH2F.h>
+#include <TGraph.h>
 
 #include <string>
 #include <vector>
@@ -43,11 +49,11 @@
 namespace AnHiMa
 {
 
-    class AnalysisPileup: public IAnalysis, EventAware<EventHGCAL>
+    class AnalysisProjection: public IAnalysis, EventAware<EventHGCAL>
     {
         public:
-            AnalysisPileup();
-            ~AnalysisPileup();
+            AnalysisProjection();
+            ~AnalysisProjection();
 
             bool initialize(const std::string& parameterFile);
 
@@ -55,11 +61,11 @@ namespace AnHiMa
 
         private:
             void fillHistos();
+            void fillProjectionMapping(const std::string& inputFile);
+            HGCEEDetId projectCell(const HGCEEDetId& cellid);
 
-            std::map< std::pair<int,int>, std::vector< std::pair<HGCEEDetId, float> > > m_regionSimHits; // detid (with eta) in trigger regions and layers inside a trigger region
-            std::map< std::pair<int,int>, std::vector< std::pair<HGCHEDetId, float> > > m_regionSimHitsHCal;
-
-            
+            int m_eventCount;
+            std::map< std::pair<unsigned,unsigned>, unsigned> m_projectionMapping;
 
     };
 }

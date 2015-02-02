@@ -5,7 +5,7 @@ batch = AnhimaBatchLauncher()
 batch.name = "MinBias_140PU"
 batch.exe = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/bin/slc6_amd64_gcc472/jets.exe"
 batch.baseDir = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/"
-batch.inputFiles.extend(glob.glob("/data_CMS/cms/sauvan/HGCAL/MinBias_140PU/6_2_0_SLHC20_15.01.17/*/MinBias_*.root"))
+batch.inputFiles.extend(glob.glob("/data_CMS/cms/sauvan/HGCAL/MinBias_140PU/6_2_0_SLHC20_15.01.17/0/MinBias_*.root"))
 batch.tree = "HGC"
 batch.outputDirectory = "/data_CMS/cms/sauvan/HGCAL/histos/StudyJets/MinBias_140PU/"
 batch.outputFile = "MinBias_140PU.root"
