@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="layercalibration.exe">
+  <use name="AnHiMaHGCAL/TriggerLayerCalibration"/>
+</bin>

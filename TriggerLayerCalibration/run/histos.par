@@ -1,0 +1,52 @@
+Histos: Calibration_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+
+h1f 10 response_raw      ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 11 response_hard     ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 12 response_hardNoTh ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 13 response_corrPU   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 14 response_corrTh   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 15 response_corrFull ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 16 response_ideal    ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+
+h1f 50 diff_pu_raw        ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
+h1f 51 diff_pu_corr       ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
+h1f 52 response_th_noPU   ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
+h1f 53 response_th_corrPU ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
+h1f 54 response_th_corrTh ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
+
+1binvh1f 60 layerEnergyFractions ' Energy fraction ' 100 0. 1.01
+LAYER 30
+0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+
+
+h1f 100 corrPU ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
+h1f 101 corrTh ' (E_{T}^{noth}/E_{T}^{th}) ' 100 0. 5.
+h1f 102 seed_eta  ' #eta ' 60 -3. 3.
+h1f 103 nhits  ' N_{hits} ' 1000 0. 1000.
+h1f 104 seed_energy  ' seed cluster energy ' 100 0. 100.
+#
+h1f 110 corrGen  ' E_{T}^{true}/E_{T}^{scl} ' 100 0. 5.
+h1f 111 sc_eta  ' #eta ' 60 -3. 3.
+h1f 112 sc_localPhi  ' local #phi ' 60 -3. 3.
+h1f 113 sc_energy  ' super cluster energy ' 100 0. 3.
+h1f 114 sc_et  ' super cluster et ' 100 0. 100.
+h1f 115 sc_ncl  ' super cluster N clusters ' 10 0. 10.
+
+
+ntuple 500 clusterTree ' cluster tree '  corrPU:corrTh:seed_eta:seed_energy:nhits
+ntuple 600 superClusterTree ' super-cluster tree '  corrGen:sc_eta:sc_localPhi:sc_energy:sc_et:sc_ncl
+
+
+
+
+
+
+end_Histos
+
+
+
+
