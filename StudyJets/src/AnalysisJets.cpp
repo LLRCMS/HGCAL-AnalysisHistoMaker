@@ -967,7 +967,7 @@ vector<const SuperCluster*> AnalysisJets::matchROIHard(const TLorentzVector& jet
     vector<const SuperCluster*> rois;
     double eta = jet.Eta();
     double phi = jet.Phi();
-    // with PU
+    // without PU
     for(const auto& cl : m_superClustersHard)
     {
         double deta = (cl.weightedEta() - eta);

@@ -22,6 +22,7 @@
 #ifndef TRIGGERJETALGORITHM_H
 #define TRIGGERJETALGORITHM_H
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -29,6 +30,8 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
+
+#include "AnHiMaHGCAL/HGCALCommon/interface/GBRForest.h"
 
 namespace AnHiMa
 {
@@ -43,11 +46,15 @@ namespace AnHiMa
 
             void hcalSeeding(const EventHGCAL& event, const std::vector<SimHit>& hits, std::vector<Tower>& seeds, double clusterSize=3.);
             void superClustering(const EventHGCAL& event, const std::vector<Tower>& seeds, std::vector<SuperCluster>& superClusters, double coneSize=0.4);
-            void coneClustering(const EventHGCAL& event, const std::vector<SimHit>& hits, const std::vector<SuperCluster>& superClusters, std::vector<Tower>& cones, double coneSize=0.4);
+            void coneClustering(const EventHGCAL& event, const std::vector<SimHit>& hits, const std::vector<SuperCluster>& superClusters, std::vector<Tower>& cones, double coneSize=0.4, bool applyThreshold=true);
 
             float pileupThreshold(float eta, int layer, int nhits, int subdet=3);
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
             int triggerRegionHits(int triggerRegion, int layer, int subdet=3);
+            void pileupSubtraction(std::vector<Tower>& jets, std::string type="");
+            void thresholdCorrection(std::vector<Tower>& jets, std::string type="");
+            void truthCorrection(std::vector<Tower>& jets, const std::vector<Tower>& cores);
+            std::vector<double> computeJetProfile(const Tower& jet, double eta0, double phi0);
 
         private:
             void fillPileupEstimators(const EventHGCAL& event);
@@ -59,6 +66,12 @@ namespace AnHiMa
             std::map< std::pair<int,int>, std::vector< std::pair<HGCHEDetId, float> > > m_regionSimHitsHCAL;
             std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveThECAL; 
             std::map< std::pair<int,int>, std::vector< const SimHit* > > m_regionHitsAboveThHCAL; 
+
+            // energy corrections
+            std::map<std::string, std::pair<GBRForest*,GBRForest*> > m_pileupSubtractions;
+            std::map<std::string, std::pair<GBRForest*,GBRForest*> >  m_thresholdCorrections;
+            GBRForest* m_truthCorrection;
+            //
     };
 
 };

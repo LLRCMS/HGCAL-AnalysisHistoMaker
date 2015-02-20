@@ -1,0 +1,40 @@
+Histos: VBFJets_, VBFJets_CorrPU_(1000), VBFJets_CorrTh_(2000), VBFJets_CorrFull_(3000)
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+h1f 50 responseThPU     ' (E_{T}^{PU} - E_{T}^{no PU, no Th})/E_{T}^{no PU, no Th} ' 100 -1. 1.
+h1f 51 responseTrueThPU ' (E_{T}^{PU} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 52 responseTrueTh   ' (E_{T}^{no PU} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 53 responseTrue     ' (E_{T}^{no PU, no Th} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+
+h1f 60 coreFraction     ' E_{T}^{core}/E_{T}^{jet} ' 100 0. 1.1
+h1f 61 coreDistance     ' #Delta R (core,jet) ' 100 0. 0.1
+
+h1f 70 jet04Fraction     ' E_{T}^{0.4}/E_{T}^{jet} ' 100 0. 10.1
+h1f 71 jet04Distance     ' #Delta R (0.4,jet) ' 100 0. 0.1
+
+
+h1f 100 corrPU         ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
+h1f 101 corrPUCore     ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
+h1f 102 corrPU04       ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
+h1f 103 corrTh         ' (E_{T}^{no PU, no Th}/E_{T}^{no PU}) ' 100 0. 2.
+h1f 104 corrThCore     ' (E_{T}^{no PU, no Th}/E_{T}^{no PU}) ' 100 0. 2.
+h1f 105 corrTh04       ' (E_{T}^{no PU, no Th}/E_{T}^{no PU}) ' 100 0. 2.
+h1f 106 corrTruth      ' (E_{T}^{true}/E_{T}^{L1}) ' 100 0. 2.
+h1f 107 eta            ' #eta ' 60 -3. 3.
+h1f 108 energy         ' seed cluster energy ' 100 0. 100.
+h1f 109 et             ' seed cluster E_{T} ' 100 0. 100.
+h1f 110 nPUhits        ' N_{PU hits} ' 1000 0. 1000.
+h1f 111 jetOverCore    ' E_{T}^{jet}/E_{T}^{core} ' 100 0. 10.
+h1f 112 jetOver04      ' E_{T}^{jet}/E_{T}^{0.4} ' 100 0. 10.
+
+
+ntuple 500 calibrationTree ' calibration tree '  corrPU:corrPUCore:corrPU04:corrTh:corrThCore:corrTh04:corrTruth:eta:energy:et:nPUhits:jetOverCore:jetOver04
+
+
+end_Histos
+
+
+
+

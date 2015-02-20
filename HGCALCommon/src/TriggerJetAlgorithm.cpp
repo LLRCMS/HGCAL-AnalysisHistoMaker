@@ -35,7 +35,8 @@ using namespace AnHiMa;
 
 
 /*****************************************************************/
-TriggerJetAlgorithm::TriggerJetAlgorithm()
+TriggerJetAlgorithm::TriggerJetAlgorithm():
+    m_truthCorrection(0)
 /*****************************************************************/
 {
 }
@@ -143,6 +144,53 @@ void TriggerJetAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
         else if(subdet==4) m_pileupParamsHCAL[make_pair(eta,layer)] = make_pair(a,b);
     }
     stream.close();
+
+    // initialize energy corrections
+    int nPUsubtraction = params.GetValue("JetPileupSubtraction.N", 1);
+    for(int i=1;i<nPUsubtraction+1;i++)
+    {
+        stringstream fileName, name;
+        name << "JetPileupSubtraction." << i <<".Name";
+        fileName << "JetPileupSubtraction." << i <<".File";
+        string pileupSubtractionName = params.GetValue(name.str().c_str(), "");
+        string pileupSubtractionFileName = params.GetValue(fileName.str().c_str(), "");
+        TFile* pileupSubtractionFile = TFile::Open(pileupSubtractionFileName.c_str());
+        assert(pileupSubtractionFile);
+        cout<<"INFO: "<<fileName.str()<<" ("<<pileupSubtractionName<<") = "<<pileupSubtractionFileName<<"\n";
+        GBRForest* pileupSubtraction_up = (GBRForest*)pileupSubtractionFile->Get("EBCorrection");
+        GBRForest* pileupSubtraction_down = (GBRForest*)pileupSubtractionFile->Get("EECorrection");
+        assert(pileupSubtraction_up);
+        assert(pileupSubtraction_down);
+        m_pileupSubtractions[pileupSubtractionName] = make_pair(pileupSubtraction_up, pileupSubtraction_down);
+        pileupSubtractionFile->Close();
+    }
+
+    int nThresholdCorrections = params.GetValue("JetThresholdCorrection.N", 1);
+    for(int i=1;i<nThresholdCorrections+1;i++)
+    {
+        stringstream fileName, name;
+        name << "JetThresholdCorrection." << i <<".Name";
+        fileName << "JetThresholdCorrection." << i <<".File";
+        string jetThresholdCorrectionName = params.GetValue(name.str().c_str(), "");
+        string jetThresholdCorrectionFileName = params.GetValue(fileName.str().c_str(), "");
+        TFile* jetThresholdCorrectionFile = TFile::Open(jetThresholdCorrectionFileName.c_str());
+        assert(jetThresholdCorrectionFile);
+        cout<<"INFO: "<<fileName.str()<<" ("<<jetThresholdCorrectionName<<") = "<<jetThresholdCorrectionFileName<<"\n";
+        GBRForest* jetThresholdCorrection_up = (GBRForest*)jetThresholdCorrectionFile->Get("EBCorrection");
+        GBRForest* jetThresholdCorrection_down = (GBRForest*)jetThresholdCorrectionFile->Get("EECorrection");
+        assert(jetThresholdCorrection_up);
+        assert(jetThresholdCorrection_down);
+        m_thresholdCorrections[jetThresholdCorrectionName] = make_pair(jetThresholdCorrection_up, jetThresholdCorrection_down);
+        jetThresholdCorrectionFile->Close();
+    }
+    string truthCorrectionFileName = params.GetValue("JetTruthCorrectionFile", "");
+    TFile* truthCorrectionFile = TFile::Open(truthCorrectionFileName.c_str());
+    assert(truthCorrectionFile);
+    cout<<"INFO: JetTruthCorrectionFile = "<<truthCorrectionFileName<<"\n";
+    //
+    m_truthCorrection = (GBRForest*)truthCorrectionFile->Get("EECorrection");
+    
+    truthCorrectionFile->Close();
 
 }
 
@@ -268,6 +316,100 @@ int TriggerJetAlgorithm::triggerRegionHits(int triggerRegion, int layer, int sub
         nhits = itr->second.size();
     }
     return nhits;
+}
+
+/*****************************************************************/
+void TriggerJetAlgorithm::pileupSubtraction(vector<Tower>& jets, std::string type)
+/*****************************************************************/
+{
+    for(auto& jet : jets)
+    {
+        if(jet.nHits()==0) 
+        {
+            //cout<<"WARNING: trying to correct jet without hits\n";
+            continue;
+        }
+        int triggerRegion = triggerRegionIndex(jet.eta(), jet.hits()[0]->zside(), jet.hits()[0]->sector(), jet.hits()[0]->subsector());
+        int nhits = 0;
+        nhits += triggerRegionHits(triggerRegion, 1, 3);
+        nhits += triggerRegionHits(triggerRegion, 2, 3);
+        nhits += triggerRegionHits(triggerRegion, 3, 3);
+        nhits += triggerRegionHits(triggerRegion, 4, 3);
+        nhits += triggerRegionHits(triggerRegion, 5, 3);
+        double eta = fabs(jet.eta());
+        double energy = jet.calibratedEnergy();
+        float* puInputs = new float[2];
+        puInputs[0] = eta;
+        puInputs[1] = nhits;
+        double esub = 0.;
+        esub = (eta<=1.8 ? m_pileupSubtractions[type].first->GetResponse(puInputs) : m_pileupSubtractions[type].second->GetResponse(puInputs))*(double)jet.nHits();
+        jet.setCalibratedEnergy(energy+esub);
+
+        delete[] puInputs;
+    }
+}
+
+/*****************************************************************/
+void TriggerJetAlgorithm::thresholdCorrection(vector<Tower>& jets, std::string type)
+/*****************************************************************/
+{
+    for(auto& jet : jets)
+    {
+        if(jet.nHits()==0) 
+        {
+            //cout<<"WARNING: trying to correct jet without hits\n";
+            continue;
+        }
+        //int triggerRegion = triggerRegionIndex(jet.eta(), jet.hits()[0]->zside(), jet.hits()[0]->sector(), jet.hits()[0]->subsector());
+        //int nhits = 0;
+        //nhits += triggerRegionHits(triggerRegion, 1);
+        //nhits += triggerRegionHits(triggerRegion, 2);
+        //nhits += triggerRegionHits(triggerRegion, 3);
+        //nhits += triggerRegionHits(triggerRegion, 4);
+        //nhits += triggerRegionHits(triggerRegion, 5);
+        double eta = fabs(jet.eta());
+        double energy = jet.calibratedEnergy();
+        float* thInputs = new float[2];
+        thInputs[0] = energy;
+        thInputs[1] = eta;
+        double ecorr = 1.;
+        ecorr = (eta<=1.8 ? m_thresholdCorrections[type].first->GetResponse(thInputs) : m_thresholdCorrections[type].second->GetResponse(thInputs));
+        jet.setCalibratedEnergy(energy*ecorr);
+
+        delete[] thInputs;
+    }
+}
+
+/*****************************************************************/
+void TriggerJetAlgorithm::truthCorrection(vector<Tower>& jets, const vector<Tower>& cores)
+/*****************************************************************/
+{
+    if(jets.size()!=cores.size())
+    {
+        cout<<"ERROR: numbers of full jets and core jets are different!\n";
+        return;
+    }
+    for(unsigned i=0; i<jets.size(); i++)
+    {
+        auto& jet = jets[i];
+        const auto& core = cores[i];
+        if(jet.nHits()==0) 
+        {
+            continue;
+        }
+        double eta = fabs(jet.eta());
+        double energy = jet.calibratedEnergy();
+        double et = jet.calibratedEt();
+        double ooc = (core.calibratedEt()>0. ? et/core.calibratedEt(): 999.);
+        float* thInputs = new float[3];
+        thInputs[0] = et;
+        thInputs[1] = eta;
+        thInputs[2] = ooc;
+        double ecorr = m_truthCorrection->GetResponse(thInputs);
+        jet.setCalibratedEnergy(energy*ecorr);
+
+        delete[] thInputs;
+    }
 }
 
 
@@ -400,17 +542,17 @@ void TriggerJetAlgorithm::superClustering(const EventHGCAL& event, const vector<
 }
 
 /*****************************************************************/
-void TriggerJetAlgorithm::coneClustering(const EventHGCAL& event, const vector<SimHit>& hits, const vector<SuperCluster>& superClusters, vector<Tower>& cones, double coneSize)
+void TriggerJetAlgorithm::coneClustering(const EventHGCAL& event, const vector<SimHit>& hits, const vector<SuperCluster>& superClusters, vector<Tower>& cones, double coneSize, bool applyThreshold)
 /*****************************************************************/
 {
     TowerCalibrator towerCalibrator;
 
     for(const auto& sc : superClusters)
     {
-        double eta0 = sc.eta();
-        double phi0 = sc.phi();
-        // first find barycenter of the ROI
-        Tower cluster;
+        double eta0 = sc.weightedEta();
+        double phi0 = sc.weightedPhi();
+        // Build cone around the ROI
+        Tower cone;
         for(const auto& hit: hits)
         {
             float eta = hit.eta();
@@ -418,28 +560,62 @@ void TriggerJetAlgorithm::coneClustering(const EventHGCAL& event, const vector<S
             double deta = (eta-eta0);
             double dphi =  TVector2::Phi_mpi_pi(phi-phi0);
             float dr = sqrt(deta*deta+dphi*dphi);
-            if(dr>0.4) continue;
-            cluster.addHit(hit);
+            if(dr>coneSize) continue;
+            int triggerRegion = triggerRegionIndex(hit.eta(), hit.zside(), hit.sector(), hit.subsector());
+            int nhits = triggerRegionHits(triggerRegion, hit.layer(), hit.subdet());
+            float threshold = pileupThreshold(hit.eta(), hit.layer(), nhits, hit.subdet());
+            double m = mip;
+            switch(hit.subdet())
+            {
+                case 3:
+                    m = mip;
+                    break;
+                case 4:
+                    m = mip_HF;
+                    break;
+                default:
+                    break;
+            }
+            // pass PU threshold
+            if(!applyThreshold || hit.energy()>threshold*m) cone.addHit(hit);
         }
-        eta0 = cluster.eta();
-        phi0 = cluster.phi();
-        // then build cone around this barycenter 
-        //Tower cone;
-        //for(const auto& hit: hits)
-        //{
-        //    float eta = hit.eta();
-        //    float phi = hit.phi();
-        //    double deta = (eta-eta0);
-        //    double dphi =  TVector2::Phi_mpi_pi(phi-phi0);
-        //    float dr = sqrt(deta*deta+dphi*dphi);
-        //    if(dr>coneSize) continue;
-        //    cone.addHit(hit);
-        //}
-        towerCalibrator.calibrate(cluster);
-        cones.push_back(cluster);
+        //if(cone.nHits()==0) continue;
+        towerCalibrator.calibrate(cone);
+        cones.push_back(cone);
     }
 
 }
 
 
+/*****************************************************************/
+vector<double> TriggerJetAlgorithm::computeJetProfile(const Tower& jet, double eta0, double phi0)
+/*****************************************************************/
+{
+    vector<double> energies(40, 0.);
+    TowerCalibrator calib;
+    for(const auto& hit : jet.hits())
+    {
+        double deta = hit->eta() - eta0;
+        double dphi = TVector2::Phi_mpi_pi(hit->phi() - phi0);
+        double dr = sqrt(deta*deta + dphi*dphi);
+        double energy = calib.calibratedEnergy(hit->energy(), hit->eta(), hit->layer(), hit->subdet());
+        for(unsigned i=1;i<=40;i++)
+        {
+            double coneSize = (double)i*0.01; // bins of 0.01
+            if(dr<coneSize)
+            {
+                for(unsigned j=i;j<=40;j++) // fill all larger cones
+                {
+                    energies[j-1] += energy;
+                }
+                break;
+            }
+        }
+    }
+    for(unsigned i=0;i<energies.size();i++)
+    {
+        energies[i] = energies[i]/cosh(eta0);
+    }
+    return energies;
+}
 

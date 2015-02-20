@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="jetcalibration.exe">
+  <use name="AnHiMaHGCAL/TriggerJetCalibration"/>
+</bin>
