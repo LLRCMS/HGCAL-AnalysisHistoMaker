@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="jetrate.exe">
+  <use name="AnHiMaHGCAL/TriggerJetRate"/>
+</bin>

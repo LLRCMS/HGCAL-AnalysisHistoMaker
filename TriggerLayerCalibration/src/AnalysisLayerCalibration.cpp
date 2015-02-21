@@ -106,17 +106,21 @@ void AnalysisLayerCalibration::fillHistos()
     m_histos.FillHisto(0+hoffset, 0.5, weight, sysNum); // Number of events
 
 
+    double Ehalf = 0.;
     for(unsigned l=2;l<=30;l+=2)
     {
         double Ei   = m_matchedElectronCone->layerCalibratedEnergy(l);
         double Eim1 = m_matchedElectronCone->layerCalibratedEnergy(l-1);
         if(Ei>0.) m_histos.Fill1BinHisto(10+hoffset, l, (Ei+Eim1)/Ei, weight, sysNum);
+        Ehalf += Ei;
     }
     for(unsigned l=1;l<=30;l++)
     {
         double E = m_matchedElectronCone->layerCalibratedEnergy(l);
         m_histos.FillHisto(100+l+hoffset, E, weight, sysNum);
     }
+    m_histos.FillHisto(99+hoffset, m_matchedElectronCone->eta(), weight, sysNum);
+    m_histos.FillHisto(100+hoffset, Ehalf, weight, sysNum);
     m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 
 }
