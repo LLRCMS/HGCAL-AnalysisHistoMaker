@@ -1,44 +1,49 @@
-Histos: Calibration_
+Histos: LayerCalibration_
 
 # General event 
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
 
-h1f 10 response_raw      ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 11 response_hard     ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 12 response_hardNoTh ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 13 response_corrPU   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 14 response_corrTh   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 15 response_corrFull ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 16 response_ideal    ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
 
-h1f 50 diff_pu_raw        ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
-h1f 51 diff_pu_corr       ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
-h1f 52 response_th_noPU   ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
-h1f 53 response_th_corrPU ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
-h1f 54 response_th_corrTh ' (E_{T}^{th} - E_{T}^{noth})/E_{T}^{noth} ' 1000 -1. 1.
-
-1binvh1f 60 layerEnergyFractions ' Energy fraction ' 100 0. 1.01
-LAYER 30
-0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 11.5 12.5 13.5 14.5 15.5 16.5 17.5 18.5 19.5 20.5 21.5 22.5 23.5 24.5 25.5 26.5 27.5 28.5 29.5 30.5
+1binvh1f 10 layerEnergyFractions ' (E_{i-1}+E_{i})/E_{i} ' 500 0. 5.
+LAYER 15
+0.5 2.5 4.5 6.5 8.5 10.5 12.5 14.5 16.5 18.5 20.5 22.5 24.5 26.5 28.5 30.5
 
 
-h1f 100 corrPU ' (E_{T}^{no PU} - E_{T}^{PU})/nhits ' 100 -1. 1.
-h1f 101 corrTh ' (E_{T}^{noth}/E_{T}^{th}) ' 100 0. 5.
-h1f 102 seed_eta  ' #eta ' 60 -3. 3.
-h1f 103 nhits  ' N_{hits} ' 1000 0. 1000.
-h1f 104 seed_energy  ' seed cluster energy ' 100 0. 100.
-#
-h1f 110 corrGen  ' E_{T}^{true}/E_{T}^{scl} ' 100 0. 5.
-h1f 111 sc_eta  ' #eta ' 60 -3. 3.
-h1f 112 sc_localPhi  ' local #phi ' 60 -3. 3.
-h1f 113 sc_energy  ' super cluster energy ' 100 0. 3.
-h1f 114 sc_et  ' super cluster et ' 100 0. 100.
-h1f 115 sc_ncl  ' super cluster N clusters ' 10 0. 10.
+h1f 101 E1  ' E_{1} [GeV] '  100 0. 100.
+h1f 102 E2  ' E_{2} [GeV] '  100 0. 100.
+h1f 103 E3  ' E_{3} [GeV] '  100 0. 100.
+h1f 104 E4  ' E_{4} [GeV] '  100 0. 100.
+h1f 105 E5  ' E_{5} [GeV] '  100 0. 100.
+h1f 106 E6  ' E_{6} [GeV] '  100 0. 100.
+h1f 107 E7  ' E_{7} [GeV] '  100 0. 100.
+h1f 108 E8  ' E_{8} [GeV] '  100 0. 100.
+h1f 109 E9  ' E_{9} [GeV] '  100 0. 100.
+h1f 110 E10 ' E_{10} [GeV] ' 100 0. 100.
+h1f 111 E11 ' E_{11} [GeV] ' 100 0. 100.
+h1f 112 E12 ' E_{12} [GeV] ' 100 0. 100.
+h1f 113 E13 ' E_{13} [GeV] ' 100 0. 100.
+h1f 114 E14 ' E_{14} [GeV] ' 100 0. 100.
+h1f 115 E15 ' E_{15} [GeV] ' 100 0. 100.
+h1f 116 E16 ' E_{16} [GeV] ' 100 0. 100.
+h1f 117 E17 ' E_{17} [GeV] ' 100 0. 100.
+h1f 118 E18 ' E_{18} [GeV] ' 100 0. 100.
+h1f 119 E19 ' E_{19} [GeV] ' 100 0. 100.
+h1f 120 E20 ' E_{20} [GeV] ' 100 0. 100.
+h1f 121 E21 ' E_{21} [GeV] ' 100 0. 100.
+h1f 122 E22 ' E_{22} [GeV] ' 100 0. 100.
+h1f 123 E23 ' E_{23} [GeV] ' 100 0. 100.
+h1f 124 E24 ' E_{24} [GeV] ' 100 0. 100.
+h1f 125 E25 ' E_{25} [GeV] ' 100 0. 100.
+h1f 126 E26 ' E_{26} [GeV] ' 100 0. 100.
+h1f 127 E27 ' E_{27} [GeV] ' 100 0. 100.
+h1f 128 E28 ' E_{28} [GeV] ' 100 0. 100.
+h1f 129 E29 ' E_{29} [GeV] ' 100 0. 100.
+h1f 130 E30 ' E_{30} [GeV] ' 100 0. 100.
 
 
-ntuple 500 clusterTree ' cluster tree '  corrPU:corrTh:seed_eta:seed_energy:nhits
-ntuple 600 superClusterTree ' super-cluster tree '  corrGen:sc_eta:sc_localPhi:sc_energy:sc_et:sc_ncl
+
+ntuple 500 layerTree ' layer tree ' E1:E2:E3:E4:E5:E6:E7:E8:E9:E10:E11:E12:E13:E14:E15:E16:E17:E18:E19:E20:E21:E22:E23:E24:E25:E26:E27:E28:E29:E30
 
 
 

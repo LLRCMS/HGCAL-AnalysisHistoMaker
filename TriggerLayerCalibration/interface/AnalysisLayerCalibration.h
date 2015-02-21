@@ -58,9 +58,12 @@ namespace AnHiMa
 
         private:
             void fillHistos();
+            void fillGenElectrons();
+            
 
             TriggerEGammaAlgorithm m_egammaAlgo;
 
+            std::vector<const GenParticle*> m_genElectrons;
             const GenParticle* m_genParticle;
 
             std::vector<Tower> m_electronCones;

@@ -222,12 +222,14 @@ void AnalysisJetIsolation::fillHistosVBFJets(int hoffset)
 
 
         // compute areas of cones
-        vector<double> drBins(40,0.);
-        vector<double> areas(40,0.);
-        for(unsigned int drBin=0; drBin<40; drBin++)
+        unsigned nbins = 20;
+        double binwidth = 0.05;
+        vector<double> drBins(nbins,0.);
+        vector<double> areas(nbins,0.);
+        for(unsigned int drBin=0; drBin<nbins; drBin++)
         {
-            drBins[drBin] = (double)drBin*0.01+0.05;
-            double R = ((double)drBin+1.)*0.01;
+            drBins[drBin] = (double)drBin*binwidth+(binwidth/2.);
+            double R = ((double)drBin+1.)*binwidth;
             double etaJ = fabs(roi->weightedEta())-2.25; // take the ROI center, and shift the endcaps around 0
             double phiJ = roi->weightedPhi();
             areas[drBin] = truncatedArea(etaJ, phiJ, R, 0.75);
@@ -257,7 +259,7 @@ void AnalysisJetIsolation::fillHistosVBFJets(int hoffset)
 
 
         double previousArea = 0.;
-        for(unsigned int drBin=0;drBin<40;drBin++)
+        for(unsigned int drBin=0;drBin<nbins;drBin++)
         {
             double deltaR = drBins[drBin];
             double sumE = sumEBins[drBin];
@@ -313,12 +315,14 @@ void AnalysisJetIsolation::fillHistosMinBiasJets(int hoffset)
         const Tower* l1jet05 = &(m_jets["Size05"][jetindex]);
 
         // compute areas of cones
-        vector<double> drBins(40,0.);
-        vector<double> areas(40,0.);
-        for(unsigned int drBin=0; drBin<40; drBin++)
+        unsigned nbins = 20;
+        double binwidth = 0.05;
+        vector<double> drBins(nbins,0.);
+        vector<double> areas(nbins,0.);
+        for(unsigned int drBin=0; drBin<nbins; drBin++)
         {
-            drBins[drBin] = (double)drBin*0.01+0.05;
-            double R = ((double)drBin+1.)*0.01;
+            drBins[drBin] = (double)drBin*binwidth+(binwidth/2.);
+            double R = ((double)drBin+1.)*binwidth;
             double etaJ = fabs(roi->weightedEta())-2.25; // take the ROI center, and shift the endcaps around 0
             double phiJ = roi->weightedPhi();
             areas[drBin] = truncatedArea(etaJ, phiJ, R, 0.75);
@@ -347,7 +351,7 @@ void AnalysisJetIsolation::fillHistosMinBiasJets(int hoffset)
         m_histos.FillHisto(12+hoffset, dR05, weight, sysNum);
 
         double previousArea = 0.;
-        for(unsigned int drBin=0;drBin<40;drBin++)
+        for(unsigned int drBin=0;drBin<nbins;drBin++)
         {
             double deltaR = drBins[drBin];
             double sumE = sumEBins[drBin];

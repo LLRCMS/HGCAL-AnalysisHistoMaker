@@ -7,9 +7,9 @@ h1f 10 distance01     ' #Delta R (0.1,0.2) ' 100 0. 0.1
 h1f 11 distance04     ' #Delta R (0.4,0.2) ' 100 0. 0.1
 h1f 12 distance05     ' #Delta R (0.5,0.2) ' 100 0. 0.1
 
-2binfh1f_sys 50 energyDensityVsEtDeltaR ' E density vs E_{T}, #Delta R ' 100 0. 1000.
+2binfh1f_sys 50 energyDensityVsEtDeltaR ' E density vs E_{T}, #Delta R ' 600 0. 6000.
 Et 5 10. 15.
-deltaR 40 0.01 0.
+deltaR 20 0.05 0.
 
 h1f 500 eta_roi       ' #eta_{ROI} ' 300 -3. 3.
 h1f 501 eta_02        ' #eta ' 300 -3. 3.

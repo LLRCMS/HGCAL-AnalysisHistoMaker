@@ -708,6 +708,8 @@ void TriggerEGammaAlgorithm::coneClustering(const EventHGCAL& event, vector<Towe
     }
     if(cluster.energy()>0.)
     {
+        // calibrate energy
+        towerCalibrator.calibrate(cluster);
         clusters.push_back(cluster);
     }
 
