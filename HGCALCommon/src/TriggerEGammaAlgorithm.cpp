@@ -309,15 +309,14 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
 
         // find projective cells in layers 15-18
         vector<HGCEEDetId> idLayers(31);
-        if(!m_useHalfLayers) idLayers[layer] = HGCEEDetId(hit->detid());
+        idLayers[layer] = HGCEEDetId(hit->detid());
         for(int l=layer+1;l<=18;l++)
         {
-            if(m_useHalfLayers && l%2!=0) continue;
             vector<HGCEEDetId> ids;
             ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, refEta, refPhi);
             if(ids.size()==0)
             {
-                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] e/g seeding: Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
@@ -379,7 +378,7 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
             usedHits.insert(hit);
         }
         // calibrate energy
-        towerCalibrator.calibrate(tower);
+        towerCalibrator.calibrate(tower, m_useHalfLayers);
         // filter seed candidates
         if(tower.calibratedEt()<0.5) continue;
         int nhits = tower.layerNHits(15)+tower.layerNHits(16)+tower.layerNHits(17)+tower.layerNHits(18);
@@ -446,7 +445,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
             ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, eta0, phi0);
             if(ids.size()==0)
             {
-                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] e/g clustering: Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
@@ -460,7 +459,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
             ids = event.hgcalNavigator().downProj(idLayers[l+1], 1, eta0, phi0);
             if(ids.size()==0)
             {
-                cerr<<"[WARNING] Cannot find cell in layer "<<l<<"\n";
+                cerr<<"[WARNING] e/g clustering: Cannot find cell in layer "<<l<<"\n";
                 idLayers[l] = (HGCEEDetId)DetId(0);
             }
             else
