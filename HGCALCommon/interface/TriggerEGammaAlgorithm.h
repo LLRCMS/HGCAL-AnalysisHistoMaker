@@ -60,6 +60,9 @@ namespace AnHiMa
             void fillPileupEstimators(const EventHGCAL& event);
 
 
+            // hardware constraints
+            bool m_useHalfLayers;
+
             // pileup related 
             std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsECAL;
             std::map< std::pair<int,int>, std::pair<float,float> > m_pileupParamsHCAL;

@@ -35,6 +35,7 @@ using namespace AnHiMa;
 
 /*****************************************************************/
 TriggerEGammaAlgorithm::TriggerEGammaAlgorithm():
+    m_useHalfLayers(false),
     m_pileupSubtraction_up(0),
     m_pileupSubtraction_down(0),
     m_thresholdCorrection_up(0),
@@ -106,6 +107,9 @@ void TriggerEGammaAlgorithm::initialize(const EventHGCAL& event, TEnv& params)
             }
         }
     }
+
+    // Fill hardware constraints
+    m_useHalfLayers = params.GetValue("UseHalfLayers", false);
 
     // fill pileup params
     string pileupParamsFile = params.GetValue("PileupParams", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/ElectronClusterThreshold/data/thresholdParameters.txt");
@@ -305,9 +309,10 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
 
         // find projective cells in layers 15-18
         vector<HGCEEDetId> idLayers(31);
-        idLayers[layer] = HGCEEDetId(hit->detid());
+        if(!m_useHalfLayers) idLayers[layer] = HGCEEDetId(hit->detid());
         for(int l=layer+1;l<=18;l++)
         {
+            if(m_useHalfLayers && l%2!=0) continue;
             vector<HGCEEDetId> ids;
             ids = event.hgcalNavigator().upProj(idLayers[l-1], 1, refEta, refPhi);
             if(ids.size()==0)
@@ -325,6 +330,7 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
         vector<HGCEEDetId> towerCells;
         for(int l=layer;l<=18;l++)
         {
+            if(m_useHalfLayers && l%2!=0) continue;
             // center cell
             towerCells.push_back(idLayers[l]);
             // first ring (3x3)
@@ -377,7 +383,8 @@ void TriggerEGammaAlgorithm::seeding(const EventHGCAL& event, vector<Tower>& see
         // filter seed candidates
         if(tower.calibratedEt()<0.5) continue;
         int nhits = tower.layerNHits(15)+tower.layerNHits(16)+tower.layerNHits(17)+tower.layerNHits(18);
-        if(nhits<19) continue;
+        const double nhitsThreshold = (m_useHalfLayers ? 10 : 19);
+        if(nhits<nhitsThreshold) continue;
         seeds.push_back(tower);
     } // end seeding hits loop
 
@@ -423,6 +430,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
     for(const auto seed : sortedSeeds)
     {
         //cerr<<"seed ET="<<seed->calibratedEt()<<", eta="<<seed->eta()<<", phi="<<seed->phi()<<"\n";
+        if(seed->hits().size()==0) continue;
         const SimHit* seedHit = seed->hits()[0];
 
         // first build a 1x1 tower
@@ -466,6 +474,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
         for(const auto& id : idLayers)
         {
             if(id==HGCEEDetId(0)) continue;
+            if(m_useHalfLayers && id.layer()%2!=0) continue;
 
             const GlobalPoint& point0 = event.hgcalNavigator().geometry()->getPosition(id);
             float x0 = point0.x();
@@ -491,7 +500,7 @@ void TriggerEGammaAlgorithm::clustering(const EventHGCAL& event, const vector<To
         if(cluster.energy()>0.)
         {
             // calibrate energy
-            towerCalibrator.calibrate(cluster);
+            towerCalibrator.calibrate(cluster, m_useHalfLayers);
             clusters.push_back(cluster);
             //cerr<<"cluster ET="<<cluster.calibratedEt()<<", eta="<<cluster.eta()<<", phi="<<cluster.phi()<<"\n";
         }
@@ -513,11 +522,11 @@ void TriggerEGammaAlgorithm::clusterPileupSubtraction(vector<Tower>& clusters)
     {
         int triggerRegion = triggerRegionIndex(cluster.hits()[0]->eta(), cluster.hits()[0]->zside(), cluster.hits()[0]->sector(), cluster.hits()[0]->subsector());
         int nhits = 0;
-        nhits += triggerRegionHits(triggerRegion, 1);
+        if(!m_useHalfLayers) nhits += triggerRegionHits(triggerRegion, 1);
         nhits += triggerRegionHits(triggerRegion, 2);
-        nhits += triggerRegionHits(triggerRegion, 3);
+        if(!m_useHalfLayers) nhits += triggerRegionHits(triggerRegion, 3);
         nhits += triggerRegionHits(triggerRegion, 4);
-        nhits += triggerRegionHits(triggerRegion, 5);
+        if(!m_useHalfLayers) nhits += triggerRegionHits(triggerRegion, 5);
         double eta = fabs(cluster.eta());
         double energy = cluster.calibratedEnergy();
         float* puInputs = new float[2];
@@ -537,13 +546,13 @@ void TriggerEGammaAlgorithm::clusterThresholdCorrection(vector<Tower>& clusters)
 {
     for(auto& cluster : clusters)
     {
-        int triggerRegion = triggerRegionIndex(cluster.hits()[0]->eta(), cluster.hits()[0]->zside(), cluster.hits()[0]->sector(), cluster.hits()[0]->subsector());
-        int nhits = 0;
-        nhits += triggerRegionHits(triggerRegion, 1);
-        nhits += triggerRegionHits(triggerRegion, 2);
-        nhits += triggerRegionHits(triggerRegion, 3);
-        nhits += triggerRegionHits(triggerRegion, 4);
-        nhits += triggerRegionHits(triggerRegion, 5);
+        //int triggerRegion = triggerRegionIndex(cluster.hits()[0]->eta(), cluster.hits()[0]->zside(), cluster.hits()[0]->sector(), cluster.hits()[0]->subsector());
+        //int nhits = 0;
+        //nhits += triggerRegionHits(triggerRegion, 1);
+        //nhits += triggerRegionHits(triggerRegion, 2);
+        //nhits += triggerRegionHits(triggerRegion, 3);
+        //nhits += triggerRegionHits(triggerRegion, 4);
+        //nhits += triggerRegionHits(triggerRegion, 5);
         double eta = fabs(cluster.eta());
         double energy = cluster.calibratedEnergy();
         float* thInputs = new float[2];
@@ -668,6 +677,7 @@ void TriggerEGammaAlgorithm::idealClustering(const EventHGCAL& event, vector<Tow
     Tower cluster;
     for(const auto& hit: simhits)
     {
+        if(m_useHalfLayers && hit.layer()%2!=0) continue;
         float eta = hit.eta();
         float phi = hit.phi();
         double deta = (eta-eta0);
@@ -679,7 +689,7 @@ void TriggerEGammaAlgorithm::idealClustering(const EventHGCAL& event, vector<Tow
     if(cluster.energy()>0.)
     {
         // calibrate energy
-        towerCalibrator.calibrate(cluster);
+        towerCalibrator.calibrate(cluster, m_useHalfLayers);
         clusters.push_back(cluster);
     }
 
@@ -698,6 +708,7 @@ void TriggerEGammaAlgorithm::coneClustering(const EventHGCAL& event, vector<Towe
     Tower cluster;
     for(const auto& hit: simhits)
     {
+        if(m_useHalfLayers && hit.layer()%2!=0) continue;
         float eta = hit.eta();
         float phi = hit.phi();
         double deta = (eta-eta0);
@@ -709,7 +720,7 @@ void TriggerEGammaAlgorithm::coneClustering(const EventHGCAL& event, vector<Towe
     if(cluster.energy()>0.)
     {
         // calibrate energy
-        towerCalibrator.calibrate(cluster);
+        towerCalibrator.calibrate(cluster, m_useHalfLayers);
         clusters.push_back(cluster);
     }
 
