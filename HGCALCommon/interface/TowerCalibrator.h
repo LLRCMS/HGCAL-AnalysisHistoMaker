@@ -16,7 +16,7 @@ namespace AnHiMa
             TowerCalibrator();
             ~TowerCalibrator();
 
-            void calibrate(Tower& tower);
+            void calibrate(Tower& tower, bool halfLayers=false);
             double calibratedEnergy(double energy, double eta, int layer, int subdet=3);
 
         private:
@@ -39,6 +39,8 @@ namespace AnHiMa
             double m_coeff_c_HEB;
             std::vector<double> m_weights_HEB;
 
+            // 1/2 layer calibration
+            std::vector<double> m_halfLayersCalib;
     };
 
 };
