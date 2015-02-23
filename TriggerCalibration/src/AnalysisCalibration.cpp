@@ -200,16 +200,17 @@ void AnalysisCalibration::fillHistos()
     }
 
     // cluster corrections
-    double corrPU = (seedHard->calibratedEt() - seedRaw->calibratedEt())/(double)seedRaw->nHits();
-    double corrTh = seedHardNoTh->calibratedEt()/seedHard->calibratedEt();
+    double corrPU = (seedHard->calibratedEnergy() - seedRaw->calibratedEnergy())/(double)seedRaw->nHits();
+    double corrTh = seedHardNoTh->calibratedEnergy()/seedHard->calibratedEnergy();
 
     int triggerRegion = m_egammaAlgo.triggerRegionIndex(seedRaw->hits()[0]->eta(), seedRaw->hits()[0]->zside(), seedRaw->hits()[0]->sector(), seedRaw->hits()[0]->subsector());
     int nhits = 0;
-    nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 1);
+    bool useHalfLayers = m_reader.params().GetValue("UseHalfLayers", false);
+    if(!useHalfLayers) nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 1);
     nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 2);
-    nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 3);
+    if(!useHalfLayers) nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 3);
     nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 4);
-    nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 5);
+    if(!useHalfLayers) nhits += m_egammaAlgo.triggerRegionHits(triggerRegion, 5);
 
     m_histos.FillHisto(100+hoffset, corrPU, weight, sysNum);
     m_histos.FillHisto(101+hoffset, corrTh, weight, sysNum);
