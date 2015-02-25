@@ -4,13 +4,17 @@ Histos: Calibration_
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
 
-h1f 10 response_raw      ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 11 response_hard     ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 12 response_hardNoTh ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 13 response_corrPU   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 14 response_corrTh   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 15 response_corrFull ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
-h1f 16 response_ideal    ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 100 -1. 1.
+h1f 10 response_raw      ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 11 response_hard     ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 12 response_hardNoTh ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 13 response_corrPU   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 14 response_corrTh   ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 15 response_corrFull ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+h1f 16 response_ideal    ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} ' 1000 -1. 1.
+
+1binvh1f 20 response_corrFull_vs_pt ' (E_{T}^{scl} - E_{T}^{true})/E_{T}^{true} vs p_{T} [GeV] ' 1000 -1. 1.
+PT 6
+20. 25. 30. 35. 40. 45. 50.
 
 h1f 50 diff_pu_raw        ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.
 h1f 51 diff_pu_corr       ' E_{T}^{PU} - E_{T}^{no PU} ' 1000 -10. 10.

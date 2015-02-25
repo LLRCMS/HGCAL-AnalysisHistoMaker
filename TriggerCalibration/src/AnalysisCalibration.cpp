@@ -172,6 +172,8 @@ void AnalysisCalibration::fillHistos()
     m_histos.FillHisto(15+hoffset, responseCorrFull, weight, sysNum);
     m_histos.FillHisto(16+hoffset, responseIdeal   , weight, sysNum);
 
+    m_histos.Fill1BinHisto(20+hoffset, m_genParticle->Pt(), responseCorrFull, weight, sysNum);
+
     // impact of individual corrections
     const Tower* seedRaw      = m_matchedSuperCluster->cluster(0);
     const Tower* seedHard     = findSeedClusterHard(m_matchedSuperCluster);
