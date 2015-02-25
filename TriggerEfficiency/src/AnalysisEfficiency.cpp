@@ -84,7 +84,8 @@ bool AnalysisEfficiency::initialize(const string& parameterFile)
     m_egammaAlgo.initialize(event(), m_reader.params());
 
     /// get BDT cuts
-    TFile* fileBDTcuts = TFile::Open("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD.root");
+    string fileNameBDTcuts = m_reader.params().GetValue("FileBDTCuts", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD.root");
+    TFile* fileBDTcuts = TFile::Open(fileNameBDTcuts.c_str());
     TGraph* bdtCuts995 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.995");
     TGraph* bdtCuts99  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.99");
     TGraph* bdtCuts985 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.985");
@@ -234,6 +235,8 @@ void AnalysisEfficiency::fillHistos()
         m_histos.FillHisto(42+hoffset, event().npu(), weight, sysNum);
         m_histos.FillHisto(43+hoffset, m_genParticle->Pt(), weight, sysNum);
 
+        string bdtName = "BDTG_QCD";
+        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_QCD_HalfLayers";
         double bdt = m_egammaAlgo.bdtOutput(*m_matchedSuperCluster->cluster(0), "BDTG_QCD");
         bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(m_matchedSuperCluster->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(m_matchedSuperCluster->eta())));

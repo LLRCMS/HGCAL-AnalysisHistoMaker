@@ -56,6 +56,8 @@ namespace AnHiMa
             int triggerRegionIndex(float eta, int zside, int sector, int subsector);
             int triggerRegionHits(int triggerRegion, int layer);
 
+            bool useHalfLayers() const {return m_useHalfLayers;}
+
         private:
             void fillPileupEstimators(const EventHGCAL& event);
 
