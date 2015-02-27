@@ -70,8 +70,8 @@ bool AnalysisRate::initialize(const string& parameterFile)
     m_egammaAlgo.initialize(event(), m_reader.params());
 
     /// get BDT cuts
-    string bdtCuts = m_reader.params().GetValue("BDTCuts","/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_7_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta.root");
-    TFile* fileBDTcuts = TFile::Open(bdtCuts.c_str());
+    string fileNameBDTcuts = m_reader.params().GetValue("FileBDTCuts", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD.root");
+    TFile* fileBDTcuts = TFile::Open(fileNameBDTcuts.c_str());
     TGraph* bdtCuts995 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.995");
     TGraph* bdtCuts99  = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.99");
     TGraph* bdtCuts985 = (TGraph*)fileBDTcuts->Get("bdtCutVsEta_eff0.985");
@@ -178,7 +178,7 @@ void AnalysisRate::fillHistos()
 
     for(const auto sc : m_sortedSuperClusters)
     {
-        if(sc->et()<5. || sc->et()>100.) continue;
+        if(sc->et()<5. /*|| sc->et()>100.*/) continue;
         double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
         double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
         m_histos.FillHisto(200+hoffset, sc->et() , weight, sysNum);
@@ -187,7 +187,7 @@ void AnalysisRate::fillHistos()
     }
     for(const auto sc : m_sortedSuperClustersLooseID)
     {
-        if(sc->et()<5. || sc->et()>100.) continue;
+        if(sc->et()<5. /*|| sc->et()>100.*/) continue;
         double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
         double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
         m_histos.FillHisto(210+hoffset, sc->et() , weight, sysNum);
@@ -196,7 +196,7 @@ void AnalysisRate::fillHistos()
     }
     for(const auto sc : m_sortedSuperClustersMediumID)
     {
-        if(sc->et()<5. || sc->et()>100.) continue;
+        if(sc->et()<5. /*|| sc->et()>100.*/) continue;
         double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
         double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
         m_histos.FillHisto(220+hoffset, sc->et() , weight, sysNum);
@@ -213,7 +213,9 @@ void AnalysisRate::applyIdentification()
 {
     for(const auto sc : m_sortedSuperClusters)
     {
-        double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0), "BDTG_QCD");
+        string bdtName = "BDTG_QCD";
+        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_QCD_HalfLayers";
+        double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0), bdtName.c_str());
         //bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(sc->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(sc->eta())));
         bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(sc->eta())));

@@ -237,7 +237,7 @@ void AnalysisEfficiency::fillHistos()
 
         string bdtName = "BDTG_QCD";
         if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_QCD_HalfLayers";
-        double bdt = m_egammaAlgo.bdtOutput(*m_matchedSuperCluster->cluster(0), "BDTG_QCD");
+        double bdt = m_egammaAlgo.bdtOutput(*m_matchedSuperCluster->cluster(0), bdtName.c_str());
         bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(m_matchedSuperCluster->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(m_matchedSuperCluster->eta())));
         bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(m_matchedSuperCluster->eta())));
