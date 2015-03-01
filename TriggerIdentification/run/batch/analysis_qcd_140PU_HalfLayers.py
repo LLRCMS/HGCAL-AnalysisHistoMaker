@@ -33,6 +33,8 @@ batch.additionalParameters["BDT.2.Name"] = "BDTG_QCD"
 batch.additionalParameters["BDT.2.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_firstLayerMaxLayerEratio.xml"
 batch.additionalParameters["BDT.3.Name"] = "BDTG_QCD_HalfLayers"
 batch.additionalParameters["BDT.3.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_HalfLayers_firstLayerMaxLayerEratio.xml"
+
+
 batch.additionalParameters["Sample"] = "background"
 batch.additionalParameters["EtCut"] = "20."
 

@@ -218,11 +218,13 @@ void AnalysisIdentification::fillHistos()
 
     /// BDT
     double bdt_pu = m_egammaAlgo.bdtOutput(*seed, "BDTG");
+    double bdt_pu_halfLayers = m_egammaAlgo.bdtOutput(*seed, "BDTG_MinBias_HalfLayers");
     double bdt_qcd = m_egammaAlgo.bdtOutput(*seed, "BDTG_QCD");
     double bdt_qcd_halfLayers = m_egammaAlgo.bdtOutput(*seed, "BDTG_QCD_HalfLayers");
     m_histos.FillHisto(120+hoffset, bdt_pu, weight, sysNum);
-    m_histos.FillHisto(121+hoffset, bdt_qcd, weight, sysNum);
-    m_histos.FillHisto(122+hoffset, bdt_qcd_halfLayers, weight, sysNum);
+    m_histos.FillHisto(121+hoffset, bdt_pu_halfLayers, weight, sysNum);
+    m_histos.FillHisto(122+hoffset, bdt_qcd, weight, sysNum);
+    m_histos.FillHisto(123+hoffset, bdt_qcd_halfLayers, weight, sysNum);
 
     m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 }

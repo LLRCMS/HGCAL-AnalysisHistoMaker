@@ -39,10 +39,11 @@ h1f 102 seed_lastLayer ' last layer ' 31 0. 31.
 h1f 103 seed_maxHitLayer ' max hit layer ' 31 0. 31.
 #
 h1f 120 seed_bdt_pu ' BDT PU output ' 200 -1. 1.
-h1f 121 seed_bdt_qcd ' BDT QCD output ' 200 -1. 1.
-h1f 122 seed_bdt_qcd_halfLayers ' BDT QCD HalfLayers output ' 200 -1. 1.
+h1f 121 seed_bdt_pu_halfLayers ' BDT PU output ' 200 -1. 1.
+h1f 122 seed_bdt_qcd ' BDT QCD output ' 200 -1. 1.
+h1f 123 seed_bdt_qcd_halfLayers ' BDT QCD HalfLayers output ' 200 -1. 1.
 
-ntuple 500 identificationTree ' ID tree '  seed_eta:seed_sectorPhi:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer:seed_bdt_pu:seed_bdt_qcd:seed_bdt_qcd_halfLayers
+ntuple 500 identificationTree ' ID tree '  seed_eta:seed_sectorPhi:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer:seed_bdt_pu:seed_bdt_pu_halfLayers:seed_bdt_qcd:seed_bdt_qcd_halfLayers
 
 end_Histos
 
