@@ -26,12 +26,18 @@ batch.additionalParameters["ThresholdCorrectionFile"] = "/home/llr/cms/sauvan/CM
 batch.additionalParameters["SuperClusterCorrectionFile"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/GBR_Trigger_HGCAL_EG_halfLayers_superClusterCorr_eta_phi_ncl_results.root"
 batch.additionalParameters["UseHalfLayers"] = "true"
 #
-batch.additionalParameters["BDT.N"] = "2"
-batch.additionalParameters["BDT.1.Name"] = "BDTG_QCD"
-batch.additionalParameters["BDT.1.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_firstLayerMaxLayerEratio.xml"
-batch.additionalParameters["BDT.2.Name"] = "BDTG_QCD_HalfLayers"
-batch.additionalParameters["BDT.2.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_HalfLayers_firstLayerMaxLayerEratio.xml"
+batch.additionalParameters["BDT.N"] = "4"
+batch.additionalParameters["BDT.1.Name"] = "BDTG"
+batch.additionalParameters["BDT.1.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_pu_firstLayerMaxLayerEratio.xml"
+batch.additionalParameters["BDT.2.Name"] = "BDTG_MinBias_HalfLayers"
+batch.additionalParameters["BDT.2.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_minbias_HalfLayers_firstLayerMaxLayerEratio.xml"
+batch.additionalParameters["BDT.3.Name"] = "BDTG_QCD"
+batch.additionalParameters["BDT.3.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_firstLayerMaxLayerEratio.xml"
+batch.additionalParameters["BDT.4.Name"] = "BDTG_QCD_HalfLayers"
+batch.additionalParameters["BDT.4.File"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/ele_qcd_HalfLayers_firstLayerMaxLayerEratio.xml"
+
 #
-batch.additionalParameters["FileBDTCuts"] =  "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD_HalfLayers.root"
+#batch.additionalParameters["FileBDTCuts"] =  "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD_HalfLayers.root"
+batch.additionalParameters["FileBDTCuts"] =  "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_MinBias_HalfLayers.root"
 
 batch.additionalParameters["ProjectionMapping"] = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/projectionMapping.txt"

@@ -69,6 +69,7 @@ bool AnalysisRate::initialize(const string& parameterFile)
 
     m_egammaAlgo.initialize(event(), m_reader.params());
 
+
     /// get BDT cuts
     string fileNameBDTcuts = m_reader.params().GetValue("FileBDTCuts", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/bdtCutsVsEta_QCD.root");
     TFile* fileBDTcuts = TFile::Open(fileNameBDTcuts.c_str());
@@ -213,8 +214,9 @@ void AnalysisRate::applyIdentification()
 {
     for(const auto sc : m_sortedSuperClusters)
     {
-        string bdtName = "BDTG_QCD";
-        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_QCD_HalfLayers";
+        // FIXME: create several lists with several BDTs
+        string bdtName = "BDTG";
+        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_MinBias_HalfLayers";
         double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0), bdtName.c_str());
         //bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(sc->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(sc->eta())));
