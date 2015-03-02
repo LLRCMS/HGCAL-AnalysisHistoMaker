@@ -25,6 +25,7 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHit.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/GenParticle.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SimHitFactory.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/TriggerHitFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/ProjectedSimHitFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/TowerFactory.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/GenParticleFactory.h"
@@ -126,6 +127,8 @@ namespace AnHiMa
 
             SimHitFactory      m_simhitFactoryAll;
             SimHitFactory      m_simhitFactoryHard;
+            TriggerHitFactory  m_triggerhitFactoryAll;
+            TriggerHitFactory  m_triggerhitFactoryHard;
             ProjectedSimHitFactory m_projectedSimhitFactoryAll;
             ProjectedSimHitFactory m_projectedSimhitFactoryHard;
             TowerFactory       m_towerFactory;

@@ -76,6 +76,8 @@ void EventHGCAL::connectVariables(TChain* inputChain)
     // keep this order of initialization
     m_simhitFactoryAll.initialize(this, inputChain, SimHitFactory::ALL);
     m_simhitFactoryHard.initialize(this, inputChain, SimHitFactory::HARDINT);
+    m_triggerhitFactoryAll.initialize(this, inputChain, m_simhitFactoryAll, "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/cellsToTriggerCellsMap.txt");
+    m_triggerhitFactoryHard.initialize(this, inputChain, m_simhitFactoryHard, "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/cellsToTriggerCellsMap.txt");
     registerCallback((void*)this, EventHGCAL::callback);
     //m_towerFactory.initialize(this, inputChain, this);
     m_genparticleFactory.initialize(this, inputChain);
