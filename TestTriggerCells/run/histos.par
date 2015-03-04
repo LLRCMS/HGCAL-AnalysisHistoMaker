@@ -1,0 +1,15 @@
+Histos: TestTriggerCells_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+1binvh2f 10 maxdxdy_vs_ncells ' max(DR) vs Ncells ' 100 0. 100. 100 0. 100.
+NCELLS 8
+2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 
+
+
+end_Histos
+
+
+
+
