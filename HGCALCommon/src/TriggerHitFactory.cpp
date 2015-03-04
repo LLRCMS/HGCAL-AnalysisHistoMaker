@@ -21,9 +21,11 @@
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerHitFactory.h"
 
+
 #include <utility>
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
 #include "TVector2.h"
 
@@ -41,7 +43,7 @@ void TriggerHitFactory::initialize(IEvent* event, TChain* chain)
 }
 
 /*****************************************************************/
-void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFactory& hitFactory, const string& triggerCellMapping)
+void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFactory& hitFactory, const string& triggerCellMapping, const HGCALNavigator& navigator)
 /*****************************************************************/
 {
     m_hitFactory = &hitFactory;
@@ -50,7 +52,8 @@ void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFac
     m_data.push_back( vector<SimHit>() ); // FH
     m_data.push_back( vector<SimHit>() ); // BH
 
-    m_cellToTriggerCell.resize(30);
+
+    array< map<short, vector<short>>, 30> triggerCellToCell; 
 
     // Read trigger cell mapping
     ifstream ifs(triggerCellMapping, std::ifstream::in);
@@ -63,9 +66,9 @@ void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFac
     short cell = 0;
     short triggerCell = 0;
     short subsector = 0;
-    while(!ifs.eof())
+    
+    for(; ifs>>layer>>cell>>triggerCell>>subsector; )
     {
-        ifs >> layer >> cell >> triggerCell >> subsector;
         if(layer>=30 || layer<0) 
         {
             cerr<<"ERROR: TriggerHitFactory::initialize(): Found layer '"<<layer<<"' in trigger cell mapping. Discard it.\n";
@@ -75,11 +78,59 @@ void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFac
         auto ret = m_cellToTriggerCell[layer].insert( std::make_pair(newcell, triggerCell) );
         if(ret.second==false)
         {
-            cerr<<"ERROR: TriggerHitFactory::initialize(): Duplicated entry ("<<layer<<","<<cell<<") in trigger cell mapping. Use first mapping found.\n";
+            cerr<<"ERROR: TriggerHitFactory::initialize(): Duplicated entry ("<<layer<<","<<newcell<<") in trigger cell mapping. Use first mapping found.\n";
         }
-    }
+        vector<short> vec(0);
+        triggerCellToCell[layer].insert( std::make_pair(triggerCell, vec) );
+        triggerCellToCell[layer].at(triggerCell).push_back(newcell);
+    } 
+    assert(ifs.eof());
     ifs.close();
 
+    // check the number of cells included in trigger cells
+    for(unsigned layer=1; layer<=30; layer++)
+    {
+        const auto& mapping = triggerCellToCell.at(layer-1);
+        for(const auto& trigger_cells : mapping)
+        {
+            if(trigger_cells.second.size()>5) 
+            {
+                cout<<"WARNING: TriggerHitFactory::initialize(): layer "<<layer<<" trigger cell "<<trigger_cells.first<<" includes "<<trigger_cells.second.size()<<" cells\n";
+            }
+        }
+    }
+
+    // compute positions of trigger cells
+    for(unsigned sec=1;sec<=18; sec++)
+    {
+        for(unsigned layer=1; layer<=30; layer++)
+        {
+            for(const auto& trigger_cells : triggerCellToCell[layer-1])
+            {
+                const short triggerCell = trigger_cells.first;
+                const vector<short>& cells = trigger_cells.second;
+                SimplePosition pos;
+                pos.x   = 0.;
+                pos.y   = 0.;
+                for(const auto& c : cells)
+                {
+                    int subsec = (c>0 ? 1 : -1);
+                    int cell = abs(c)-1;
+                    HGCEEDetId detid(HGCEE, 1, layer, sec, subsec, cell);
+                    const GlobalPoint point = navigator.geometry()->getPosition(detid);
+                    //pos.eta += point.eta();
+                    //pos.phi += (pos.phi + TVector2::Phi_mpi_pi(point.phi() - pos.phi));
+                    pos.x   += point.x();
+                    pos.y   += point.y();
+                }
+                //pos.eta /= (float)cells.size();
+                //pos.phi  = TVector2::Phi_mpi_pi(pos.phi/(float)cells.size());
+                pos.x   /= (float)cells.size();
+                pos.y   /= (float)cells.size();
+                m_triggerCellPositions[sec-1][layer-1].insert( std::make_pair(triggerCell, pos) );
+            }
+        }
+    }
 
 }
 
@@ -119,38 +170,64 @@ void TriggerHitFactory::update()
     m_data[1].clear();
     m_data[2].clear();
     
+    // Loop on EE, F-HE, B-HE
+    // Trigger cell grouping is only done in EE
     for(int iCol=0;iCol<3;iCol++)
     {
         const vector<SimHit>& hits = m_hitFactory->data().at(iCol);
-        if(iCol==0)
+        if(iCol==0) // EE
         {
-            map<int, pair<short,SimHit> > m_triggerHits;
+            map<int, SimHit> m_triggerHits;
             for(const auto& hit : hits)
             {
-                short layer = hit.layer();
-                short cell = hit.cell()*hit.subsector();
-                short triggerCell = m_cellToTriggerCell[layer].at(cell);
-                int index = cellIndex(hit.zside(), hit.layer(), hit.sector(), triggerCell);
-                SimHit triggerHit(hit);
-                triggerHit.setCell(triggerCell);
-                pair<short,SimHit> p(1,triggerHit);
-                auto ret = m_triggerHits.insert( pair<int, pair<short,SimHit> >( index, p ));
-                if(!ret.second) 
+                try
                 {
-                    ret.first->second.first += 1;
-                    ret.first->second.second.setEnergy(hit.energy() + ret.first->second.second.energy());
-                    ret.first->second.second.setEta(hit.eta() + ret.first->second.second.eta());
-                    double phidiff = TVector2::Phi_mpi_pi(hit.phi() - ret.first->second.second.phi());
-                    ret.first->second.second.setPhi(2*ret.first->second.second.phi() + phidiff);
+                    short layer = hit.layer()-1;
+                    short cell = (hit.cell()+1)*hit.subsector();
+                    short triggerCell = m_cellToTriggerCell[layer].at(cell);
+                    int index = cellIndex(hit.zside(), hit.layer(), hit.sector(), triggerCell);
+                    SimHit triggerHit(hit);
+                    triggerHit.setCell(triggerCell);
+                    auto ret = m_triggerHits.insert( pair<int, SimHit>( index, triggerHit ) );
+                    //cerr<<"Hit "<<layer<<","<<cell<<" -> "<<triggerCell<<"\n";
+                    if(!ret.second) // if trigger cells already store, add energy
+                    {
+                        ret.first->second.setEnergy(hit.energy() + ret.first->second.energy()); // increase trigger cell energy
+                    }
+                }
+                catch(std::out_of_range& e)
+                {
+                    cerr<<"ERROR: Cannot find the trigger cell for hit layer "<<hit.layer()<<" sector "<<hit.sector()<<" subsec "<<hit.subsector()<<" cell "<<hit.cell()<<"\n";
+                    cerr<<"       This hit is discarded\n";
                 }
             }
-            for(auto& id_n_hit : m_triggerHits)
+            // retrieve trigger cell position and fill in data buffer
+            for(auto& id_hit : m_triggerHits) 
             {
-                id_n_hit.second.second.setEta(id_n_hit.second.second.eta()/(double)id_n_hit.second.first);
-                id_n_hit.second.second.setPhi( TVector2::Phi_mpi_pi(id_n_hit.second.second.phi()/(double)id_n_hit.second.first) );
-                m_data[iCol].push_back( id_n_hit.second.second );
+                const SimHit& hit = id_hit.second;
+                try
+                {
+                    const SimplePosition& pos = m_triggerCellPositions[hit.sector()-1][hit.layer()-1].at(hit.cell());
+                    float x = (float)hit.zside() * pos.x;
+                    float y = pos.y;
+                    float z = hit.z();
+                    GlobalPoint point(x, y, z);
+                    float eta = point.eta();
+                    float phi = point.phi();
+                    id_hit.second.setEta(eta);
+                    id_hit.second.setPhi(phi);
+                    id_hit.second.setX(x);
+                    id_hit.second.setY(y);
+                }
+                catch(std::out_of_range& e)
+                {
+                    cerr<<"ERROR: Cannot find the position of trigger hit layer "<<hit.layer()<<" sector "<<hit.sector()<<" cell "<<hit.cell()<<"\n";
+                    cerr<<"       The hit position will be incorrect\n";
+                }
+                m_data[iCol].push_back( id_hit.second );
             }
         }
+        // not EE. Just copy the cells (no grouping)
         else
         {
             for(const auto& hit : hits)

@@ -79,6 +79,15 @@ namespace AnHiMa
             const std::vector<SimHit>& hardsimhitsBH() const {return m_simhitFactoryHard.data()[2];}
             const std::vector<const SimHit*>& sortedHits() const {return m_energySortedHits;}
             const std::vector<const SimHit*>& sortedSeedingHits() const {return m_energySortedSeedingHits;}
+            // Trigger hits
+            const std::vector<SimHit>& triggerhits() const       {return m_triggerhitFactoryAll.data()[0];}
+            const std::vector<SimHit>& triggerhitsE() const      {return m_triggerhitFactoryAll.data()[0];}
+            const std::vector<SimHit>& triggerhitsFH() const     {return m_triggerhitFactoryAll.data()[1];}
+            const std::vector<SimHit>& triggerhitsBH() const     {return m_triggerhitFactoryAll.data()[2];}
+            const std::vector<SimHit>& hardtriggerhits() const   {return m_triggerhitFactoryHard.data()[0];}
+            const std::vector<SimHit>& hardtriggerhitsE() const  {return m_triggerhitFactoryHard.data()[0];}
+            const std::vector<SimHit>& hardtriggerhitsFH() const {return m_triggerhitFactoryHard.data()[1];}
+            const std::vector<SimHit>& hardtriggerhitsBH() const {return m_triggerhitFactoryHard.data()[2];}
             //
             const std::vector<SimHit>& projectedhits() const {return m_projectedSimhitFactoryAll.data();}
             const std::vector<SimHit>& hardprojectedhits() const {return m_projectedSimhitFactoryHard.data();}
