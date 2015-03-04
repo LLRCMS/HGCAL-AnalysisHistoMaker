@@ -93,7 +93,7 @@ void TriggerHitFactory::initialize(IEvent* event, TChain* chain, const SimHitFac
         const auto& mapping = triggerCellToCell.at(layer-1);
         for(const auto& trigger_cells : mapping)
         {
-            if(trigger_cells.second.size()>5) 
+            if(trigger_cells.second.size()>7) 
             {
                 cout<<"WARNING: TriggerHitFactory::initialize(): layer "<<layer<<" trigger cell "<<trigger_cells.first<<" includes "<<trigger_cells.second.size()<<" cells\n";
             }
