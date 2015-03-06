@@ -39,8 +39,12 @@ EventHGCAL::EventHGCAL():IEvent(),
     m_sortedHardHitsBH(7776000)
 /*****************************************************************/
 {
+    const string triggerLeftNavigationMapping("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/triggerCellsLeftNeighbor.txt");
+    const string triggerRightNavigationMapping("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/triggerCellsRightNeighbor.txt");
+    const string triggerUpNavigationMapping("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/triggerCellsUpNeighbor.txt");
+    const string triggerDownNavigationMapping("/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/triggerCellsDownNeighbor.txt");
 
-    m_hgcalNavigator.initialize();
+    m_hgcalNavigator.initialize(triggerLeftNavigationMapping, triggerRightNavigationMapping, triggerUpNavigationMapping, triggerDownNavigationMapping);
 
 }
 

@@ -188,6 +188,7 @@ void TriggerHitFactory::update()
                     int index = cellIndex(hit.zside(), hit.layer(), hit.sector(), triggerCell);
                     SimHit triggerHit(hit);
                     triggerHit.setCell(triggerCell);
+                    triggerHit.setSubsector(1);
                     auto ret = m_triggerHits.insert( pair<int, SimHit>( index, triggerHit ) );
                     //cerr<<"Hit "<<layer<<","<<cell<<" -> "<<triggerCell<<"\n";
                     if(!ret.second) // if trigger cells already store, add energy

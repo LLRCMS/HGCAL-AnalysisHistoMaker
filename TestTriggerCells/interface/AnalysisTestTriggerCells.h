@@ -50,11 +50,14 @@ namespace AnHiMa
             void execute();
 
         private:
-            void fillHistos();
+            void testTriggerCellBuilding();
+            void testTriggerCellNavigation();
+
             unsigned cellIndex(int zside, int layer, int sector, int cell) const;
 
             std::vector< std::map<short, short> > m_cellToTriggerCell;
             std::array< std::map<short, std::vector<short>>, 30> m_triggerCellToCell; 
+            std::array< std::array< std::map<short, SimplePosition>, 30>, 18> m_triggerCellPositions;
 
 
     };

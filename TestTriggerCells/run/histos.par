@@ -6,6 +6,22 @@ h1f 0 nevents ' Number of events ' 1 0.5 1.5
 1binvh2f 10 maxdxdy_vs_ncells ' max(DR) vs Ncells ' 100 0. 100. 100 0. 100.
 NCELLS 8
 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5 
+#
+1binvh2f 20 eastdxdy_vs_ncells ' east dx,dy vs Ncells ' 200 -100. 100. 200 -100. 100.
+NCELLS 8
+2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5
+#
+1binvh2f 30 westdxdy_vs_ncells ' west dx,dy vs Ncells ' 200 -100. 100. 200 -100. 100.
+NCELLS 8
+2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5
+#
+1binvh2f 40 northdxdy_vs_ncells ' north dx,dy vs Ncells ' 200 -100. 100. 200 -100. 100.
+NCELLS 8
+2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5
+#
+1binvh2f 50 southdxdy_vs_ncells ' south dx,dy vs Ncells ' 200 -100. 100. 200 -100. 100.
+NCELLS 8
+2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 10.5
 
 
 end_Histos

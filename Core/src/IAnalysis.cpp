@@ -103,8 +103,8 @@ void IAnalysis::loop()
 /*****************************************************************/
 {
     int treenum=0;
-    for (Long64_t entry =0;entry<m_nEntries;entry++)
-    //for (Long64_t entry =0;entry<100;entry++)
+    //for (Long64_t entry =0;entry<m_nEntries;entry++)
+    for (Long64_t entry =0;entry<10;entry++)
     {
         if(entry%1000==0)
         {

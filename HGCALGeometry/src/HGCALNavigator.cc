@@ -16,9 +16,7 @@
  */
 
 
-#include <vector>
-#include <string>
-
+#include <fstream>
 #include "TVector2.h"
 
 #include "AnHiMaHGCAL/HGCALGeometry/interface/HGCALNavigator.h"
@@ -73,7 +71,7 @@ HGCALNavigator::~HGCALNavigator()
 
 
 /*****************************************************************/
-bool HGCALNavigator::initialize()
+bool HGCALNavigator::initialize(const string& triggerLeftNavigationMapping, const string& triggerRightNavigationMapping, const string& triggerUpNavigationMapping, const string& triggerDownNavigationMapping)
 /*****************************************************************/
 {
     // xml geometry files defined in https://github.com/cms-sw/cmssw/blob/CMSSW_6_2_X_SLHC/Geometry/CMSCommonData/python/cmsExtendedGeometry2023HGCalMuonXML_cfi.py 
@@ -288,10 +286,210 @@ bool HGCALNavigator::initialize()
     }
     cout<<"OK\n";
 
+    // Load trigger cell navigation mapping
+    if(!loadTriggerLeftNavigation(triggerLeftNavigationMapping))   return false;
+    if(!loadTriggerRightNavigation(triggerRightNavigationMapping)) return false;
+    if(!loadTriggerUpNavigation(triggerUpNavigationMapping))       return false;
+    if(!loadTriggerDownNavigation(triggerDownNavigationMapping))   return false;
+
     return true;
 
 }
 
+
+
+/*****************************************************************/
+bool HGCALNavigator::loadTriggerLeftNavigation(const string& navigationMapping)
+/*****************************************************************/
+{
+    // Read trigger cell navigation map
+    ifstream ifs(navigationMapping, std::ifstream::in);
+    if(!ifs.is_open()) 
+    {
+        cerr<<"ERROR: HGCALNavigator::loadTriggerLeftNavigation(): Cannot open navigation map'"<<navigationMapping<<"'\n";
+        return false;
+    }
+    short layer = 0;
+    short cell = 0;
+    short neighborCell = 0;
+    short sector = 0;
+    
+    for(; ifs>>layer>>cell>>neighborCell>>sector; )
+    {
+        if(layer>=30 || layer<0) 
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerLeftNavigation(): Found layer '"<<layer<<"' in trigger cell mapping. Discard it.\n";
+            continue;
+        }
+        vector< pair<short,short>> neighborCells(1);
+        neighborCells.at(0) = make_pair(sector, neighborCell);
+        auto ret = m_triggerLeftNavigationMapping[layer].insert( pair<short, vector< pair<short,short>>>(cell, neighborCells) );
+        if(ret.second==false)
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerLeftNavigation(): Duplicated entry ("<<layer<<","<<cell<<"). Use first mapping found.\n";
+        }
+    } 
+    assert(ifs.eof());
+    ifs.close();
+
+
+    return true;
+}
+
+
+/*****************************************************************/
+bool HGCALNavigator::loadTriggerRightNavigation(const string& navigationMapping)
+/*****************************************************************/
+{
+    // Read trigger cell navigation map
+    ifstream ifs(navigationMapping, std::ifstream::in);
+    if(!ifs.is_open()) 
+    {
+        cerr<<"ERROR: HGCALNavigator::loadTriggerRightNavigation(): Cannot open navigation map'"<<navigationMapping<<"'\n";
+        return false;
+    }
+    short layer = 0;
+    short cell = 0;
+    short neighborCell = 0;
+    short sector = 0;
+    
+    for(; ifs>>layer>>cell>>neighborCell>>sector; )
+    {
+        if(layer>=30 || layer<0) 
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerRightNavigation(): Found layer '"<<layer<<"' in trigger cell mapping. Discard it.\n";
+            continue;
+        }
+        vector< pair<short,short>> neighborCells(1);
+        neighborCells.at(0) = make_pair(sector, neighborCell);
+        auto ret = m_triggerRightNavigationMapping[layer].insert( pair<short, vector< pair<short,short>>>(cell, neighborCells) );
+        if(ret.second==false)
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerRightNavigation(): Duplicated entry ("<<layer<<","<<cell<<"). Use first mapping found.\n";
+        }
+    } 
+    assert(ifs.eof());
+    ifs.close();
+
+
+    return true;
+}
+
+/*****************************************************************/
+bool HGCALNavigator::loadTriggerUpNavigation(const string& navigationMapping)
+/*****************************************************************/
+{
+    // Read trigger cell navigation map
+    ifstream ifs(navigationMapping, std::ifstream::in);
+    if(!ifs.is_open()) 
+    {
+        cerr<<"ERROR: HGCALNavigator::loadTriggerUpNavigation(): Cannot open navigation map'"<<navigationMapping<<"'\n";
+        return false;
+    }
+    short layer = 0;
+    short cell = 0;
+    short neighborCell1 = 0;
+    short neighborCell2 = 0;
+    
+    for(; ifs>>layer>>cell>>neighborCell1>>neighborCell2; )
+    {
+        if(layer>=30 || layer<0) 
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerUpNavigation(): Found layer '"<<layer<<"' in trigger cell mapping. Discard it.\n";
+            continue;
+        }
+        unsigned size = (neighborCell1==neighborCell2 ? 1 : 2);
+        if(neighborCell2==-999) size = 0;
+        if( (neighborCell1==-999 && neighborCell2!=-999) || (neighborCell1!=-999 && neighborCell2==-999))
+        {
+            cout<<"WARNING: HGCALNavigator::loadTriggerUpNavigation(): only one up neighbor == -999 instead of 2. This is unexpected\n";
+        }
+        vector< pair<short,short>> neighborCells(size);
+        if(size>0) neighborCells.at(0) = make_pair(0, neighborCell1);
+        if(size>1) neighborCells.at(1) = make_pair(0, neighborCell2);
+        auto ret = m_triggerUpNavigationMapping[layer].insert( pair<short, vector< pair<short,short>>>(cell, neighborCells) );
+        if(ret.second==false)
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerUpNavigation(): Duplicated entry ("<<layer<<","<<cell<<"). Use first mapping found.\n";
+        }
+    } 
+    assert(ifs.eof());
+    ifs.close();
+
+
+
+    return true;
+}
+
+/*****************************************************************/
+bool HGCALNavigator::loadTriggerDownNavigation(const string& navigationMapping)
+/*****************************************************************/
+{
+    // Read trigger cell navigation map
+    ifstream ifs(navigationMapping, std::ifstream::in);
+    if(!ifs.is_open()) 
+    {
+        cerr<<"ERROR: HGCALNavigator::loadTriggerDownNavigation(): Cannot open navigation map'"<<navigationMapping<<"'\n";
+        return false;
+    }
+    short layer = 0;
+    short cell = 0;
+    short neighborCell1 = 0;
+    short neighborCell2 = 0;
+    
+    for(; ifs>>layer>>cell>>neighborCell1>>neighborCell2; )
+    {
+        if(layer>=30 || layer<0) 
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerDownNavigation(): Found layer '"<<layer<<"' in trigger cell mapping. Discard it.\n";
+            continue;
+        }
+        unsigned size = (neighborCell1==neighborCell2 ? 1 : 2);
+        if(neighborCell2==-999) size = 0;
+        if( (neighborCell1==-999 && neighborCell2!=-999) || (neighborCell1!=-999 && neighborCell2==-999))
+        {
+            cout<<"WARNING: HGCALNavigator::loadTriggerDownNavigation(): only one down neighbor == -999 instead of 2. This is unexpected\n";
+        }
+
+        vector< pair<short,short>> neighborCells(size);
+        short sector1 = 0;
+        short sector2 = 0;
+        if(neighborCell1==-777 || neighborCell1==-888)
+        {
+            sector1 = (neighborCell1==-777 ? -1 : 1);
+            neighborCell1 = (neighborCell1==-777 ? m_triggerLeftNavigationMapping.at(layer).at(neighborCell2).at(0).second : m_triggerRightNavigationMapping.at(layer).at(neighborCell2).at(0).second);
+        }
+        else if(neighborCell2==-777 || neighborCell2==-888)
+        {
+            sector2 = (neighborCell2==-777 ? -1 : 1);
+            neighborCell2 = (neighborCell2==-777 ? m_triggerLeftNavigationMapping.at(layer).at(neighborCell1).at(0).second : m_triggerRightNavigationMapping.at(layer).at(neighborCell1).at(0).second);
+        }
+        if(size>0) neighborCells.at(0) = make_pair(sector1, neighborCell1);
+        if(size>1) neighborCells.at(1) = make_pair(sector2, neighborCell2);
+        auto ret = m_triggerDownNavigationMapping[layer].insert( pair<short, vector< pair<short,short>>>(cell, neighborCells) );
+        if(ret.second==false)
+        {
+            cerr<<"ERROR: HGCALNavigator::loadTriggerDownNavigation(): Duplicated entry ("<<layer<<","<<cell<<"). Use first mapping found.\n";
+        }
+    } 
+    assert(ifs.eof());
+    ifs.close();
+
+    //for(unsigned i=0;i<30;i++)
+    //{
+        //for(const auto& cell_neighbors : m_triggerDownNavigationMapping.at(i))
+        //{
+            //cout<<i<<" "<<cell_neighbors.first<<" -> ";
+            //for(const auto& neighbor : cell_neighbors.second)
+            //{
+                //cout<<"("<<neighbor.first<<","<<neighbor.second<<") ";
+            //}
+            //cout<<"\n";
+        //}
+    //}
+
+    return true;
+}
 
 // temporary workaround to navigate up and down
 /*****************************************************************/
@@ -461,4 +659,101 @@ std::vector<HGCEEDetId> HGCALNavigator::downProj(const HGCEEDetId& id, int nz, d
 /*****************************************************************/
 {
     return upProj(id, -nz, refEta, refPhi);
+}
+
+
+/*****************************************************************/
+vector<HGCEEDetId> HGCALNavigator::northTrigger(const HGCEEDetId& id) const
+/*****************************************************************/
+{
+    vector<HGCEEDetId> vec(0);   
+    short cell = (short)id.cell();
+    short layer = (short)id.layer();
+    try
+    {
+        for(const auto& sec_cell : m_triggerUpNavigationMapping.at(layer-1).at(cell))
+        {
+            int sector = id.sector()+(int)sec_cell.first;
+            if(sector==0) sector = 18;
+            if(sector==19) sector = 1;
+            HGCEEDetId neigh(HGCEE, id.zside(), id.layer(), sector, id.subsector(), sec_cell.second);
+            vec.push_back(neigh);
+        }
+    } catch(std::out_of_range& e)
+    {
+        cout<<"ERROR: HGCALNavigator::northTrigger(): out_of_range(layer="<<layer<<",cell="<<cell<<")\n";
+    }
+    return vec;
+}
+
+/*****************************************************************/
+vector<HGCEEDetId> HGCALNavigator::southTrigger(const HGCEEDetId& id) const
+/*****************************************************************/
+{
+    vector<HGCEEDetId> vec(0);   
+    short cell = (short)id.cell();
+    short layer = (short)id.layer();
+    try
+    {
+        for(const auto& sec_cell : m_triggerDownNavigationMapping.at(layer-1).at(cell))
+        {
+            int sector = id.sector()+(int)sec_cell.first;
+            if(sector==0) sector = 18;
+            if(sector==19) sector = 1;
+            HGCEEDetId neigh(HGCEE, id.zside(), id.layer(), sector, id.subsector(), sec_cell.second);
+            vec.push_back(neigh);
+        }
+    } catch(std::out_of_range& e)
+    {
+        cout<<"ERROR: HGCALNavigator::southTrigger(): out_of_range(layer="<<layer<<",cell="<<cell<<")\n";
+    }
+    return vec;
+}
+
+/*****************************************************************/
+vector<HGCEEDetId> HGCALNavigator::eastTrigger(const HGCEEDetId& id) const
+/*****************************************************************/
+{
+    vector<HGCEEDetId> vec(0);   
+    short cell = (short)id.cell();
+    short layer = (short)id.layer();
+    try
+    {
+        for(const auto& sec_cell : m_triggerRightNavigationMapping.at(layer-1).at(cell))
+        {
+            int sector = id.sector()+(int)sec_cell.first;
+            if(sector==0) sector = 18;
+            if(sector==19) sector = 1;
+            HGCEEDetId neigh(HGCEE, id.zside(), id.layer(), sector, id.subsector(), sec_cell.second);
+            vec.push_back(neigh);
+        }
+    } catch(std::out_of_range& e)
+    {
+        cout<<"ERROR: HGCALNavigator::eastTrigger(): out_of_range(layer="<<layer<<",cell="<<cell<<")\n";
+    }
+    return vec;
+}
+
+/*****************************************************************/
+vector<HGCEEDetId> HGCALNavigator::westTrigger(const HGCEEDetId& id) const
+/*****************************************************************/
+{
+    vector<HGCEEDetId> vec(0);   
+    short cell = (short)id.cell();
+    short layer = (short)id.layer();
+    try
+    {
+        for(const auto& sec_cell : m_triggerLeftNavigationMapping.at(layer-1).at(cell))
+        {
+            int sector = id.sector()+(int)sec_cell.first;
+            if(sector==0) sector = 18;
+            if(sector==19) sector = 1;
+            HGCEEDetId neigh(HGCEE, id.zside(), id.layer(), sector, id.subsector(), sec_cell.second);
+            vec.push_back(neigh);
+        }
+    } catch(std::out_of_range& e)
+    {
+        cout<<"ERROR: HGCALNavigator::westTrigger(): out_of_range(layer="<<layer<<",cell="<<cell<<")\n";
+    }
+    return vec;
 }

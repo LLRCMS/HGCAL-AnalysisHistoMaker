@@ -98,6 +98,38 @@ bool AnalysisTestTriggerCells::initialize(const string& parameterFile)
     assert(ifs.eof());
     ifs.close();
 
+    // compute positions of trigger cells
+    for(unsigned sec=1;sec<=18; sec++)
+    {
+        for(unsigned layer=1; layer<=30; layer++)
+        {
+            for(const auto& trigger_cells : m_triggerCellToCell[layer-1])
+            {
+                const short triggerCell = trigger_cells.first;
+                const vector<short>& cells = trigger_cells.second;
+                SimplePosition pos;
+                pos.x   = 0.;
+                pos.y   = 0.;
+                for(const auto& c : cells)
+                {
+                    int subsec = (c>0 ? 1 : -1);
+                    int cell = abs(c)-1;
+                    HGCEEDetId detid(HGCEE, 1, layer, sec, subsec, cell);
+                    const GlobalPoint point = event().hgcalNavigator().geometry()->getPosition(detid);
+                    //pos.eta += point.eta();
+                    //pos.phi += (pos.phi + TVector2::Phi_mpi_pi(point.phi() - pos.phi));
+                    pos.x   += point.x();
+                    pos.y   += point.y();
+                }
+                //pos.eta /= (float)cells.size();
+                //pos.phi  = TVector2::Phi_mpi_pi(pos.phi/(float)cells.size());
+                pos.x   /= (float)cells.size();
+                pos.y   /= (float)cells.size();
+                m_triggerCellPositions[sec-1][layer-1].insert( std::make_pair(triggerCell, pos) );
+            }
+        }
+    }
+
 
     return true;
 }
@@ -112,7 +144,16 @@ void AnalysisTestTriggerCells::execute()
     if(!event().passSelection()) return;
 
 
+    testTriggerCellBuilding();
+    testTriggerCellNavigation();
 
+}
+
+
+/*****************************************************************/
+void AnalysisTestTriggerCells::testTriggerCellBuilding()
+/*****************************************************************/
+{
     // create trigger cells as Tower objects
     map<int, Tower> triggerCells;
     for(const auto& hit : event().simhits() )
@@ -223,14 +264,7 @@ void AnalysisTestTriggerCells::execute()
 
     }
 
-    fillHistos();
-}
-
-/*****************************************************************/
-void AnalysisTestTriggerCells::fillHistos()
-/*****************************************************************/
-{
-
+    // Look at cell distances inside trigger cells
     short sysNum = 0;
     float weight = 1.;
     int hoffset  = 0;
@@ -278,6 +312,111 @@ void AnalysisTestTriggerCells::fillHistos()
     }
 
 }
+
+/*****************************************************************/
+void AnalysisTestTriggerCells::testTriggerCellNavigation()
+/*****************************************************************/
+{
+    short sysNum = 0;
+    float weight = 1.;
+    int hoffset  = 0;
+
+    for(const auto& hit : event().triggerhits())
+    {
+        if(hit.sector()!=1) continue; // Only sector parallel to the x-axis
+        HGCEEDetId id(HGCEE, hit.zside(), hit.layer(), hit.sector(), hit.subsector(), hit.cell());
+        const auto neighborsEast  = event().hgcalNavigator().eastTrigger(id);
+        const auto neighborsWest  = event().hgcalNavigator().westTrigger(id);
+        const auto neighborsNorth = event().hgcalNavigator().northTrigger(id);
+        const auto neighborsSouth = event().hgcalNavigator().southTrigger(id);
+
+        double x1 = hit.x();
+        double y1 = hit.y();
+        const auto& cellList =  m_triggerCellToCell[hit.layer()-1].at(hit.cell());
+        //
+        for(const auto& neigh : neighborsEast)
+        {
+            cerr<<neigh.sector()<<" "<<neigh.layer()<<" "<<neigh.cell()<<"\n";
+            SimplePosition pos = m_triggerCellPositions.at(neigh.sector()-1).at(neigh.layer()-1).at(neigh.cell());
+            double x2 = pos.x;
+            double y2 = pos.y;
+            //
+            double dx = (x2-x1);
+            double dy = (y2-y1);
+            m_histos.Fill1BinHisto(20+hoffset, cellList.size(), dx, dy, weight, sysNum);
+        }
+        //
+        for(const auto& neigh : neighborsWest)
+        {
+            cerr<<neigh.sector()<<" "<<neigh.layer()<<" "<<neigh.cell()<<"\n";
+            SimplePosition pos = m_triggerCellPositions.at(neigh.sector()-1).at(neigh.layer()-1).at(neigh.cell());
+            double x2 = pos.x;
+            double y2 = pos.y;
+            //
+            double dx = (x2-x1);
+            double dy = (y2-y1);
+            m_histos.Fill1BinHisto(30+hoffset, cellList.size(), dx, dy, weight, sysNum);
+        }
+        //
+        for(const auto& neigh : neighborsNorth)
+        {
+            cerr<<neigh.sector()<<" "<<neigh.layer()<<" "<<neigh.cell()<<"\n";
+            SimplePosition pos = m_triggerCellPositions.at(neigh.sector()-1).at(neigh.layer()-1).at(neigh.cell());
+            double x2 = pos.x;
+            double y2 = pos.y;
+            //
+            double dx = (x2-x1);
+            double dy = (y2-y1);
+            m_histos.Fill1BinHisto(40+hoffset, cellList.size(), dx, dy, weight, sysNum);
+        }
+        //
+        for(const auto& neigh : neighborsSouth)
+        {
+            cerr<<neigh.sector()<<" "<<neigh.layer()<<" "<<neigh.cell()<<"\n";
+            SimplePosition pos = m_triggerCellPositions.at(neigh.sector()-1).at(neigh.layer()-1).at(neigh.cell());
+            double x2 = pos.x;
+            double y2 = pos.y;
+            //
+            double dx = (x2-x1);
+            double dy = (y2-y1);
+            m_histos.Fill1BinHisto(50+hoffset, cellList.size(), dx, dy, weight, sysNum);
+        }
+
+
+
+
+
+
+
+        //cout<<"sector "<<hit.sector()<<" layer "<<hit.layer()<<" cell "<<hit.cell()<<"\n";
+        //cout<<" Neighbors east = ";
+        //for(const auto& neigh : neighborsEast)
+        //{
+        //    cout<<"("<<neigh.sector()<<","<<neigh.layer()<<","<<neigh.cell()<<")";
+        //}
+        //cout<<"\n";
+        //cout<<" Neighbors west = ";
+        //for(const auto& neigh : neighborsWest)
+        //{
+        //    cout<<"("<<neigh.sector()<<","<<neigh.layer()<<","<<neigh.cell()<<")";
+        //}
+        //cout<<"\n";
+        //cout<<" Neighbors north = ";
+        //for(const auto& neigh : neighborsNorth)
+        //{
+        //    cout<<"("<<neigh.sector()<<","<<neigh.layer()<<","<<neigh.cell()<<")";
+        //}
+        //cout<<"\n";
+        //cout<<" Neighbors south = ";
+        //for(const auto& neigh : neighborsSouth)
+        //{
+        //    cout<<"("<<neigh.sector()<<","<<neigh.layer()<<","<<neigh.cell()<<")";
+        //}
+        //cout<<"\n";
+    }
+
+}
+
 
 
 /*****************************************************************/
