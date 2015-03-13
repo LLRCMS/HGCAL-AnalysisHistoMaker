@@ -68,6 +68,7 @@ bool AnalysisRate::initialize(const string& parameterFile)
     //string pileupParamsFile = m_reader.params().GetValue("PileupParams", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC19/src/AnHiMaHGCAL/ElectronClusterThreshold/data/thresholdParameters.txt");
 
     m_egammaAlgo.initialize(event(), m_reader.params());
+    m_jetAlgo.initialize(event(), m_reader.params());
 
 
     /// get BDT cuts
@@ -92,6 +93,28 @@ bool AnalysisRate::initialize(const string& parameterFile)
     }
     fileBDTcuts->Close();
 
+    /// get H/E cuts
+    string fileNameHoEcuts = m_reader.params().GetValue("FileHoECuts", "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/src/AnHiMaHGCAL/HGCALCommon/data/hoeCutsVsEt_QCD.root");
+    TFile* fileHoEcuts = TFile::Open(fileNameHoEcuts.c_str());
+    TGraph* hoeCuts995 = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.995");
+    TGraph* hoeCuts99  = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.99");
+    TGraph* hoeCuts985 = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.985");
+    TGraph* hoeCuts98  = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.98");
+    TGraph* hoeCuts975 = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.975");
+    TGraph* hoeCuts97  = (TGraph*)fileHoEcuts->Get("hoeCutVsEt_eff0.97");
+    m_hoeCuts[995] = hoeCuts995;
+    m_hoeCuts[99]  = hoeCuts99;
+    m_hoeCuts[985] = hoeCuts985;
+    m_hoeCuts[98]  = hoeCuts98;
+    m_hoeCuts[975] = hoeCuts975;
+    m_hoeCuts[97]  = hoeCuts97;
+    for(auto& eff_graph : m_hoeCuts)
+    {
+        TGraph* g = eff_graph.second;
+        assert(g);
+    }
+    fileHoEcuts->Close();
+
 
     return true;
 }
@@ -111,6 +134,7 @@ void AnalysisRate::execute()
     m_sortedSuperClusters.clear();
     m_sortedSuperClustersLooseID.clear();
     m_sortedSuperClustersMediumID.clear();
+    m_hcalCones.clear();
 
     // seeding
     m_egammaAlgo.seeding(event(), m_seeds);
@@ -123,9 +147,29 @@ void AnalysisRate::execute()
     m_egammaAlgo.superClustering(m_clusters, m_superClusters);
     // supercluster energy corrections
     m_egammaAlgo.superClusterCorrection(m_superClusters);
+
+    // Build super-clusters made only of seed clusters
+    vector<SuperCluster> superClusterSeeds;
+    for(const auto& sc : m_superClusters)
+    {
+        superClusterSeeds.push_back( SuperCluster() );
+        if(sc.nClusters()==0)
+        {
+            cout<<"ERROR: no cluster found in e/g super-cluster\n";
+            continue;
+        }
+        superClusterSeeds.back().addCluster( sc.cluster(0) );
+    }
+    m_jetAlgo.coneClustering(event(), event().simhitsFH(), superClusterSeeds, m_hcalCones, 0.15);
+
+
     // sort superclusters
-    for(const auto& sc : m_superClusters) m_sortedSuperClusters.push_back(&sc);
+    for(const auto& sc : m_superClusters) m_sortedSuperClusters.push_back( &sc );
     sort(m_sortedSuperClusters.begin(), m_sortedSuperClusters.end(), AnHiMa::superClusterSort);
+
+
+
+
     // filter identified clusters
     applyIdentification();
 
@@ -212,16 +256,27 @@ void AnalysisRate::fillHistos()
 void AnalysisRate::applyIdentification()
 /*****************************************************************/
 {
-    for(const auto sc : m_sortedSuperClusters)
+    for(const auto& sc : m_sortedSuperClusters)
     {
+        unsigned i = 0;
+        for(i=0;i<m_superClusters.size();i++)
+        {
+            const auto s = &m_superClusters.at(i);
+            if(s==sc) break;
+        }
+        const auto& cone = &m_hcalCones.at(i);
         // FIXME: create several lists with several BDTs
-        string bdtName = "BDTG";
-        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_MinBias_HalfLayers";
+        string bdtName = "BDTG_QCD";
+        if(m_egammaAlgo.useHalfLayers()) bdtName = "BDTG_QCD_HalfLayers";
         double bdt = m_egammaAlgo.bdtOutput(*sc->cluster(0), bdtName.c_str());
         //bool pass995 = (bdt>=m_bdtCuts[995]->Eval(fabs(sc->eta())));
         bool pass99  = (bdt>=m_bdtCuts[99] ->Eval(fabs(sc->eta())));
-        bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(sc->eta())));
+        //bool pass985 = (bdt>=m_bdtCuts[985]->Eval(fabs(sc->eta())));
         bool pass98  = (bdt>=m_bdtCuts[98] ->Eval(fabs(sc->eta())));
+        //
+        double hoe = cone->calibratedEt()/sc->et();
+        double etForHoE = min(sc->et(), 65.0f);
+        bool passHoE99  = (hoe<=m_hoeCuts[99] ->Eval(etForHoE));
         //bool pass975 = (bdt>=m_bdtCuts[975]->Eval(fabs(sc->eta())));
         //bool pass97  = (bdt>=m_bdtCuts[97] ->Eval(fabs(sc->eta())));
         //double reducedPhiSC = (sc->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
@@ -230,10 +285,10 @@ void AnalysisRate::applyIdentification()
         if((sc->et()<30. && pass99) || (sc->et()>30. && pass98))
         {
             m_sortedSuperClustersLooseID.push_back(sc);
-        }
-        if(pass985)
-        {
-            m_sortedSuperClustersMediumID.push_back(sc);
+            if(passHoE99)
+            {
+                m_sortedSuperClustersMediumID.push_back(sc);
+            }
         }
     }
 }

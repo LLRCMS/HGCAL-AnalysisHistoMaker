@@ -3,6 +3,8 @@ Histos: Identification_
 # General event 
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
+h1f 8  sc_et      ' E_{T} [GeV] ' 50 0. 50.
+h1f 9  sc_energy  ' E [GeV] ' 300 0. 300.
 h1f 10 seed_eta     ' #eta ' 60 -3. 3.
 h1f 11 seed_phi     ' #phi ' 60 -3.14159265359 3.14159265359
 h1f 12 seed_energy  ' E [GeV] ' 300 0. 300.
@@ -42,8 +44,11 @@ h1f 120 seed_bdt_pu ' BDT PU output ' 200 -1. 1.
 h1f 121 seed_bdt_pu_halfLayers ' BDT PU output ' 200 -1. 1.
 h1f 122 seed_bdt_qcd ' BDT QCD output ' 200 -1. 1.
 h1f 123 seed_bdt_qcd_halfLayers ' BDT QCD HalfLayers output ' 200 -1. 1.
+#
+h1f 150 seed_hcalET015 ' Front HCAL E cone 0.15 ' 100 0. 50.
+h1f 151 seed_hcalE015 ' Front HCAL E_{T} cone 0.15 ' 100 0. 50.
 
-ntuple 500 identificationTree ' ID tree '  seed_eta:seed_sectorPhi:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer:seed_bdt_pu:seed_bdt_pu_halfLayers:seed_bdt_qcd:seed_bdt_qcd_halfLayers
+ntuple 500 identificationTree ' ID tree '  sc_et:sc_energy:seed_eta:seed_sectorPhi:seed_et:seed_energy:seed_layer20_energy:seed_layer21_energy:seed_layer22_energy:seed_layer23_energy:seed_layer24_energy:seed_layer25_energy:seed_layer26_energy:seed_layer27_energy:seed_layer28_energy:seed_layer29_energy:seed_layer30_energy:seed_layer10_nCells:seed_layer11_nCells:seed_layer12_nCells:seed_layer13_nCells:seed_layer14_nCells:seed_layer15_nCells:seed_layer16_nCells:seed_layer17_nCells:seed_layer18_nCells:seed_layer19_nCells:seed_layer20_nCells:seed_maxLayer:seed_firstLayer:seed_lastLayer:seed_bdt_pu:seed_bdt_pu_halfLayers:seed_bdt_qcd:seed_bdt_qcd_halfLayers:seed_hcalET015:seed_hcalE015
 
 end_Histos
 

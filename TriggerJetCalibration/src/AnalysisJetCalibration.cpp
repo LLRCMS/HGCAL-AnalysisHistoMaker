@@ -197,7 +197,7 @@ void AnalysisJetCalibration::fillHistosVBFJets(int hoffset)
         // jet requirements
         if(fabs(jet.Eta())<1.5) continue;
         if(fabs(jet.Eta())>3.) continue;
-        if(jet.Pt()<10.) continue;
+        if(jet.Pt()<30.) continue;
 
         vector<const Tower*> l1jets         = matchJet(jet);
         vector<const Tower*> l1jetsHard     = matchJetHard(jet);
@@ -225,7 +225,12 @@ void AnalysisJetCalibration::fillHistosVBFJets(int hoffset)
 
         //cout<<"  ET = "<<l1jet->calibratedEt()<<"\n";
 
-        if(l1jet->calibratedEt()<15.) continue;
+        if(l1jet->calibratedEt()<5.) continue;
+
+        m_histos.FillHisto(10+hoffset, jet.Et(), weight, sysNum);
+        m_histos.FillHisto(11+hoffset, l1jet->calibratedEt(), weight, sysNum);
+        m_histos.FillHisto(12+hoffset, jet.E(), weight, sysNum);
+        m_histos.FillHisto(13+hoffset, l1jet->calibratedEnergy(), weight, sysNum);
 
         // checks
         double responseThPU     = (l1jet->calibratedEt() - l1jetHardNoTh->calibratedEt())/l1jetHardNoTh->calibratedEt();
@@ -254,6 +259,15 @@ void AnalysisJetCalibration::fillHistosVBFJets(int hoffset)
         m_histos.FillHisto(70+hoffset, jet04Fraction, weight, sysNum);
         m_histos.FillHisto(71+hoffset, jet04DR, weight, sysNum);
 
+
+        m_histos.Fill1BinHisto(100+hoffset, jet.Et(), l1jet->calibratedEt()/jet.Et(), weight, sysNum);
+        m_histos.Fill1BinHisto(120+hoffset, jet.Et(), l1jet->calibratedEt(), weight, sysNum);
+        m_histos.Fill1BinHisto(140+hoffset, jet.E(), l1jet->calibratedEnergy()/jet.E(), weight, sysNum);
+        m_histos.Fill1BinHisto(160+hoffset, jet.E(), l1jet->calibratedEnergy(), weight, sysNum);
+
+        /////////////////////////////////////////////////
+        /// Regression tree filling
+        /////////////////////////////////////////////////
         // regression targets
         double diffPU           = (l1jetHard->calibratedEnergy() - l1jet->calibratedEnergy())/(double)l1jet->nHits();
         double diffPUCore       = (l1jetCoreHard->calibratedEnergy() - l1jetCore->calibratedEnergy())/(double)l1jetCore->nHits();
@@ -263,6 +277,9 @@ void AnalysisJetCalibration::fillHistosVBFJets(int hoffset)
         double correctionThCore = l1jetCoreHardNoTh->calibratedEt()/l1jetCore->calibratedEt();
         double correctionTh04   = l1jet04HardNoTh->calibratedEt()/l1jet04->calibratedEt();
         double correctionTruth  = jet.Et()/l1jet->calibratedEt();
+        double correctionInvTruth  = l1jet->calibratedEt()/jet.Et();
+        double correctionETruth  = jet.E()/l1jet->calibratedEnergy();
+        double correctionEInvTruth  = l1jet->calibratedEnergy()/jet.E();
 
         // jet energy / core energy
         double jetOverCore     = l1jet->calibratedEt()/l1jetCore->calibratedEt();
@@ -278,19 +295,24 @@ void AnalysisJetCalibration::fillHistosVBFJets(int hoffset)
         nhits += m_jetAlgo.triggerRegionHits(triggerRegion, 5, 3);
 
         // fill calibration tree
-        m_histos.FillHisto(100+hoffset, diffPU, weight, sysNum);
-        m_histos.FillHisto(101+hoffset, diffPUCore, weight, sysNum);
-        m_histos.FillHisto(102+hoffset, diffPU04, weight, sysNum);
-        m_histos.FillHisto(103+hoffset, correctionTh, weight, sysNum);
-        m_histos.FillHisto(104+hoffset, correctionThCore, weight, sysNum);
-        m_histos.FillHisto(105+hoffset, correctionTh04, weight, sysNum);
-        m_histos.FillHisto(106+hoffset, correctionTruth, weight, sysNum);
-        m_histos.FillHisto(107+hoffset, l1jet->eta(), weight, sysNum);
-        m_histos.FillHisto(108+hoffset, l1jet->calibratedEnergy(), weight, sysNum);
-        m_histos.FillHisto(109+hoffset, l1jet->calibratedEt(), weight, sysNum);
-        m_histos.FillHisto(110+hoffset, nhits, weight, sysNum);
-        m_histos.FillHisto(111+hoffset, jetOverCore, weight, sysNum);
-        m_histos.FillHisto(112+hoffset, jetOver04, weight, sysNum);
+        m_histos.FillHisto(400+hoffset, diffPU, weight, sysNum);
+        m_histos.FillHisto(401+hoffset, diffPUCore, weight, sysNum);
+        m_histos.FillHisto(402+hoffset, diffPU04, weight, sysNum);
+        m_histos.FillHisto(403+hoffset, correctionTh, weight, sysNum);
+        m_histos.FillHisto(404+hoffset, correctionThCore, weight, sysNum);
+        m_histos.FillHisto(405+hoffset, correctionTh04, weight, sysNum);
+        m_histos.FillHisto(406+hoffset, correctionTruth, weight, sysNum);
+        m_histos.FillHisto(407+hoffset, correctionInvTruth, weight, sysNum);
+        m_histos.FillHisto(408+hoffset, correctionETruth, weight, sysNum);
+        m_histos.FillHisto(409+hoffset, correctionEInvTruth, weight, sysNum);
+        m_histos.FillHisto(410+hoffset, l1jet->eta(), weight, sysNum);
+        m_histos.FillHisto(411+hoffset, l1jet->calibratedEnergy(), weight, sysNum);
+        m_histos.FillHisto(412+hoffset, jet.E(), weight, sysNum);
+        m_histos.FillHisto(413+hoffset, l1jet->calibratedEt(), weight, sysNum);
+        m_histos.FillHisto(414+hoffset, jet.Et(), weight, sysNum);
+        m_histos.FillHisto(415+hoffset, nhits, weight, sysNum);
+        m_histos.FillHisto(416+hoffset, jetOverCore, weight, sysNum);
+        m_histos.FillHisto(417+hoffset, jetOver04, weight, sysNum);
 
         m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 
@@ -330,12 +352,12 @@ void AnalysisJetCalibration::selectMaxMassJetPair()
     for(int i=0;i<(int)nJets-1;i++)
     {
         const GenJet& jet1 = event().genjets()[i];
-        if(jet1.Pt()<30.) continue;
+        if(jet1.Pt()<15.) continue;
         if(overlapWithLeptonOrNeutrino(jet1)) continue;
         for(int j=i+1;j<(int)nJets;j++)
         {
             const GenJet& jet2 = event().genjets()[j];
-            if(jet2.Pt()<30.) continue;
+            if(jet2.Pt()<15.) continue;
             if(overlapWithLeptonOrNeutrino(jet2)) continue;
             jetPairs.push_back( TParticlePair<GenJet>(jet1,jet2) );
         }

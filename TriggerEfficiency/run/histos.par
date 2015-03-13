@@ -4,76 +4,113 @@ Histos: Efficiency_
 h1f 0 nevents ' Number of events ' 1 0.5 1.5
 
 ## number of gen electrons
-h1f 10 nGen_eta ' |#eta| ' 30 1.5 3.
+h1f 10 nGen_eta ' |#eta| ' 15 1.5 3.
 h1f 11 nGen_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 12 nGen_npu ' N_{PU} ' 40 120 160
-h1f 13 nGen_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 12 nGen_npu ' N_{PU} ' 10 120 160
+h1f 13 nGen_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched seeds
-h1f 20 nMatchedSeed_eta ' |#eta| ' 30 1.5 3.
+h1f 20 nMatchedSeed_eta ' |#eta| ' 15 1.5 3.
 h1f 21 nMatchedSeed_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 22 nMatchedSeed_npu ' N_{PU} ' 40 120 160
-h1f 23 nMatchedSeed_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 22 nMatchedSeed_npu ' N_{PU} ' 10 120 160
+h1f 23 nMatchedSeed_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched clusters
-h1f 30 nMatchedCluster_eta ' |#eta| ' 30 1.5 3.
+h1f 30 nMatchedCluster_eta ' |#eta| ' 15 1.5 3.
 h1f 31 nMatchedCluster_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 32 nMatchedCluster_npu ' N_{PU} ' 40 120 160
-h1f 33 nMatchedCluster_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 32 nMatchedCluster_npu ' N_{PU} ' 10 120 160
+h1f 33 nMatchedCluster_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters
-h1f 40 nMatchedSuperCluster_eta ' |#eta| ' 30 1.5 3.
+h1f 40 nMatchedSuperCluster_eta ' |#eta| ' 15 1.5 3.
 h1f 41 nMatchedSuperCluster_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 42 nMatchedSuperCluster_npu ' N_{PU} ' 40 120 160
-h1f 43 nMatchedSuperCluster_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 42 nMatchedSuperCluster_npu ' N_{PU} ' 10 120 160
+h1f 43 nMatchedSuperCluster_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched ideal clusters
-h1f 50 nMatchedIdealCluster_eta ' |#eta| ' 30 1.5 3.
+h1f 50 nMatchedIdealCluster_eta ' |#eta| ' 15 1.5 3.
 h1f 51 nMatchedIdealCluster_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 52 nMatchedIdealCluster_npu ' N_{PU} ' 40 120 160
-h1f 53 nMatchedIdealCluster_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 52 nMatchedIdealCluster_npu ' N_{PU} ' 10 120 160
+h1f 53 nMatchedIdealCluster_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 99.5
-h1f 60 nMatchedSuperClusterID995_eta ' |#eta| ' 30 1.5 3.
+h1f 60 nMatchedSuperClusterID995_eta ' |#eta| ' 15 1.5 3.
 h1f 61 nMatchedSuperClusterID995_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 62 nMatchedSuperClusterID995_npu ' N_{PU} ' 40 120 160
-h1f 63 nMatchedSuperClusterID995_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 62 nMatchedSuperClusterID995_npu ' N_{PU} ' 10 120 160
+h1f 63 nMatchedSuperClusterID995_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 99
-h1f 70 nMatchedSuperClusterID99_eta ' |#eta| ' 30 1.5 3.
+h1f 70 nMatchedSuperClusterID99_eta ' |#eta| ' 15 1.5 3.
 h1f 71 nMatchedSuperClusterID99_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 72 nMatchedSuperClusterID99_npu ' N_{PU} ' 40 120 160
-h1f 73 nMatchedSuperClusterID99_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 72 nMatchedSuperClusterID99_npu ' N_{PU} ' 10 120 160
+h1f 73 nMatchedSuperClusterID99_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 98.5
-h1f 80 nMatchedSuperClusterID985_eta ' |#eta| ' 30 1.5 3.
+h1f 80 nMatchedSuperClusterID985_eta ' |#eta| ' 15 1.5 3.
 h1f 81 nMatchedSuperClusterID985_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 82 nMatchedSuperClusterID985_npu ' N_{PU} ' 40 120 160
-h1f 83 nMatchedSuperClusterID985_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 82 nMatchedSuperClusterID985_npu ' N_{PU} ' 10 120 160
+h1f 83 nMatchedSuperClusterID985_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 98
-h1f 90 nMatchedSuperClusterID98_eta ' |#eta| ' 30 1.5 3.
+h1f 90 nMatchedSuperClusterID98_eta ' |#eta| ' 15 1.5 3.
 h1f 91 nMatchedSuperClusterID98_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 92 nMatchedSuperClusterID98_npu ' N_{PU} ' 40 120 160
-h1f 93 nMatchedSuperClusterID98_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 92 nMatchedSuperClusterID98_npu ' N_{PU} ' 10 120 160
+h1f 93 nMatchedSuperClusterID98_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 97.5
-h1f 100 nMatchedSuperClusterID975_eta ' |#eta| ' 30 1.5 3.
+h1f 100 nMatchedSuperClusterID975_eta ' |#eta| ' 15 1.5 3.
 h1f 101 nMatchedSuperClusterID975_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 102 nMatchedSuperClusterID975_npu ' N_{PU} ' 40 120 160
-h1f 103 nMatchedSuperClusterID975_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 102 nMatchedSuperClusterID975_npu ' N_{PU} ' 10 120 160
+h1f 103 nMatchedSuperClusterID975_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID 97
-h1f 110 nMatchedSuperClusterID97_eta ' |#eta| ' 30 1.5 3.
+h1f 110 nMatchedSuperClusterID97_eta ' |#eta| ' 15 1.5 3.
 h1f 111 nMatchedSuperClusterID97_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 112 nMatchedSuperClusterID97_npu ' N_{PU} ' 40 120 160
-h1f 113 nMatchedSuperClusterID97_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 112 nMatchedSuperClusterID97_npu ' N_{PU} ' 10 120 160
+h1f 113 nMatchedSuperClusterID97_pt ' p_{T} [GeV] ' 10 20. 50.
 
 ## number of matched super-clusters passing ID pT tuned
-h1f 120 nMatchedSuperClusterIDtuned_eta ' |#eta| ' 30 1.5 3.
+h1f 120 nMatchedSuperClusterIDtuned_eta ' |#eta| ' 15 1.5 3.
 h1f 121 nMatchedSuperClusterIDtuned_phi ' local #phi ' 35 0. 0.349065850398865896
-h1f 122 nMatchedSuperClusterIDtuned_npu ' N_{PU} ' 40 120 160
-h1f 123 nMatchedSuperClusterIDtuned_pt ' p_{T} [GeV] ' 30 20. 50.
+h1f 122 nMatchedSuperClusterIDtuned_npu ' N_{PU} ' 10 120 160
+h1f 123 nMatchedSuperClusterIDtuned_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 99.5
+h1f 160 nMatchedSuperClusterHoE995_eta ' |#eta| ' 15 1.5 3.
+h1f 161 nMatchedSuperClusterHoE995_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 162 nMatchedSuperClusterHoE995_npu ' N_{PU} ' 10 120 160
+h1f 163 nMatchedSuperClusterHoE995_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 99
+h1f 170 nMatchedSuperClusterHoE99_eta ' |#eta| ' 15 1.5 3.
+h1f 171 nMatchedSuperClusterHoE99_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 172 nMatchedSuperClusterHoE99_npu ' N_{PU} ' 10 120 160
+h1f 173 nMatchedSuperClusterHoE99_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 98.5
+h1f 180 nMatchedSuperClusterHoE985_eta ' |#eta| ' 15 1.5 3.
+h1f 181 nMatchedSuperClusterHoE985_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 182 nMatchedSuperClusterHoE985_npu ' N_{PU} ' 10 120 160
+h1f 183 nMatchedSuperClusterHoE985_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 98
+h1f 190 nMatchedSuperClusterHoE98_eta ' |#eta| ' 15 1.5 3.
+h1f 191 nMatchedSuperClusterHoE98_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 192 nMatchedSuperClusterHoE98_npu ' N_{PU} ' 10 120 160
+h1f 193 nMatchedSuperClusterHoE98_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 97.5
+h1f 200 nMatchedSuperClusterHoE975_eta ' |#eta| ' 15 1.5 3.
+h1f 201 nMatchedSuperClusterHoE975_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 202 nMatchedSuperClusterHoE975_npu ' N_{PU} ' 10 120 160
+h1f 203 nMatchedSuperClusterHoE975_pt ' p_{T} [GeV] ' 10 20. 50.
+
+## number of matched super-clusters passing H/E 97
+h1f 210 nMatchedSuperClusterHoE97_eta ' |#eta| ' 15 1.5 3.
+h1f 211 nMatchedSuperClusterHoE97_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 212 nMatchedSuperClusterHoE97_npu ' N_{PU} ' 10 120 160
+h1f 213 nMatchedSuperClusterHoE97_pt ' p_{T} [GeV] ' 10 20. 50.
+
 
 end_Histos
 

@@ -42,6 +42,7 @@ using namespace std;
 AnalysisIdentification::AnalysisIdentification():IAnalysis(),
     m_genParticle(0),
     m_superCluster(0),
+    m_hcalCone(0),
     m_sample("signal"),
     m_etCut(10.)
 /*****************************************************************/
@@ -73,7 +74,7 @@ bool AnalysisIdentification::initialize(const string& parameterFile)
     m_etCut  = m_reader.params().GetValue("EtCut", 10.);
 
     m_egammaAlgo.initialize(event(), m_reader.params());
-
+    m_jetAlgo.initialize(event(), m_reader.params());
 
 
     return true;
@@ -91,6 +92,7 @@ void AnalysisIdentification::execute()
     m_seeds.clear();
     m_clusters.clear();
     m_superClusters.clear();
+    m_hcalCones.clear();
 
     // seeding
     m_egammaAlgo.seeding(event(), m_seeds);
@@ -103,6 +105,21 @@ void AnalysisIdentification::execute()
     m_egammaAlgo.superClustering(m_clusters, m_superClusters);
     // supercluster energy corrections
     m_egammaAlgo.superClusterCorrection(m_superClusters);
+
+    // Build super-clusters made only of seed clusters
+    vector<SuperCluster> superClusterSeeds;
+    for(const auto& sc : m_superClusters)
+    {
+        superClusterSeeds.push_back( SuperCluster() );
+        if(sc.nClusters()==0)
+        {
+            cout<<"ERROR: no cluster found in e/g super-cluster\n";
+            continue;
+        }
+        superClusterSeeds.back().addCluster( sc.cluster(0) );
+    }
+
+    m_jetAlgo.coneClustering(event(), event().simhitsFH(), superClusterSeeds, m_hcalCones, 0.15); 
 
     if(m_sample=="signal")
     {
@@ -121,13 +138,33 @@ void AnalysisIdentification::execute()
             }
         }
     }
+    else if(m_sample=="signal_zee")
+    {
+        for(const auto& gen : event().genparticles())
+        {
+            if(gen.status()!=3) continue;
+            if(abs(gen.id())!=11) continue;
+            if(gen.Pt()<10.) continue;
+            if(fabs(gen.Eta())<1.6 || fabs(gen.Eta())>2.9) continue;
+            m_genParticle = &gen;
+            // match super-cluster to gen electron
+            matchSuperCluster();
+            if(m_superCluster && m_superCluster->et()>m_etCut)
+            {
+                fillHistos();
+            }
+        }
+    }
     else
     {
-        for(const auto& sc : m_superClusters)
+        //for(const auto& sc : m_superClusters)
+        for(unsigned i=0; i<m_superClusters.size(); i++)
         {
+            const SuperCluster& sc = m_superClusters.at(i);
             if(sc.et()>m_etCut)
             {
                 m_superCluster = &sc;
+                m_hcalCone = &m_hcalCones.at(i);
                 fillHistos();
             }
         }
@@ -150,6 +187,8 @@ void AnalysisIdentification::fillHistos()
     double reducedPhiSC = (m_superCluster->phi()+TMath::Pi()/18.)/(2*TMath::Pi()/18.); // divide by 20°
     double localPhiSC = (reducedPhiSC - floor(reducedPhiSC))*(2*TMath::Pi()/18.);
     const Tower* seed = m_superCluster->cluster(0);
+    m_histos.FillHisto(8+hoffset, m_superCluster->et(), weight, sysNum); 
+    m_histos.FillHisto(9+hoffset, m_superCluster->energy(), weight, sysNum); 
     m_histos.FillHisto(10+hoffset, seed->eta(), weight, sysNum); 
     m_histos.FillHisto(11+hoffset, seed->phi(), weight, sysNum); 
     m_histos.FillHisto(12+hoffset, seed->calibratedEnergy(), weight, sysNum); 
@@ -226,6 +265,10 @@ void AnalysisIdentification::fillHistos()
     m_histos.FillHisto(122+hoffset, bdt_qcd, weight, sysNum);
     m_histos.FillHisto(123+hoffset, bdt_qcd_halfLayers, weight, sysNum);
 
+    if(!m_hcalCone) cout<<"WARNING: no HCAL cone found\n";
+    m_histos.FillHisto(150+hoffset, (m_hcalCone ? m_hcalCone->calibratedEt(): 0.) , weight, sysNum);
+    m_histos.FillHisto(151+hoffset, (m_hcalCone ? m_hcalCone->calibratedEnergy(): 0.) , weight, sysNum);
+
     m_histos.FillNtuple(500+hoffset, event().run(), event().event(), weight, sysNum);
 }
 
@@ -238,18 +281,28 @@ void AnalysisIdentification::matchSuperCluster()
 /*****************************************************************/
 {
     m_superCluster = 0;
+    m_hcalCone = 0;
 
     double eta = m_genParticle->Eta();
     double phi = m_genParticle->Phi();
     double maxEt = 0.;
-    for(const auto& sc : m_superClusters )
+    if(m_superClusters.size()!=m_hcalCones.size())
     {
+        cout<<"ERROR: number of HCAL cones different from number of SC\n";
+        return;
+    }
+    //for(const auto& sc : m_superClusters )
+    for(unsigned i=0;i<m_superClusters.size();i++)
+    {
+        const SuperCluster& sc = m_superClusters.at(i);
+        const Tower& hcalCone = m_hcalCones.at(i);
         double deta = (sc.eta() - eta);
         double dphi = TVector2::Phi_mpi_pi(sc.phi() - phi);
         double dr = sqrt(deta*deta + dphi*dphi);
         if(dr<0.2 && sc.et()>maxEt && (sc.et()-m_genParticle->Pt())/m_genParticle->Pt()>-0.5)
         {
             m_superCluster = &sc;
+            m_hcalCone = &hcalCone;
             maxEt = sc.et();
         }
     }

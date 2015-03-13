@@ -116,7 +116,7 @@ void AnalysisJetRate::execute()
     m_jetAlgo.pileupSubtraction(m_jets["Size02"], "0.2");
     m_jetAlgo.thresholdCorrection(m_jets["Size01"], "0.1");
     m_jetAlgo.thresholdCorrection(m_jets["Size02"], "0.2");
-    //m_jetAlgo.truthCorrection(m_jets["Size02"], m_jets["Size01"]);
+    m_jetAlgo.truthCorrection(m_jets["Size02"], m_jets["Size01"]);
 
     // sort jets
     for(const auto& jet : m_jets["Size02"]) m_sortedJets.push_back(&jet); 

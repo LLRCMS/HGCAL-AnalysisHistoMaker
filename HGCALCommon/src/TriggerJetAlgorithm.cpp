@@ -402,11 +402,16 @@ void TriggerJetAlgorithm::truthCorrection(vector<Tower>& jets, const vector<Towe
         double et = jet.calibratedEt();
         double ooc = (core.calibratedEt()>0. ? et/core.calibratedEt(): 999.);
         float* thInputs = new float[3];
-        thInputs[0] = et;
+        thInputs[0] = energy;
         thInputs[1] = eta;
         thInputs[2] = ooc;
-        double ecorr = m_truthCorrection->GetResponse(thInputs);
-        jet.setCalibratedEnergy(energy*ecorr);
+        double ecorr = 1.;
+        for(unsigned i=0;i<3;i++)
+        {
+            ecorr = m_truthCorrection->GetResponse(thInputs);
+            thInputs[0] = energy/ecorr;
+        }
+        jet.setCalibratedEnergy(energy/ecorr);
 
         delete[] thInputs;
     }

@@ -26,6 +26,7 @@
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/TriggerJetAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
@@ -62,16 +63,19 @@ namespace AnHiMa
             void applyIdentification();
 
             TriggerEGammaAlgorithm m_egammaAlgo;
+            TriggerJetAlgorithm m_jetAlgo;
 
 
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
             std::vector<SuperCluster> m_superClusters;
+            std::vector<Tower> m_hcalCones;
             std::vector<const SuperCluster*> m_sortedSuperClusters;
             std::vector<const SuperCluster*> m_sortedSuperClustersLooseID;
             std::vector<const SuperCluster*> m_sortedSuperClustersMediumID;
 
             std::map<int, TGraph*> m_bdtCuts;
+            std::map<int, TGraph*> m_hoeCuts;
 
     };
 }

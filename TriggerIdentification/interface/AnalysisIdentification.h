@@ -18,14 +18,15 @@
 
 
 
-#ifndef ANALYSISEFFICIENCY_H
-#define ANALYSISEFFICIENCY_H
+#ifndef ANALYSISIDENTIFICATION_H
+#define ANALYSISIDENTIFICATION_H
 
 #include "AnHiMaHGCAL/Core/interface/IAnalysis.h"
 #include "AnHiMaHGCAL/Core/interface/EventAware.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/EventHGCAL.h"
 
 #include "AnHiMaHGCAL/HGCALCommon/interface/TriggerEGammaAlgorithm.h"
+#include "AnHiMaHGCAL/HGCALCommon/interface/TriggerJetAlgorithm.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/Tower.h"
 #include "AnHiMaHGCAL/HGCALCommon/interface/SuperCluster.h"
 
@@ -61,14 +62,17 @@ namespace AnHiMa
             void matchSuperCluster();
 
             TriggerEGammaAlgorithm m_egammaAlgo;
+            TriggerJetAlgorithm m_jetAlgo;
 
 
             std::vector<Tower> m_seeds;
             std::vector<Tower> m_clusters;
             std::vector<SuperCluster> m_superClusters;
+            std::vector<Tower> m_hcalCones;
 
             const GenParticle* m_genParticle;
             const SuperCluster* m_superCluster;
+            const Tower* m_hcalCone;
 
             std::string m_sample;
             float m_etCut;
