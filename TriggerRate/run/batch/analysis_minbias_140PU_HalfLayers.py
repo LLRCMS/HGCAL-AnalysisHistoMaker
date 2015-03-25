@@ -11,7 +11,7 @@ batch.outputDirectory = "/data_CMS/cms/sauvan/HGCAL/histos/TriggerRate/MinBias_1
 batch.outputFile = "rate_140PU_HalfLayers.root"
 batch.histoParameters = "../histos.par"
 batch.histoTag = "Histos"
-batch.nFilesPerJob = 10
+batch.nFilesPerJob = 15
 
 batch.scram_arch = "slc6_amd64_gcc472"
 batch.cmsswDir   = "/home/llr/cms/sauvan/CMSSW/HGCAL/CMSSW_6_2_0_SLHC20/"

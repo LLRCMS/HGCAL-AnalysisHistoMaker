@@ -6,6 +6,12 @@ h1f 0 nevents ' Number of events ' 1 0.5 1.5
 h1f 100 jetleading_pt  ' p_{T} [GeV] ' 200 0. 200.
 h1f 101 jetleading_eta ' |#eta| '      15 1.5 3.
 h1f 102 jetsecond_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 103 jetsecond_oppEta_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 104 jetsecond_oppEta_M200_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 105 jetsecond_oppEta_M250_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 106 jetsecond_oppEta_M300_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 107 jetsecond_oppEta_M400_pt   ' p_{T} [GeV] ' 200 0. 200
+h1f 108 jetsecond_oppEta_M500_pt   ' p_{T} [GeV] ' 200 0. 200
 
 ###
 h1f 200 jets_pt  ' p_{T} [GeV] ' 200 0. 200.
