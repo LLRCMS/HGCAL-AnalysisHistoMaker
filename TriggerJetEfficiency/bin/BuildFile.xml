@@ -1,0 +1,3 @@
+<bin file="main.cpp" name="jetefficiency.exe">
+  <use name="AnHiMaHGCAL/TriggerJetEfficiency"/>
+</bin>

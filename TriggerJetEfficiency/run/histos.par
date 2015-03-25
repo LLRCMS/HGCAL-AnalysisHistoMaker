@@ -1,0 +1,28 @@
+Histos: JetEfficiency_
+
+# General event 
+h1f 0 nevents ' Number of events ' 1 0.5 1.5
+
+## number of gen electrons
+h1f 10 nGen_eta ' |#eta| ' 15 1.5 3.
+h1f 11 nGen_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 12 nGen_npu ' N_{PU} ' 10 120 160
+h1f 13 nGen_pt ' p_{T} [GeV] ' 17 30. 200.
+
+## number of matched seeds
+h1f 20 nMatched_eta ' |#eta| ' 15 1.5 3.
+h1f 21 nMatched_phi ' local #phi ' 35 0. 0.349065850398865896
+h1f 22 nMatched_npu ' N_{PU} ' 10 120 160
+h1f 23 nMatched_pt ' p_{T} [GeV] ' 17 30. 200.
+
+
+end_Histos
+
+
+
+
+
+
+
+
+
