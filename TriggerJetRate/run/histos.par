@@ -18,6 +18,60 @@ h1f 200 jets_pt  ' p_{T} [GeV] ' 200 0. 200.
 h1f 201 jets_eta ' |#eta| '      15 1.5 3.
 
 
+### number of gen jets around L1 candidate
+1binvh1f 300 nGenJets02_vs_pt ' Number of matched true jets, #Delta R<0.2 ' 10 0. 10.
+ET 5
+20. 40. 60. 100. 150. 200.
+##
+1binvh1f 310 nGenJets04_vs_pt ' Number of matched true jets, #Delta R<0.4 ' 10 0. 10.
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### pT(leading)/pT(sum) around L1 candidate
+1binvh1f 320 pt1overPtsumGenJets02_vs_pt ' p_{T}^{1}/p_{T}^{sum}, #Delta R<0.2 ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
+#
+1binvh1f 330 pt1overPtsumGenJets04_vs_pt ' p_{T}^{1}/p_{T}^{sum}, #Delta R<0.4 ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### pT(2nd)/pT(leading) around L1 candidate
+1binvh1f 340 pt2overPt1GenJets02_vs_pt ' p_{T}^{2}/p_{T}^{1}, #Delta R<0.2 ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
+#
+1binvh1f 350 pt2overPt1GenJets04_vs_pt ' p_{T}^{2}/p_{T}^{1}, #Delta R<0.4 ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### pT(leading) around L1 candidate
+1binvh1f 360 pt1GenJets02_vs_pt ' p_{T}^{1}, #Delta R<0.2 ' 500 0. 500.
+ET 5
+20. 40. 60. 100. 150. 200.
+#
+1binvh1f 370 pt1GenJets04_vs_pt ' p_{T}^{1}, #Delta R<0.4 ' 500 0. 500
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### DeltaR(leading, 2nd) around L1 candidate
+1binvh1f 380 deltaR12GenJets02_vs_pt ' #Delta R(1,2), #Delta R<0.2 ' 100 0. 1.
+ET 5
+20. 40. 60. 100. 150. 200.
+#
+1binvh1f 390 deltaR12GenJets04_vs_pt ' #Delta R(1,2), #Delta R<0.4 ' 100 0. 1.
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### N(0.2)/N(0.4) around L1 candidate
+1binvh1f 400 n02overN04GenJets_vs_pt ' N(0.2)/N(0.4) ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
+
+### pT(1,0.2)/pT(1,0.4) around L1 candidate
+1binvh1f 410 pt102overpt104GenJets_vs_pt ' pT(1,0.2)/pt(1,0.4) ' 101 0. 1.01
+ET 5
+20. 40. 60. 100. 150. 200.
 
 end_Histos
 

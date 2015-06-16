@@ -49,6 +49,7 @@ void GenJetFactory::connectVariables(TChain* chain)
     m_genjet_pt        = 0;
     m_genjet_eta       = 0;
     m_genjet_phi       = 0;
+    m_genjet_ipu       = 0;
 
 
     chain->SetBranchStatus("genjet_n"         , true);
@@ -59,6 +60,7 @@ void GenJetFactory::connectVariables(TChain* chain)
     chain->SetBranchStatus("genjet_pt"        , true);
     chain->SetBranchStatus("genjet_eta"       , true);
     chain->SetBranchStatus("genjet_phi"       , true);
+    chain->SetBranchStatus("genjet_ipu"       , true);
 
 
     chain->SetBranchAddress("genjet_n"         , &m_genjet_n);
@@ -69,6 +71,7 @@ void GenJetFactory::connectVariables(TChain* chain)
     chain->SetBranchAddress("genjet_pt"        , &m_genjet_pt     );
     chain->SetBranchAddress("genjet_eta"       , &m_genjet_eta    );
     chain->SetBranchAddress("genjet_phi"       , &m_genjet_phi    );
+    chain->SetBranchAddress("genjet_ipu"       , &m_genjet_ipu    );
 
 }
 
@@ -88,12 +91,13 @@ void GenJetFactory::update()
 /*****************************************************************/
 {
     m_data.clear();
-    for(int i=0;i<m_genjet_n;i++)
+    for(unsigned i=0;i<(unsigned)m_genjet_n;i++)
     {
         GenJet gen;
         gen.setEmEnergy        ( (*m_genjet_emenergy)[i] );
         gen.setHadEnergy       ( (*m_genjet_hadenergy)[i] );
         gen.setInvisibleEnergy ( (*m_genjet_invenergy)[i] );
+        gen.setPuIndex         ( m_genjet_ipu ? (*m_genjet_ipu)[i] : 0 );
         gen.SetPtEtaPhiE ( (*m_genjet_pt)[i], (*m_genjet_eta)[i], (*m_genjet_phi)[i], (*m_genjet_energy)[i] );
 
         m_data.push_back( gen );

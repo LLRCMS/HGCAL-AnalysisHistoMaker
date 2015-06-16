@@ -35,6 +35,7 @@ namespace AnHiMa
             std::vector<float> *m_genjet_pt;
             std::vector<float> *m_genjet_eta;
             std::vector<float> *m_genjet_phi;
+            std::vector<int>   *m_genjet_ipu;
 
     };
 }
